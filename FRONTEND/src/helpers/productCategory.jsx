@@ -1,0 +1,27 @@
+const productCategory = [
+    { id : 1, label : "Jersey", value : "jersey" },
+    { id : 2, label : "Boots", value : "boots" },
+    { id : 3, label : "Trainers", value : "trainers" },
+    { id : 4, label : "Swimwear", value : "swimwear" },
+    { id : 5, label : "Backpacks", value : "backpacks" },
+    { id : 6, label : "Socks", value : "socks" },
+    { id : 7, label : "Balls", value : "balls" },
+    { id : 8, label : "Jackets", value : "jackets" },
+    { id : 9, label : "Polo", value : "polo" },
+    { id : 10, label : "Sandals", value : "sandals" },
+    { id : 11, label : "Wallets", value : "wallets" },
+    { id : 12, label : "Watches", value : "watches" },
+    { id : 13, label : "T-shirts", value : "t-shirts" },
+    { id : 14, label : "WaterBottles", value : "waterbottles" },
+    { id : 15, label : "Gloves", value : "gloves" },
+    { id : 16, label : "Headwear", value : "headwear" },
+    { id : 17, label : "Underwear", value : "underwear" },
+    { id : 18, label : "ShinPads", value : "shinpads" },
+    { id : 19, label : "Vest", value : "vest" },
+    { id : 20, label : "Tracksuit", value : "tracksuit" },
+    { id : 21, label : "Sneakers", value : "sneakers" },
+    { id : 22, label : "Gaming", value : "gaming" },
+    { id : 23, label : "Unclassified", value : "unclassified" },
+]
+
+export default productCategory
