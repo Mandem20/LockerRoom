@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema({
     role : {
         type : String,
     },
+    resetOtp : {
+        type : String,
+        default : null
+    },
+    resetOtpExpiry : {
+        type : Number,
+        default : null
+    },
 },{
     timestamps : true
 })

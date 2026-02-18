@@ -2,24 +2,34 @@ const addToCartModel = require("../../models/cartProduct")
 
 const addToCartController = async(req,res)=>{
     try {
-         const { productId } = req?.body
+         const { productId, size } = req?.body
          const currentUser = req.userId
 
-         const isProductAvailable = await addToCartModel.findOne({ productId })
+         const isProductAvailable = await addToCartModel.findOne({ 
+             productId,
+             size: size || null,
+             userId: currentUser
+         })
 
          console.log("isProductAvailable   ",isProductAvailable)
 
          if (isProductAvailable) {
+            const updateQuantity = await addToCartModel.findByIdAndUpdate(isProductAvailable._id, {
+                quantity: isProductAvailable.quantity + 1
+            }, { new: true })
+            
             return res.json({
-                message : "You've already added product to cart",
-                success : false,
-                error : true
+                data: updateQuantity,
+                message : "Product quantity updated in cart",
+                success : true,
+                error : false
             })
          }
 
          const payload = {
             productId : productId,
             quantity : 1,
+            size : size || null,
             userId : currentUser,
          }
 

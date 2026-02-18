@@ -76,9 +76,16 @@ const RecommendedProductDisplay = ({category, heading}) => {
                      <p className='capitalize text-slate-500'>{product?.gender}</p>
                      <p className='capitalize text-slate-500'>{product?.category}</p>
                     </div>
-                    <div className='flex gap-3'>
-                        <p className='text-red-600 font-medium'>{displayCEDICurrency(product?.sellingPrice)}</p>
-                        <p className='text-slate-500 line-through'>{displayCEDICurrency(product?.price)}</p>
+                    <div className='flex gap-3 items-center'>
+                        <div className='flex gap-3'>
+                            <p className='text-red-600 font-medium'>{displayCEDICurrency(product?.sellingPrice)}</p>
+                            <p className='text-slate-500 line-through'>{displayCEDICurrency(product?.price)}</p>
+                        </div>
+                        {product?.price > product?.sellingPrice && (
+                            <span className='text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium'>
+                                -{Math.round(((product?.price - product?.sellingPrice) / product?.price) * 100)}%
+                            </span>
+                        )}
                     </div>
                     <button className='text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded-full'onClick={(e)=>handleAddToCart(e,product?._id)}>Add to cart</button>
                   </div>

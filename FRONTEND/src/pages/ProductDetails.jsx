@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import SummaryApi from '../common'
 import { FaStar } from "react-icons/fa";
 import { FaStarHalfAlt } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaWhatsapp, FaLink, FaCheck } from "react-icons/fa";
 import displayCEDICurrency from '../helpers/displayCurrency';
-import { useCallback } from 'react';
 import VerticalCardProduct from '../components/VerticalCardProduct';
 import RecommendedProductDisplay from '../components/RecommendedProductDisplay';
 import addToCart from '../helpers/addToCart';
 import Context from '../context';
 import { useContext } from 'react';
+import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
     const [data,setData] = useState({
@@ -19,7 +20,7 @@ const ProductDetails = () => {
         productImage : [],
         description : "",
         stock : "",
-        size : "",
+        sizes : [],
         gender : "",
         color : "",
         material : "",
@@ -28,15 +29,18 @@ const ProductDetails = () => {
     })
     
     const params = useParams()
+    const location = useLocation()
     const [loading,setLoading] = useState(true)
     const productImageListLoading = new Array(4).fill(null)
     const [activeImage,setActiveImage] = useState("")
+    const [selectedSize, setSelectedSize] = useState("")
 
     const [zoomImageCoordinate,setZoomImageCoordinate] = useState({
       x : 0,
       y : 0
     })                       
 const [zoomImage,setZoomImage]=useState(false)
+const [copied, setCopied] = useState(false)
 
  const { fetchUserAddToCart } = useContext(Context)
 
@@ -55,8 +59,11 @@ const [zoomImage,setZoomImage]=useState(false)
          setLoading(false)
          const dataResponse = await response.json()
 
-         setData(dataResponse?.data)
-         setActiveImage(dataResponse?.data?.productImage[0])
+          setData(dataResponse?.data)
+          setActiveImage(dataResponse?.data?.productImage[0])
+          if (dataResponse?.data?.sizes && dataResponse?.data?.sizes.length > 0) {
+              setSelectedSize(dataResponse?.data?.sizes[0])
+          }
     }
     console.log("data",data)
 
@@ -86,15 +93,62 @@ const [zoomImage,setZoomImage]=useState(false)
     }
 
     const handleAddToCart = async(e,id) =>{
-        await addToCart(e,id)
+        if (data.sizes && data.sizes.length > 0 && !selectedSize) {
+            toast.error('Please select a size')
+            return
+        }
+        await addToCart(e, id, selectedSize)
         fetchUserAddToCart()
     } 
 
   const handleBuyProduct = async(e,id) =>{
-      await addToCart(e,id)
+      if (data.sizes && data.sizes.length > 0 && !selectedSize) {
+        toast.error('Please select a size')
+        return
+    }
+      await addToCart(e, id, selectedSize)
       fetchUserAddToCart()
       navigate("/cart")
   }
+
+  const getProductUrl = () => {
+    const baseUrl = window.location.origin
+    return `${baseUrl}/product/${params?.id}`
+  }
+
+  const shareOnFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getProductUrl())}`
+    window.open(url, '_blank', 'width=600,height=400')
+  }
+
+  const shareOnTwitter = () => {
+    const text = `Check out this product: ${data?.productName}`
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getProductUrl())}`
+    window.open(url, '_blank', 'width=600,height=400')
+  }
+
+  const shareOnWhatsApp = () => {
+    const text = `Check out this product: ${data?.productName} - ${getProductUrl()}`
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`
+    window.open(url, '_blank')
+  }
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getProductUrl())
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
+
+  const shareOptions = [
+    { icon: <FaFacebook />, label: 'Facebook', onClick: shareOnFacebook, color: 'bg-blue-600 hover:bg-blue-700' },
+    { icon: <FaTwitter />, label: 'Twitter', onClick: shareOnTwitter, color: 'bg-sky-500 hover:bg-sky-600' },
+    { icon: <FaWhatsapp />, label: 'WhatsApp', onClick: shareOnWhatsApp, color: 'bg-green-500 hover:bg-green-600' },
+    { icon: copied ? <FaCheck /> : <FaLink />, label: copied ? 'Copied!' : 'Copy Link', onClick: copyLink, color: copied ? 'bg-green-600' : 'bg-gray-600 hover:bg-gray-700' },
+  ]
   return (
     <div className='container mx-auto p-8'>
           <div className='min-h-[200px] flex flex-col lg:flex-row gap-4'>
@@ -148,7 +202,7 @@ const [zoomImage,setZoomImage]=useState(false)
                                </div>
                               )
                              }
-                      </div>
+                      </div>    
                 </div>
             {/**Product Details */}
                {
@@ -196,16 +250,44 @@ const [zoomImage,setZoomImage]=useState(false)
                       <FaStar/>
                       <FaStarHalfAlt/>
                      </div>
-                     <div className='flex items-center gap-2 text-2xl lg:text-3xl font-medium my-1'>
-                      <p className='text-red-600'>{displayCEDICurrency(data?.sellingPrice)}</p>
-                      <p className='text-slate-400 line-through'>{displayCEDICurrency(data?.price)}</p>
-                     </div>
+                      <div className='flex items-center gap-2 text-2xl lg:text-3xl font-medium my-1'>
+                       <p className='text-red-600'>{displayCEDICurrency(data?.sellingPrice)}</p>
+                       <p className='text-slate-400 line-through'>{displayCEDICurrency(data?.price)}</p>
+                       {data?.price > data?.sellingPrice && (
+                          <span className='text-sm bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium'>
+                              -{Math.round(((data?.price - data?.sellingPrice) / data?.price) * 100)}%
+                          </span>
+                       )}
+                      </div>
                       <h2 className='capitalize'>Colour : {data?.color}</h2>
-                      <p>Size : {data?.size}</p>
+                      
+                      {data?.sizes && Array.isArray(data.sizes) && data.sizes.length > 0 ? (
+                        <div className='my-2'>
+                            <p className='font-medium mb-1'>Select Size:</p>
+                            <div className='flex gap-2 flex-wrap'>
+                                {data.sizes.map((size, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setSelectedSize(size)}
+                                        className={`px-4 py-2 border rounded-full font-medium transition-colors ${
+                                            selectedSize === size 
+                                            ? 'bg-red-600 text-white border-red-600' 
+                                            : 'border-gray-300 hover:border-red-600'
+                                        }`}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                      ) : data?.size ? (
+                        <p>Size : {data?.size}</p>
+                      ) : null}
                       <div className='flex items-center gap-3 my-2'>
                         <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-red-600 font-medium hover:bg-red-600 hover:text-white' onClick={(e)=>handleBuyProduct(e,data?._id)} >Buy</button>
                         <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-white bg-red-600 font-medium hover:bg-white hover:text-red-600' onClick={(e)=>handleAddToCart(e,data?._id)}>Add To Cart</button>
                       </div>
+
                       <div>
                         <p className='text-slate-600 font-medium my-1'>Description :</p>
                         <p>{data?.description}</p>
@@ -218,7 +300,21 @@ const [zoomImage,setZoomImage]=useState(false)
 
 
           </div>
-
+                   <div className='my-3 flex gap-1'>
+                        <p className='text-slate-600 font-medium mb-2'>Share:</p>
+                        <div className='flex gap-2'>
+                          {shareOptions.map((option, index) => (
+                            <button
+                              key={index}
+                              onClick={option.onClick}
+                              className={`${option.color} text-white p-2 rounded-full transition-colors`}
+                              title={option.label}
+                            >
+                              {option.icon}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
          {
           data.category && (
              <RecommendedProductDisplay  category={data?.category} heading={"Recommended Product"}/>

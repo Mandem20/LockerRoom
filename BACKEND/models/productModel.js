@@ -16,7 +16,10 @@ const productSchema = new mongoose.Schema({
             type : Object,
             default : {}
         },
-        size : String,
+        sizes : {
+            type: [String],
+            default: []
+        },
         gender : String,
         color : String,
         material : String,

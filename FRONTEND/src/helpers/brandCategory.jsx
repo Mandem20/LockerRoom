@@ -1,6 +1,6 @@
 const brandCategory = [
-    { id : 1, label : "PUMA", value : "puma" },
-    { id : 2, label : "THB", value : "thb" },
+    { id : 1, label : "Puma", value : "puma" },
+    { id : 2, label : "Thb", value : "thb" },
     { id : 3, label : "Adidas", value : "adidas" },
     { id : 4, label : "Nike", value : "nike" },
     { id : 5, label : "Icarus", value : "icarus" },

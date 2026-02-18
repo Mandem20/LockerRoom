@@ -79,10 +79,26 @@ const SummaryApi = {
       url : `${BackendDomain}/api/search`,
       method : 'get'
      },
-     filterProduct : {
-      url : `${BackendDomain}/api/filter-product`,
-      method : 'post'
-     }
+      filterProduct : {
+       url : `${BackendDomain}/api/filter-product`,
+       method : 'post'
+      },
+      deleteProduct : {
+       url : `${BackendDomain}/api/delete-product`,
+       method : 'post'
+      },
+      forgotPassword : {
+       url : `${BackendDomain}/api/forgot-password`,
+       method : 'post'
+      },
+      verifyOtp : {
+       url : `${BackendDomain}/api/verify-otp`,
+       method : 'post'
+      },
+      resetPassword : {
+       url : `${BackendDomain}/api/reset-password`,
+       method : 'post'
+      }
 }
 
 export default SummaryApi

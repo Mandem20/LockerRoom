@@ -24,13 +24,17 @@ const HorizontalCardProduct = ({category, heading}) => {
         }
 
      const fetchData = async()=>{
-        setLoading(true)
-         const categoryProduct = await fetchCategoryWiseProduct(category)
-         setLoading(false)
-         
-         console.log("horizontal data",categoryProduct.data)
-         setData(categoryProduct?.data)
-     }
+         setLoading(true)
+          const categoryProduct = await fetchCategoryWiseProduct(category)
+          setLoading(false)
+          
+          console.log("horizontal data",categoryProduct.data)
+          
+          const sortedData = (categoryProduct?.data || []).sort((a, b) => {
+            return new Date(b.createdAt) - new Date(a.createdAt)
+          })
+          setData(sortedData)
+      }
      useEffect(()=>{
          fetchData() 
      },[])
@@ -46,7 +50,12 @@ const HorizontalCardProduct = ({category, heading}) => {
   return (
     <div className='container mx-auto px-4 my-6 relative'>
 
-             <h2 className='text-2xl font-bold py-4'>{heading}</h2>
+             <div className='flex items-center justify-between py-4'>
+              <h2 className='text-2xl font-bold'>{heading}</h2>
+              <Link to={`/product-category?category=${category}`} className='text-red-600 hover:underline text-sm font-medium'>
+                See All
+              </Link>
+             </div>
 
     <div className='flex items-center gap-4 md:gap-6 overflow-scroll scrollbar-none transition-all' ref={scrollElement}>
          <button  className='bg-white shadow-md rounded-full p-1 absolute left-0 text-lg hidden md:block' onClick={scrollLeft}><FaAngleLeft/></button>
@@ -73,20 +82,29 @@ const HorizontalCardProduct = ({category, heading}) => {
          ) : (
                 data.map((product,index)=>{
                     return(
-             <Link to={"product/"+product?._id} className='w-full min-w-[340px] md:min-w-[320px] max-w-[300px] md:max-w-[330px] h-[165px] bg-white rounded-sm shadow flex' key={"Horizontal"+index}>
-                  <div className='bg-white-200 h-full p-4 min-w-[120px] md:min-w-[140px] shadow'>
+              <Link to={"product/"+product?._id} className='w-full min-w-[340px] md:min-w-[320px] max-w-[300px] md:max-w-[330px] h-[165px] bg-white rounded-sm shadow flex' key={"Horizontal"+index}>
+                  <div className='bg-white-200 h-full p-4 min-w-[120px] md:min-w-[140px] shadow relative'>
+                    {product?.price > product?.sellingPrice && (
+                        <span className='absolute top-2 right-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium'>
+                            -{Math.round(((product?.price - product?.sellingPrice) / product?.price) * 100)}%
+                        </span>
+                    )}
                     <img src={product.productImage[0]} className='object-fill h-full  hover:scale-110 transition-all'/>
                   </div>
                   <div className='p-4'>
                     <h2 className='font-medium text-base md:text-md text-ellipsis line-clamp-2 text-black'>{product?.productName}</h2>
-                    <p className='capitalize text-slate-500'>{product?.category}</p>
+                    <div className='flex gap-2'>
+                       <p className='capitalize text-slate-500'>{product?.category}</p>  
+                       <p className='capitalize text-slate-500'>{product?.brandName}</p>  
+                    </div>
+                  
                     <div className='gap-1'>
                        <p className='text-red-600 font-medium'>{displayCEDICurrency(product?.sellingPrice)}</p>
                        <p className='text-slate-500 line-through'>{displayCEDICurrency(product?.price)}</p>
                     </div>
                     <button className='text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded-full' onClick={(e)=>handleAddToCart(e,product?._id)}>Add to cart</button>
                   </div>
-             </Link>
+              </Link>
                     )
                 })
          )

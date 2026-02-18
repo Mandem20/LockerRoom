@@ -8,11 +8,10 @@ const getBrandCategoryProduct = async(req,res) => {
 
         console.log ("brandName",brandCategory)
 
-//array to store one product from each Brand
         const brandByCategory = []
 
         for(const brandName of brandCategory){
-            const product = await productModel.findOne({brandName})
+            const product = await productModel.findOne({ brandName: { $regex: new RegExp(`^${brandName}$`, 'i') } })
         
             if (product) {
                 brandByCategory.push(product)

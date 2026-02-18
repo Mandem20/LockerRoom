@@ -20,7 +20,7 @@ const UploadProduct = ({
         category : "",
         productImage : [],
         description : "",
-        size : "",
+        sizes : [],
         material : "",
         stock : "",
         color : "",
@@ -30,6 +30,7 @@ const UploadProduct = ({
     })
     const [openFullScreenImage,setOpenFullScreenImage] = useState(false)
     const [fullScreenImage,setFullScreenImage] = useState("")
+    const [sizeInput, setSizeInput] = useState("")
 
     const handleOnChange = (e)=>{
        const { name, value } = e.target
@@ -67,6 +68,27 @@ const UploadProduct = ({
                 productImage : [ ...newProductImage]
             }
         })
+    }
+
+    const handleAddSize = () => {
+        if (!sizeInput.trim()) return
+        if (data.sizes.includes(sizeInput.trim())) {
+            return
+        }
+        setData((previous) => ({
+            ...previous,
+            sizes: [...previous.sizes, sizeInput.trim()]
+        }))
+        setSizeInput("")
+    }
+
+    const handleRemoveSize = (index) => {
+        const newSizes = [...data.sizes]
+        newSizes.splice(index, 1)
+        setData((previous) => ({
+            ...previous,
+            sizes: newSizes
+        }))
     }
 
     {/**upload product */}
@@ -242,17 +264,40 @@ const UploadProduct = ({
             required
             />
 
-            <label htmlFor='size' className='mt-3'>Size :</label>
-            <input 
-            type="text" 
-            id='size' 
-            placeholder='enter product size' 
-            name='size'
-            value={data.size} 
-            onChange={handleOnChange}
-            className='p-2 bg-slate-100 border rounded'
-            required
-            />
+            <label htmlFor='size' className='mt-3'>Sizes (select multiple):</label>
+            <div className='flex gap-2 mb-2'>
+                <input 
+                type="text" 
+                id='size' 
+                placeholder='e.g., S, M, L, XL' 
+                name='size'
+                value={sizeInput} 
+                onChange={(e) => setSizeInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSize())}
+                className='p-2 bg-slate-100 border rounded flex-1'
+                />
+                <button
+                    type='button'
+                    onClick={handleAddSize}
+                    className='px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600'
+                >
+                    Add
+                </button>
+            </div>
+            <div className='flex gap-2 flex-wrap mb-2'>
+                {data.sizes.map((size, index) => (
+                    <span key={index} className='px-3 py-1 bg-slate-200 rounded-full flex items-center gap-1'>
+                        {size}
+                        <button
+                            type='button'
+                            onClick={() => handleRemoveSize(index)}
+                            className='text-red-500 hover:text-red-700'
+                        >
+                            ×
+                        </button>
+                    </span>
+                ))}
+            </div>
 
             <label htmlFor='color' className='mt-3'>Colour :</label>
             <input 

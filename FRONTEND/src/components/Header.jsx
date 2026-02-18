@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Logo from './Logo'
 import {  GrSearch } from "react-icons/gr";
 import { FaRegUserCircle } from "react-icons/fa";
@@ -22,6 +22,7 @@ const Header = () => {
     const URLSearch = new URLSearchParams(searchInput?.search)
     const searchQuery = URLSearch.getAll("q")
     const [search,setSearch] = useState(searchQuery)
+    const hasUserTyped = useRef(false)
 
     const handleLogout = async() =>{
         const fetchData = await fetch(SummaryApi.logout_user.url,{
@@ -42,15 +43,25 @@ const Header = () => {
         }
     }
 
-   const handleSearch =(e) =>{
-      const { value } = e.target
+   useEffect(() => {
+        if (!hasUserTyped.current) return
+         
+        const timer = setTimeout(() => {
+            if (search) {
+                navigate(`/search/${search}`)
+            } else {
+                navigate("/")
+            }
+        }, 500)
+
+        return () => clearTimeout(timer)
+   }, [search, navigate])
+
+    const handleSearch =(e) =>{
+       const { value } = e.target
        setSearch(value)
-      if (value) {
-        navigate(`/search?q=${value}`)
-      } else {
-         navigate("/search")
-      }
-   }
+       hasUserTyped.current = true
+    }
   return (
     <header className='h-22 shadow-md bg-white fixed w-full z-40'>
         <div className='h-full container mx-auto flex items-center px-4 justify-between'>
@@ -89,7 +100,11 @@ const Header = () => {
                     <nav>
                         {
                             user?.role === ROLE.ADMIN && (
-                                <Link to={"/admin-panel/all-products"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Admin Panel</Link>
+                                <>
+                                <Link to={"/admin-panel"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Admin Panel</Link>
+                                <Link to={"/admin-panel/all-products"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Manage Products</Link>
+                                <Link to={"/admin-panel/all-users"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Manage Users</Link>
+                                </>
                             )
                         }
                         

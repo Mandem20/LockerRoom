@@ -42,22 +42,28 @@ const VerticalCard = ({ loading, data = [] }) => {
             onClick={scrollTop}
             className='w-full min-w-[340px] md:min-w-[300px] max-w-[300px] bg-white rounded-sm shadow'
           >
-            <div className='h-40 p-4 flex justify-center items-center'>
+            <div className='h-40 p-4 flex justify-center items-center relative'>
+              {product.price > product.sellingPrice && (
+                <span className='absolute top-2 right-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium'>
+                  -{Math.round(((product.price - product.sellingPrice) / product.price) * 100)}%
+                </span>
+              )}
               <img
-                src={product.productImage?.[0]}
-                alt={product.productName}
+                src={product?.productImage?.[0]}
+                alt={product?.productName}
                 className='object-fill h-full hover:scale-110 transition-all mix-blend-multiply'
               />
             </div>
 
             <div className='p-4 grid gap-3'>
               <h2 className='font-medium text-base line-clamp-2'>
-                {product.productName}
+                {product?.productName}
               </h2>
 
               <div className='flex gap-3 text-slate-500'>
-                <p>{product.gender}</p>
-                <p>{product.category}</p>
+                <p>{product?.gender}</p>
+                <p>{product?.category}</p>
+                <p>{product?.brandName}</p>
               </div>
 
               <div className='flex gap-3'>

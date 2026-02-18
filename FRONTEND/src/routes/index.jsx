@@ -55,6 +55,18 @@ const router = createBrowserRouter([
                 element : <SearchProduct/>
             },
             {
+                path : "search/:keyword",
+                element : <SearchProduct/>
+            },
+            {
+                path : "search/:keyword/:category",
+                element : <SearchProduct/>
+            },
+            {
+                path : "search/:keyword/:category/:brand",
+                element : <SearchProduct/>
+            },
+            {
                 path : "admin-panel",
                 element : <AdminPanel/>,
                 children : [

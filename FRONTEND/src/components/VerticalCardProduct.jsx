@@ -24,12 +24,15 @@ const VerticalCardProduct = ({category, heading}) => {
             }
 
      const fetchData = async()=>{
-        setLoading(true)
-         const categoryProduct = await fetchCategoryWiseProduct(category)
-         setLoading(false)
+         setLoading(true)
+          const categoryProduct = await fetchCategoryWiseProduct(category)
+          setLoading(false)
 
-         setData(categoryProduct?.data)
-     }
+          const sortedData = (categoryProduct?.data || []).sort((a, b) => {
+            return new Date(b.createdAt) - new Date(a.createdAt)
+          })
+          setData(sortedData)
+      }
      useEffect(()=>{
          fetchData() 
      },[])
@@ -45,7 +48,12 @@ const VerticalCardProduct = ({category, heading}) => {
   return (
     <div className='container mx-auto px-4 my-6 relative'>
 
-             <h2 className='text-2xl font-bold py-4'>{heading}</h2>
+             <div className='flex items-center justify-between py-4'>
+              <h2 className='text-2xl font-bold'>{heading}</h2>
+              <Link to={`/product-category?category=${category}`} className='text-red-600 hover:underline text-sm font-medium'>
+                See All
+              </Link>
+             </div>
 
     <div className='flex items-center gap-4 md:gap-6 overflow-x-scroll scrollbar-none transition-all' ref={scrollElement}>
          <button  className='bg-white shadow-md rounded-full p-1 absolute left-0 text-lg hidden md:block' onClick={scrollLeft}><FaAngleLeft/></button>
@@ -84,10 +92,18 @@ const VerticalCardProduct = ({category, heading}) => {
                     <div className='flex items-center gap-3'> 
                      <p className='capitalize text-slate-500'>{product?.gender}</p>
                      <p className='capitalize text-slate-500'>{product?.category}</p>
+                     <p className='capitalize text-slate-500'>{product?.brandName}</p>
                     </div>
-                    <div className='flex gap-3'>
-                        <p className='text-red-600 font-medium'>{displayCEDICurrency(product?.sellingPrice)}</p>
-                        <p className='text-slate-500 line-through'>{displayCEDICurrency(product?.price)}</p>
+                    <div className='flex gap-3 items-center'>
+                        <div className='flex gap-3'>
+                            <p className='text-red-600 font-medium'>{displayCEDICurrency(product?.sellingPrice)}</p>
+                            <p className='text-slate-500 line-through'>{displayCEDICurrency(product?.price)}</p>
+                        </div>
+                        {product?.price > product?.sellingPrice && (
+                            <span className='text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium'>
+                                -{Math.round(((product?.price - product?.sellingPrice) / product?.price) * 100)}%
+                            </span>
+                        )}
                     </div>
                     <button className='text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded-full'onClick={(e)=>handleAddToCart(e,product?._id)}>Add to cart</button>
                   </div>
