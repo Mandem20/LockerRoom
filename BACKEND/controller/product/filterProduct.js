@@ -6,16 +6,20 @@ const filterProductController = async(req,res) => {
             category, 
             brand, 
             gender,
+            sizes,
+            color,
             sortBy = "newest",
             page = 1,
             limit = 12
         } = req.body
 
-        console.log("Filter request:", { category, brand, gender })
+        console.log("Filter request:", { category, brand, gender, sizes, color })
 
         const categoryList = Array.isArray(category) ? category : []
         const brandList = Array.isArray(brand) ? brand : []
         const genderList = Array.isArray(gender) ? gender : []
+        const sizeList = Array.isArray(sizes) ? sizes : []
+        const colorList = Array.isArray(color) ? color : []
 
         const filterConditions = []
 
@@ -34,6 +38,18 @@ const filterProductController = async(req,res) => {
         if (genderList.length > 0) {
             filterConditions.push({ 
                 gender: { $regex: genderList.join('|'), $options: 'i' }
+            })
+        }
+
+        if (sizeList.length > 0) {
+            filterConditions.push({ 
+                sizes: { $in: sizeList }
+            })
+        }
+
+        if (colorList.length > 0) {
+            filterConditions.push({ 
+                color: { $regex: colorList.join('|'), $options: 'i' }
             })
         }
 

@@ -137,28 +137,28 @@ const Cart = () => {
                     ) : (
                       data.map((product,index)=>{
                           return(
-                            <div key={product?._id+"Add To Cart Loading"} className='w-full bg-white h-32 my-2 border border-slate-300 rounded grid grid-cols-[128px,1fr]'>
-                                <div className='w-32 h-32 bg-slate-200'>
-                                    <img src={product?.productId?.productImage[0]} className='w-full h-full  mix-blend-multiply'/>
+                            <div key={product?._id+"Add To Cart Loading"} className='w-full bg-white h-32 my-2 border border-slate-300 rounded grid grid-cols-[100px,1fr] md:grid-cols-[128px,1fr]'>
+                                <div className='w-24 md:w-32 h-24 md:h-32 bg-slate-200'>
+                                    <img src={product?.productId?.productImage[0]} className='w-full h-full object-cover md:object-contain mix-blend-multiply'/>
                                 </div>
-                                <div className='px-4 py-2 relative'>
+                                <div className='px-2 py-1 relative'>
                                     {/**Delete product */}
                                     <div className='absolute right-0 text-red-600 rounded-full p-2 hover:bg-red-600 hover:text-white cursor-pointer' onClick={()=>deleteCartProduct(product?._id)}>
                                         <MdDelete/>
                                     </div>
-                                    <h2 className='text-lg lg:text-xl text-ellipsis line-clamp-1'>{product?.productId?.productName}</h2>
-                                    <p className='capitalize text-slate-500'>{product?.productId?.category}</p>
-                                    {product?.size && (
+                                    <h2 className='text-lg lg:text-lg text-ellipsis line-clamp-1'>{product?.productId?.productName}</h2>
+                                     <p className='capitalize text-slate-500'>{product?.productId?.category}</p>
+                                   {product?.size && (
                                         <p className='text-slate-500'>Size: {product?.size}</p>
                                     )}
                                     <div className='flex items-center justify-between'> 
-                                        <p className='text-red-600 font-medium text-lg'>{displayCEDICurrency(product?.productId?.sellingPrice)}</p>
-                                        <p className='text-slate-600  font-semibold text-lg'>{displayCEDICurrency(product?.productId?.sellingPrice * product?.quantity)}</p>
+                                        <p className='text-red-600 font-medium text-md'>{displayCEDICurrency(product?.productId?.sellingPrice)}</p>
+                                        <p className='text-slate-600  font-semibold text-md'>{displayCEDICurrency(product?.productId?.sellingPrice * product?.quantity)}</p>
                                     </div>
-                                    <div className='flex items-center gap-3 mt-2'>
-                                        <button className='border border-red-600 text-red-600 hover:bg-red-600 hover:text-white w-6 h-6 flex justify-center items-center rounded'onClick={()=>decreaseQty(product?._id,product?.quantity)}>-</button>
+                                    <div className='flex items-center gap-3 '>
+                                        <button className='border border-red-600 text-red-600 hover:bg-red-600 hover:text-white w-5 h-5 flex justify-center items-center rounded'onClick={()=>decreaseQty(product?._id,product?.quantity)}>-</button>
                                         <span>{product?.quantity}</span>
-                                        <button className='border border-red-600 text-red-600 hover:bg-red-600 hover:text-white  w-6 h-6 flex justify-center  items-center rounded'onClick={()=>increaseQty(product?._id,product?.quantity)}>+</button>
+                                        <button className='border border-red-600 text-red-600 hover:bg-red-600 hover:text-white  w-5 h-5 flex justify-center  items-center rounded'onClick={()=>increaseQty(product?._id,product?.quantity)}>+</button>
                                     </div>
                                 </div>
                             </div>

@@ -10,92 +10,68 @@ import image6 from '../assets/banner/OakFront-650x0.jpg'
 import image7 from '../assets/banner/puma.png'
 import image8 from '../assets/banner/a826f9bc-a3ef-429c-9e82-e522b0905994.webp'
 
+const defaultImages = [image1, image2, image3, image4, image5, image6, image7, image8]
 
-const BannerProduct = () => {
-   const [currentImage,setCurrentImage] = useState(0)
+const BannerProduct = ({ images = defaultImages, height = 'h-48 md:h-64 lg:h-96', autoPlayInterval = 5000 }) => {
+   const [currentImage, setCurrentImage] = useState(0)
 
+   const nextImage = () => {
+      if (images.length - 1 > currentImage) {
+         setCurrentImage(previous => previous + 1)
+      }
+   }
 
-    const desktopImages =[
-        image1,
-        image2,
-        image3,
-        image4,
-     
-        
-    ]
+   const previousImage = () => {
+      if (currentImage != 0) {
+         setCurrentImage(previous => previous - 1)
+      }
+   }
 
-
-    const mobileImages =[
-        image5,
-         image6,
-        image7,
-        image8
-        
-    ]
-
-    const nextImage = () =>{
-        if(desktopImages.length - 1 > currentImage){
-            setCurrentImage(previous => previous + 1) 
-        }    
-    }
-
-        const previousImage = () =>{
-        if(currentImage !=0){
-            setCurrentImage(previous => previous - 1) 
-        }    
-    }
-
-    useEffect(()=>{
-        const interval = setInterval(()=>{
-           if(desktopImages.length - 1 > currentImage){
+   useEffect(() => {
+      if (!autoPlayInterval) return
+      
+      const interval = setInterval(() => {
+         if (images.length - 1 > currentImage) {
             nextImage()
-           }else{
+         } else {
             setCurrentImage(0)
-           }
-        },5000)
+         }
+      }, autoPlayInterval)
 
-        return ()=> clearInterval(interval)
-    },[currentImage])
+      return () => clearInterval(interval)
+   }, [currentImage, images.length, autoPlayInterval])
 
-  return (
-    <div className='container mx-auto px-4 rounded'>
-        <div className='h-72 md:h-72 w-full bg-slate-200 relative'>
+   if (!images || images.length === 0) {
+      return null
+   }
 
+   return (
+      <div className={`container ${height} mx-auto px-4 rounded`}>
+         <div className={`${height} w-full bg-slate-200 relative`}>
             <div className='absolute z-10 h-full w-full md:flex items-center hidden'>
-                  <div className='flex justify-between w-full text-2xl'>
-                       <button onClick={previousImage} className='bg-white shadow-md rounded-full p-1'><FaAngleLeft/></button>
-                       <button onClick={nextImage} className='bg-white shadow-md rounded-full p-1'><FaAngleRight/></button>
-                  </div>
+               <div className='flex justify-between w-full text-2xl'>
+                  <button onClick={previousImage} className='bg-white shadow-md rounded-full p-1'><FaAngleLeft /></button>
+                  <button onClick={nextImage} className='bg-white shadow-md rounded-full p-1'><FaAngleRight /></button>
+               </div>
             </div>
-            {/**Desktop and tablet version */}
-            <div className='hidden md:flex w-full h-full overflow-hidden'>
-                 {
-                mobileImages.map((imageURL,index)=>{
-                    return(
-                 <div className='w-full h-full  min-w-full min-h-full transition-all' key={imageURL} style={{transform : `translateX(-${currentImage * 100}%)`}}> 
-                 <img src={imageURL} className='w-full h-full'/>
-                 </div>  
-                    )
-                  })
-               }
-            </div>
-
-
-                {/**mobile version */}
-            <div className='flex w-full h-full overflow-hidden md:hidden'>
-                 {
-                desktopImages.map((imageURL,index)=>{
-                    return(
-                 <div className='w-full h-full  min-w-full min-h-full transition-all' key={imageURL} style={{transform : `translateX(-${currentImage * 100}%)`}}> 
-                 <img src={imageURL} className='w-full h-full'/>
-                 </div>  
-                    )
+            <div className={`flex ${height} w-full overflow-hidden`}>
+               {
+                  images.map((imageURL, index) => {
+                     return (
+                        <div 
+                           className={`${height} min-w-full transition-all`} 
+                           key={index} 
+                           style={{ transform: `translateX(-${currentImage * 100}%)` }}
+                        >
+                           <img src={imageURL} className={`w-full ${height} object-contain`} alt={`Slide ${index + 1}`} />
+                        </div>
+                     )
                   })
                }
             </div>
          </div>
-    </div>
-  )
+      </div>
+   )
 }
 
 export default BannerProduct

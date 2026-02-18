@@ -39,14 +39,22 @@ const SummaryApi = {
       url : `${BackendDomain}/api/update-product`,
       method : 'post'
      },
-     categoryProduct : {
-        url : `${BackendDomain}/api/get-categoryProduct`,
-        method : 'get'
-     },
+      categoryProduct : {
+         url : `${BackendDomain}/api/get-categoryProduct`,
+         method : 'get'
+      },
+      categoryDynamic : {
+         url : `${BackendDomain}/api/get-category-dynamic`,
+         method : 'get'
+      },
      brandCategory : {
-      url : `${BackendDomain}/api/get-brandCategoryProduct`,
-      method : 'get'
-     },
+       url : `${BackendDomain}/api/get-brandCategoryProduct`,
+       method : 'get'
+      },
+      colorProduct : {
+       url : `${BackendDomain}/api/get-colorProduct`,
+       method : 'get'
+      },
      categoryWiseProduct : {
       url : `${BackendDomain}/api/category-product`,
       method : 'post'

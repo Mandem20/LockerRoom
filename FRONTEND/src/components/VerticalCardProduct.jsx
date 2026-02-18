@@ -55,18 +55,17 @@ const VerticalCardProduct = ({category, heading}) => {
               </Link>
              </div>
 
-    <div className='flex items-center gap-4 md:gap-6 overflow-x-scroll scrollbar-none transition-all' ref={scrollElement}>
+    <div className='flex items-center gap-2 md:gap-6 overflow-x-scroll scrollbar-none transition-all' ref={scrollElement}>
          <button  className='bg-white shadow-md rounded-full p-1 absolute left-0 text-lg hidden md:block' onClick={scrollLeft}><FaAngleLeft/></button>
          <button  className='bg-white shadow-md rounded-full p-1 absolute right-0 text-lg hidden md:block' onClick={scrollRight}><FaAngleRight/></button>
          {
 
-
-              loading ? (
-                       loadingList.map((_, index) =>{
+               loading ? (
+                        loadingList.map((_, index) =>{
                     return(
-             <div  key={index}  className='w-full min-w-[340px]  md:min-w-[320px] max-w-[300px] md:max-w-[330px]  bg-white rounded-sm shadow'>
-                  <div className='bg-white-200 h-40 p-4 min-w-[300px] md:min-w-[145px] flex justify-center items-center animate-pulse'>
-                  </div>
+             <div  key={index}  className='w-40 sm:w-48 md:w-56 lg:w-64 min-w-[160px] sm:min-w-[190px] md:min-w-[220px] bg-white rounded-sm shadow'>
+                 <div className='bg-white-200 h-28 sm:h-32 md:h-40 p-2 md:p-4 flex justify-center items-center animate-pulse'>
+                 </div>
                   <div className='p-4 grid gap-3'>
                     <h2 className='font-medium text-base md:text-md text-ellipsis line-clamp-2 text-black p-1 py-2 animate-pulse rounded-full bg-slate-200'></h2>
                     <p className='capitalize text-slate-500 p-1 animate-pulse rounded-full bg-slate-200 py-2'></p>
