@@ -3,11 +3,12 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import SummaryApi from '../common'
 import { FaStar } from "react-icons/fa";
 import { FaStarHalfAlt } from "react-icons/fa";
-import { FaFacebook, FaTwitter, FaWhatsapp, FaLink, FaCheck } from "react-icons/fa";
+import { FaFacebook, FaTwitter, FaWhatsapp, FaLink, FaCheck, FaHeart, FaRegHeart } from "react-icons/fa";
 import displayCEDICurrency from '../helpers/displayCurrency';
 import VerticalCardProduct from '../components/VerticalCardProduct';
 import RecommendedProductDisplay from '../components/RecommendedProductDisplay';
 import addToCart from '../helpers/addToCart';
+import addToWishlist from '../helpers/addToWishlist';
 import Context from '../context';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
@@ -21,6 +22,7 @@ const ProductDetails = () => {
         description : "",
         stock : "",
         sizes : [],
+        rating : 0,
         gender : "",
         color : "",
         material : "",
@@ -41,6 +43,7 @@ const ProductDetails = () => {
     })                       
 const [zoomImage,setZoomImage]=useState(false)
 const [copied, setCopied] = useState(false)
+const [inWishlist, setInWishlist] = useState(false)
 
  const { fetchUserAddToCart } = useContext(Context)
 
@@ -56,16 +59,40 @@ const [copied, setCopied] = useState(false)
                 productId : params?.id
             })
          })
-         setLoading(false)
-         const dataResponse = await response.json()
+          setLoading(false)
+          const dataResponse = await response.json()
 
           setData(dataResponse?.data)
           setActiveImage(dataResponse?.data?.productImage[0])
           if (dataResponse?.data?.sizes && dataResponse?.data?.sizes.length > 0) {
               setSelectedSize(dataResponse?.data?.sizes[0])
           }
+          
+          checkWishlistStatus(dataResponse?.data?._id)
     }
-    console.log("data",data)
+
+    const checkWishlistStatus = async (productId) => {
+      if (!productId) return
+      try {
+        const response = await fetch(SummaryApi.checkWishlist.url, {
+          method: SummaryApi.checkWishlist.method,
+          credentials: 'include',
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ productId })
+        })
+        const result = await response.json()
+        setInWishlist(result.inWishlist || false)
+      } catch (e) {
+        console.error("Error checking wishlist:", e)
+      }
+    }
+
+    const handleWishlist = async (productId) => {
+      const result = await addToWishlist(productId)
+      if (result.success) {
+        setInWishlist(result.inWishlist)
+      }
+    }
 
     useEffect(()=>{
        fetchProductDetails()
@@ -93,7 +120,7 @@ const [copied, setCopied] = useState(false)
     }
 
     const handleAddToCart = async(e,id) =>{
-        if (data.sizes && data.sizes.length > 0 && !selectedSize) {
+        if (Array.isArray(data?.sizes) && data.sizes.length > 0 && !selectedSize) {
             toast.error('Please select a size')
             return
         }
@@ -102,7 +129,7 @@ const [copied, setCopied] = useState(false)
     } 
 
   const handleBuyProduct = async(e,id) =>{
-      if (data.sizes && data.sizes.length > 0 && !selectedSize) {
+      if (Array.isArray(data?.sizes) && data.sizes.length > 0 && !selectedSize) {
         toast.error('Please select a size')
         return
     }
@@ -236,20 +263,34 @@ const [copied, setCopied] = useState(false)
                     </div>
                 ) : (
                     <div className='flex flex-col gap-1'>
-                     <p className='bg-blue-200 text-blue-600 px-2 rounded-full font-bold inline-block w-fit'>{data?.brandName}</p>
-                     <h2 className='text-2xl lg:text-4xl font-semibold capitalize'>{data?.productName}</h2>
-                     <h2 className=' text-green-700'>{data?.stock}</h2>
+                      <p className='bg-blue-200 text-blue-600 px-2 rounded-full font-bold inline-block w-fit'>{data?.brandName}</p>
+                      <h2 className='text-2xl lg:text-4xl font-semibold capitalize'>{data?.productName}</h2>
+                      <p className='text-xs text-slate-400'>Product ID: {data?._id}</p>
+                      <h2 className=' text-green-700'>{data?.stock}</h2>
                      <div className='flex items-center font-medium gap-5'>
                       <p className='capitalize'>{data?.gender}</p>
                       <p className='capitalize'>{data?.category}</p>
                      </div>
-                     <div className='text-red-600 flex items-center gap-2'>
-                      <FaStar/>
-                      <FaStar/>
-                      <FaStar/>
-                      <FaStar/>
-                      <FaStarHalfAlt/>
-                     </div>
+                      <div className='flex items-center gap-2'>
+                       {(() => {
+                         const rating = data?.rating || 0
+                         const fullStars = Math.floor(rating)
+                         const hasHalfStar = rating % 1 >= 0.5
+                         const stars = []
+                         
+                         for (let i = 0; i < 5; i++) {
+                           if (i < fullStars) {
+                             stars.push(<FaStar key={i} />)
+                           } else if (i === fullStars && hasHalfStar) {
+                             stars.push(<FaStarHalfAlt key={i} />)
+                           } else {
+                             stars.push(<FaStar key={i} style={{ opacity: 0.3 }} />)
+                           }
+                         }
+                         return stars
+                       })()}
+                       <span className='text-slate-500 text-sm ml-1'>({data?.rating || 0})</span>
+                      </div>
                       <div className='flex items-center gap-2 text-2xl lg:text-3xl font-medium my-1'>
                        <p className='text-red-600'>{displayCEDICurrency(data?.sellingPrice)}</p>
                        <p className='text-slate-400 line-through'>{displayCEDICurrency(data?.price)}</p>
@@ -261,28 +302,28 @@ const [copied, setCopied] = useState(false)
                       </div>
                       <h2 className='capitalize'>Colour : {data?.color}</h2>
                       
-                      {data?.sizes && Array.isArray(data.sizes) && data.sizes.length > 0 ? (
-                        <div className='my-2'>
-                            <p className='font-medium mb-1'>Select Size:</p>
-                            <div className='flex gap-2 flex-wrap'>
-                                {data.sizes.map((size, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => setSelectedSize(size)}
-                                        className={`px-4 py-2 border rounded-full font-medium transition-colors ${
-                                            selectedSize === size 
-                                            ? 'bg-red-600 text-white border-red-600' 
-                                            : 'border-gray-300 hover:border-red-600'
-                                        }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
+                      <div className="my-2">
+                        <p className="font-medium mb-1">Select Size:</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {Array.isArray(data?.sizes) && data.sizes.map((size, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setSelectedSize(size)}
+                              className={`px-4 py-2 border rounded-full font-medium transition-colors ${
+                                selectedSize === size 
+                                ? 'bg-red-600 text-white border-red-600' 
+                                : 'border-gray-300 hover:border-red-600'
+                              }`}
+                            >
+                              {size}
+                            </button>
+                          ))}
+                          {(!Array.isArray(data?.sizes) || data.sizes.length === 0) && (
+                            <span className="text-slate-500">No sizes available</span>
+                          )}
                         </div>
-                      ) : data?.size ? (
-                        <p>Size : {data?.size}</p>
-                      ) : null}
+                      </div>
                       <div className='flex items-center gap-3 my-2'>
                         <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-red-600 font-medium hover:bg-red-600 hover:text-white' onClick={(e)=>handleBuyProduct(e,data?._id)} >Buy</button>
                         <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-white bg-red-600 font-medium hover:bg-white hover:text-red-600' onClick={(e)=>handleAddToCart(e,data?._id)}>Add To Cart</button>
@@ -290,7 +331,9 @@ const [copied, setCopied] = useState(false)
 
                       <div>
                         <p className='text-slate-600 font-medium my-1'>Description :</p>
-                        <p>{data?.description}</p>
+                        <div className='text-slate-600 whitespace-pre-wrap leading-relaxed'>
+                          {data?.description}
+                        </div>
                       </div>
                       <h2 className='text-slate-600 font-medium my-1'>Material Type : {data?.material}</h2>
 
@@ -299,21 +342,34 @@ const [copied, setCopied] = useState(false)
                }
 
 
-          </div>
-                   <div className='my-3 flex gap-1'>
-                        <p className='text-slate-600 font-medium mb-2'>Share:</p>
-                        <div className='flex gap-2'>
-                          {shareOptions.map((option, index) => (
-                            <button
-                              key={index}
-                              onClick={option.onClick}
-                              className={`${option.color} text-white p-2 rounded-full transition-colors`}
-                              title={option.label}
-                            >
-                              {option.icon}
-                            </button>
-                          ))}
-                        </div>
+           </div>
+                    <div className='my-3 flex gap-4 items-center'>
+                      <button
+                        onClick={() => handleWishlist(data?._id)}
+                        className={`p-2 rounded-full transition-colors ${
+                          inWishlist 
+                          ? 'bg-red-100 text-red-600' 
+                          : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600'
+                        }`}
+                        title={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                      >
+                        {inWishlist ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
+                      </button>
+                      <div className='flex items-center gap-1'>
+                         <p className='text-slate-600 font-medium'>Share:</p>
+                         <div className='flex gap-2'>
+                           {shareOptions.map((option, index) => (
+                             <button
+                               key={index}
+                               onClick={option.onClick}
+                               className={`${option.color} text-white p-2 rounded-full transition-colors`}
+                               title={option.label}
+                             >
+                               {option.icon}
+                             </button>
+                           ))}
+                         </div>
+                       </div>
                       </div>
          {
           data.category && (

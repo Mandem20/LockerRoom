@@ -21,6 +21,8 @@ const Home = () => {
       <BrandCategoryList heading={"Shop Our Top Brands"}/>
 
       <VerticalCardProduct category={"shinpads"} heading={"Guard Your Shin"}/>
+
+      <VerticalCardProduct category={"gloves"} heading={"Protect Your Hands"}/>
     </div>
   )
 }

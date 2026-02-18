@@ -1,17 +1,33 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import scrollTop from '../helpers/scrollTop'
 import displayCEDICurrency from '../helpers/displayCurrency'
 import Context from '../context'
 import addToCart from '../helpers/addToCart'
+import addToWishlist from '../helpers/addToWishlist'
 import { Link } from 'react-router-dom'
+import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { toast } from 'react-toastify'
 
 const VerticalCard = ({ loading, data = [] }) => {
   const loadingList = new Array(13).fill(null)
   const { fetchUserAddToCart } = useContext(Context)
+  const [wishlistItems, setWishlistItems] = useState({})
 
   const handleAddToCart = async (e, id) => {
     await addToCart(e, id)
     fetchUserAddToCart()
+  }
+
+  const handleWishlist = async (e, productId) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const result = await addToWishlist(productId)
+    if (result.success) {
+      setWishlistItems(prev => ({
+        ...prev,
+        [productId]: result.inWishlist
+      }))
+    }
   }
 
   return (
@@ -48,6 +64,7 @@ const VerticalCard = ({ loading, data = [] }) => {
                   -{Math.round(((product.price - product.sellingPrice) / product.price) * 100)}%
                 </span>
               )}
+
               <img
                 src={product?.productImage?.[0]}
                 alt={product?.productName}
@@ -56,10 +73,20 @@ const VerticalCard = ({ loading, data = [] }) => {
             </div>
 
             <div className='p-4 grid gap-3'>
+               <button
+                onClick={(e) => handleWishlist(e, product._id)}
+                className='absolute top-2 right-2 p-1.5 bg-white rounded-full shadow hover:bg-red-50'
+                title='Add to wishlist'
+              >
+                {wishlistItems[product._id] ? (
+                  <FaHeart className='text-red-500' />
+                ) : (
+                  <FaRegHeart className='text-gray-500' />
+                )}
+              </button>
               <h2 className='font-medium text-base line-clamp-2'>
                 {product?.productName}
               </h2>
-
               <div className='flex gap-3 text-slate-500'>
                 <p>{product?.gender}</p>
                 <p>{product?.category}</p>

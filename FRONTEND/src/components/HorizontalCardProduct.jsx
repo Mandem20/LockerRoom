@@ -4,8 +4,10 @@ import displayCEDICurrency from '../helpers/displayCurrency'
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import addToCart from '../helpers/addToCart'
+import addToWishlist from '../helpers/addToWishlist'
 import Context from '../context'
 import { useContext } from 'react'
+import { FaHeart, FaRegHeart } from 'react-icons/fa'
 //CategoryWiseProduct//
 
 const HorizontalCardProduct = ({category, heading}) => {
@@ -15,6 +17,7 @@ const HorizontalCardProduct = ({category, heading}) => {
 
     const [scroll,setScroll] = useState(0)
     const scrollElement = useRef()
+    const [wishlistItems, setWishlistItems] = useState({})
 
     const { fetchUserAddToCart } = useContext(Context)
     
@@ -22,6 +25,18 @@ const HorizontalCardProduct = ({category, heading}) => {
            await addToCart(e,id)
             fetchUserAddToCart()
         }
+
+    const handleWishlist = async (e, productId) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const result = await addToWishlist(productId)
+        if (result.success) {
+            setWishlistItems(prev => ({
+                ...prev,
+                [productId]: result.inWishlist
+            }))
+        }
+    }
 
      const fetchData = async()=>{
          setLoading(true)
@@ -89,6 +104,17 @@ const HorizontalCardProduct = ({category, heading}) => {
                             -{Math.round(((product?.price - product?.sellingPrice) / product?.price) * 100)}%
                         </span>
                     )}
+                    <button
+                        onClick={(e) => handleWishlist(e, product?._id)}
+                        className='absolute top-2 left-2 p-1 bg-white rounded-full shadow hover:bg-red-50'
+                        title='Add to wishlist'
+                    >
+                        {wishlistItems[product?._id] ? (
+                            <FaHeart className='text-red-500 text-sm' />
+                        ) : (
+                            <FaRegHeart className='text-gray-500 text-sm' />
+                        )}
+                    </button>
                     <img src={product.productImage[0]} className='object-fill h-full  hover:scale-110 transition-all'/>
                   </div>
                   <div className='p-4'>

@@ -3,6 +3,7 @@ import Logo from './Logo'
 import {  GrSearch } from "react-icons/gr";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import SummaryApi from '../common';
@@ -113,9 +114,9 @@ const Header = () => {
                     )
                   }
               
-              </div>
-                 
-                 {
+               </div>
+                  
+                  {
                     user?._id && (
                 <Link to={"/cart"} className='text-2xl relative'>
                     <span><FaShoppingCart/></span>
@@ -125,7 +126,15 @@ const Header = () => {
                     </div>
                 </Link>
                     )
-                 }
+                  }
+
+                  {
+                    user?._id && (
+                <Link to={"/wishlist"} className='text-2xl relative ml-3'>
+                    <span><FaHeart/></span>
+                </Link>
+                    )
+                  }
 
 
             <div>

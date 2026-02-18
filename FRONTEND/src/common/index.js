@@ -95,10 +95,26 @@ const SummaryApi = {
        url : `${BackendDomain}/api/verify-otp`,
        method : 'post'
       },
-      resetPassword : {
-       url : `${BackendDomain}/api/reset-password`,
-       method : 'post'
-      }
+       resetPassword : {
+        url : `${BackendDomain}/api/reset-password`,
+        method : 'post'
+       },
+       addToWishlist : {
+        url : `${BackendDomain}/api/wishlist`,
+        method : 'post'
+       },
+       getWishlist : {
+        url : `${BackendDomain}/api/wishlist`,
+        method : 'get'
+       },
+       removeFromWishlist : {
+        url : `${BackendDomain}/api/wishlist/remove`,
+        method : 'post'
+       },
+       checkWishlist : {
+        url : `${BackendDomain}/api/wishlist/check`,
+        method : 'post'
+       }
 }
 
 export default SummaryApi

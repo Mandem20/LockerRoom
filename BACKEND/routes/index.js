@@ -26,6 +26,7 @@ const deleteAddToCartProduct = require('../controller/user/deleteAddToCartProduc
 const searchProduct = require('../controller/product/searchProduct')
 const filterProductController = require('../controller/product/filterProduct')
 const deleteProductController = require('../controller/product/deleteProduct')
+const { addToWishlist, getWishlist, removeFromWishlist, checkWishlist } = require('../controller/product/wishlistController')
 const { forgotPasswordController, verifyOtpController, resetPasswordController } = require('../controller/user/forgotPassword')
 
 router.post("/signup", userSignUpController)
@@ -62,6 +63,12 @@ router.get("/countAddToCartProduct",authToken,countAddToCartProduct)
 router.get("/view-cart-product",authToken,addToCartViewProduct)
 router.post("/update-cart-product",authToken,updateAddToCartProduct)
 router.post("/delete-cart-product",authToken,deleteAddToCartProduct)
+
+//wishlist
+router.post("/wishlist", authToken, addToWishlist)
+router.get("/wishlist", authToken, getWishlist)
+router.post("/wishlist/remove", authToken, removeFromWishlist)
+router.post("/wishlist/check", authToken, checkWishlist)
 
 
 module.exports = router

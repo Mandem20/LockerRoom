@@ -12,6 +12,7 @@ import CategoryBrand from "../pages/CategoryBrand";
 import ProductDetails from "../pages/ProductDetails";
 import Cart from "../pages/Cart";
 import SearchProduct from "../pages/SearchProduct";
+import Wishlist from "../pages/Wishlist";
 
 const router = createBrowserRouter([
     {
@@ -65,6 +66,10 @@ const router = createBrowserRouter([
             {
                 path : "search/:keyword/:category/:brand",
                 element : <SearchProduct/>
+            },
+            {
+                path : "wishlist",
+                element : <Wishlist/>
             },
             {
                 path : "admin-panel",

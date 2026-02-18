@@ -28,7 +28,8 @@ const AdminEditProduct = ({
         color : productData?.color,
         sizes : productData?.sizes || [],
         price : productData?.price,
-        sellingPrice : productData?.sellingPrice
+        sellingPrice : productData?.sellingPrice,
+        rating : productData?.rating || 0
     })
     const [openFullScreenImage,setOpenFullScreenImage] = useState(false)
     const [fullScreenImage,setFullScreenImage] = useState("")
@@ -265,8 +266,22 @@ const AdminEditProduct = ({
                className='p-2 bg-slate-100 border rounded'
                required
                />
-            
-            <label htmlFor='size' className='mt-3'>Sizes (select multiple):</label>
+
+             <label htmlFor='rating' className='mt-3'>Rating (0-5):</label>
+             <input 
+             type='number'
+             id='rating' 
+             placeholder='enter rating (0-5)' 
+             name='rating'
+             value={data.rating} 
+             onChange={handleOnChange}
+             min="0"
+             max="5"
+             step="0.1"
+             className='p-2 bg-slate-100 border rounded'
+             />
+          
+             <label htmlFor='size' className='mt-3'>Sizes (select multiple):</label>
             <div className='flex gap-2 mb-2'>
                 <input 
                 type="text" 
@@ -314,15 +329,16 @@ const AdminEditProduct = ({
             />
    
                 <label htmlFor='description' className='mt-3'>Description :</label>
-                 <textarea 
-                 className='h-28 bg-slate-100 border p-1 resize-none' 
-                 placeholder='enter product description' 
-                 rows={3} 
-                 onChange={handleOnChange} 
-                 name='description'
-                 value={data.description}
-                 >
-                 </textarea>
+                  <textarea 
+                  className='h-40 bg-slate-100 border p-2 resize-none' 
+                  placeholder='Enter product description. Use new lines for paragraphs.' 
+                  rows={5} 
+                  onChange={handleOnChange} 
+                  name='description'
+                  value={data.description}
+                  >
+                  </textarea>
+                  <p className='text-xs text-slate-500 mt-1'>Use new lines to separate paragraphs</p>
    
                  <button className='px-3 py-2 bg-red-600 text-white mb-10 hover:bg-red-700'>Update Product</button>
             </form>
