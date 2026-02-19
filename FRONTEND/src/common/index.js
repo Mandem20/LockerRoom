@@ -23,10 +23,38 @@ const SummaryApi = {
       url : `${BackendDomain}/api/all-user`,
       method : 'get'
      },
-     updateUser : {
-       url : `${BackendDomain}/api/update-user`,
-       method : "post"
-     },
+      updateUser : {
+        url : `${BackendDomain}/api/update-user`,
+        method : "post"
+      },
+      dashboardStats : {
+        url : `${BackendDomain}/api/dashboard-stats`,
+        method : "get"
+      },
+      exportReport : {
+        url : `${BackendDomain}/api/export-report`,
+        method : "post"
+      },
+      allOrders : {
+        url : `${BackendDomain}/api/all-orders`,
+        method : "get"
+      },
+      updateOrderStatus : {
+        url : `${BackendDomain}/api/update-order-status`,
+        method : "post"
+      },
+      downloadInvoice : {
+        url : `${BackendDomain}/api/download-invoice`,
+        method : "get"
+      },
+       deleteUser : {
+         url : `${BackendDomain}/api/delete-user`,
+         method : "post"
+       },
+       toggleUserStatus : {
+         url : `${BackendDomain}/api/toggle-user-status`,
+         method : "post"
+       },
      uploadProduct : {
       url : `${BackendDomain}/api/upload-product`,
       method : "post"
@@ -35,18 +63,38 @@ const SummaryApi = {
       url : `${BackendDomain}/api/get-product`,
       method : 'get'
      },
-     updateProduct : {
-      url : `${BackendDomain}/api/update-product`,
-      method : 'post'
-     },
-      categoryProduct : {
-         url : `${BackendDomain}/api/get-categoryProduct`,
-         method : 'get'
+      updateProduct : {
+       url : `${BackendDomain}/api/update-product`,
+       method : 'post'
       },
-      categoryDynamic : {
-         url : `${BackendDomain}/api/get-category-dynamic`,
-         method : 'get'
+      updateInventory : {
+       url : `${BackendDomain}/api/update-inventory`,
+       method : 'post'
       },
+        categoryProduct : {
+          url : `${BackendDomain}/api/get-categoryProduct`,
+          method : 'get'
+       },
+       categoryDynamic : {
+          url : `${BackendDomain}/api/get-category-dynamic`,
+          method : 'get'
+       },
+       createCategory : {
+          url : `${BackendDomain}/api/create-category`,
+          method : 'post'
+       },
+       getCategories : {
+          url : `${BackendDomain}/api/get-categories`,
+          method : 'get'
+       },
+       deleteCategory : {
+          url : `${BackendDomain}/api/delete-category`,
+          method : 'post'
+       },
+       updateCategory : {
+          url : `${BackendDomain}/api/update-category`,
+          method : 'post'
+       },
      brandCategory : {
        url : `${BackendDomain}/api/get-brandCategoryProduct`,
        method : 'get'

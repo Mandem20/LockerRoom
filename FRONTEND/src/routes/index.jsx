@@ -5,8 +5,11 @@ import Login from "../pages/Login";
 import ForgotPassword from "../pages/ForgotPassword";
 import SignUp from "../pages/SignUp";
 import AdminPanel from "../pages/AdminPanel";
+import Dashboard from "../pages/Dashboard";
+import CategoryManagement from "../pages/CategoryManagement";
 import AllUsers from "../pages/AllUsers";
 import AllProducts from "../pages/AllProducts";
+import Orders from "../pages/Orders";
 import CategoryProduct from "../pages/CategoryProduct";
 import CategoryBrand from "../pages/CategoryBrand";
 import ProductDetails from "../pages/ProductDetails";
@@ -76,12 +79,24 @@ const router = createBrowserRouter([
                 element : <AdminPanel/>,
                 children : [
                     {
+                        path : "",
+                        element : <Dashboard/>
+                    },
+                    {
                         path : "all-users",
                         element : <AllUsers/>
                     },
                     {
                         path : "all-products",
                         element : <AllProducts/>
+                    },
+                    {
+                        path : "categories",
+                        element : <CategoryManagement/>
+                    },
+                    {
+                        path : "orders",
+                        element : <Orders/>
                     }
                 ]
             },

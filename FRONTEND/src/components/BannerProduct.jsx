@@ -9,8 +9,9 @@ import image5 from '../assets/banner/hearts-of-oak-1.jpg'
 import image6 from '../assets/banner/OakFront-650x0.jpg'
 import image7 from '../assets/banner/puma.png'
 import image8 from '../assets/banner/a826f9bc-a3ef-429c-9e82-e522b0905994.webp'
+import image9 from '../assets/banner/gyau.jpg'
 
-const defaultImages = [image1, image2, image3, image4, image5, image6, image7, image8]
+const defaultImages = [image1, image2, image3, image4, image5, image6, image7, image8, image9]
 
 const BannerProduct = ({ images = defaultImages, height = 'h-48 md:h-64 lg:h-96', autoPlayInterval = 5000 }) => {
    const [currentImage, setCurrentImage] = useState(0)

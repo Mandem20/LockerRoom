@@ -25,6 +25,8 @@ const AdminEditProduct = ({
         productImage : productData?.productImage || [],
         description : productData?.description,
         stock : productData?.stock,
+        quantity : productData?.quantity || 0,
+        location : productData?.location || '',
         color : productData?.color,
         sizes : productData?.sizes || [],
         price : productData?.price,
@@ -122,7 +124,7 @@ const AdminEditProduct = ({
 
     }
   return (
-     <div className='fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 bottom-0 left-0 right-0 flex justify-center items-center'>
+     <div className='fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50'>
            <div className='bg-white p-4 rounded w-full max-w-2xl h-full max-h-[80%] overflow-hidden'>
                <div className='flex justify-between items-center pb-3'>
                    <h2 className='font-bold text-lg'>Edit Product</h2>
@@ -195,7 +197,30 @@ const AdminEditProduct = ({
                }
 
             </select>
-   
+
+            <label htmlFor='quantity' className='mt-3'>Quantity :</label>
+            <input 
+            type='number' 
+            id='quantity' 
+            placeholder='Enter quantity' 
+            name='quantity'
+            value={data.quantity} 
+            onChange={handleOnChange}
+            className='p-2 bg-slate-100 border rounded'
+            min="0"
+            />
+
+            <label htmlFor='location' className='mt-3'>Location :</label>
+            <input 
+            type='text' 
+            id='location' 
+            placeholder='Enter location' 
+            name='location'
+            value={data.location} 
+            onChange={handleOnChange}
+            className='p-2 bg-slate-100 border rounded'
+            />
+    
                <label htmlFor='productImage' className='mt-3'>Product Photo :</label>
                   <label htmlFor='uploadImageInput'>
                       <div className='p-2 bg-slate-100 border rounded h-32 w-full flex justify-center items-center cursor-pointer'>

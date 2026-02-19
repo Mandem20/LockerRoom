@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
     role : {
         type : String,
     },
+    isActive : {
+        type : Boolean,
+        default : true
+    },
     resetOtp : {
         type : String,
         default : null

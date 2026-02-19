@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CgClose } from "react-icons/cg";
 import productCategory from '../helpers/productCategory';
 import genderType from '../helpers/genderType';
@@ -23,6 +23,8 @@ const UploadProduct = ({
         sizes : [],
         material : "",
         stock : "",
+        quantity : "",
+        location : "",
         color : "",
         gender : "",
         price : "",
@@ -32,6 +34,26 @@ const UploadProduct = ({
     const [openFullScreenImage,setOpenFullScreenImage] = useState(false)
     const [fullScreenImage,setFullScreenImage] = useState("")
     const [sizeInput, setSizeInput] = useState("")
+    const [categories, setCategories] = useState([])
+
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch(SummaryApi.getCategories.url, {
+                method: SummaryApi.getCategories.method,
+                credentials: 'include'
+            })
+            const dataResponse = await response.json()
+            if (dataResponse.success && dataResponse.data.length > 0) {
+                setCategories(dataResponse.data)
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error)
+        }
+    }
+
+    useEffect(() => {
+        fetchCategories()
+    }, [])
 
     const handleOnChange = (e)=>{
        const { name, value } = e.target
@@ -120,7 +142,7 @@ const UploadProduct = ({
 
     }
   return (
-    <div className='fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 bottom-0 left-0 right-0 flex justify-center items-center'>
+    <div className='fixed w-full h-full bg-slate-200 bg-opacity-35 top-0 bottom-0 left-0 right-0 flex justify-center items-center z-50'>
         <div className='bg-white p-4 rounded w-full max-w-2xl h-full max-h-[80%] overflow-hidden'>
             <div className='flex justify-between items-center pb-3'>
                 <h2 className='font-bold text-lg'>Upload Product</h2>
@@ -159,11 +181,19 @@ const UploadProduct = ({
             <select required value={data.category} name='category' onChange={handleOnChange} className='p-2 bg-slate-100 border rounded'>
                  <option value={""}>Select Category</option>
                {
-                productCategory.map((el,index)=>{
-                    return(
-                        <option value={el.value} key={el.value+index}>{el.label}</option>
-                    )
-                })
+                categories.length > 0 ? (
+                    categories.map((el,index)=>{
+                        return(
+                            <option value={el.value} key={el._id || index}>{el.name}</option>
+                        )
+                    })
+                ) : (
+                    productCategory.map((el,index)=>{
+                        return(
+                            <option value={el.value} key={el.value+index}>{el.label}</option>
+                        )
+                    })
+                )
                }
 
             </select>
@@ -193,6 +223,29 @@ const UploadProduct = ({
                }
 
             </select>
+
+            <label htmlFor='quantity' className='mt-3'>Quantity :</label>
+            <input 
+            type='number' 
+            id='quantity' 
+            placeholder='Enter quantity' 
+            name='quantity'
+            value={data.quantity} 
+            onChange={handleOnChange}
+            className='p-2 bg-slate-100 border rounded'
+            min="0"
+            />
+
+            <label htmlFor='location' className='mt-3'>Location :</label>
+            <input 
+            type='text' 
+            id='location' 
+            placeholder='Enter location (e.g., Warehouse A)' 
+            name='location'
+            value={data.location} 
+            onChange={handleOnChange}
+            className='p-2 bg-slate-100 border rounded'
+            />
 
             <label htmlFor='productImage' className='mt-3'>Product Photo :</label>
                <label htmlFor='uploadImageInput'>

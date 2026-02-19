@@ -12,6 +12,14 @@ const productSchema = new mongoose.Schema({
             default : null
         },
         stock : String,
+        quantity : {
+            type: Number,
+            default: 0
+        },
+        location : {
+            type: String,
+            default: ''
+        },
         more_details : {
             type : Object,
             default : {}
@@ -28,7 +36,11 @@ const productSchema = new mongoose.Schema({
         color : String,
         material : String,
         price : Number,
-        sellingPrice : Number
+        sellingPrice : Number,
+        lastUpdated : {
+            type: Date,
+            default: Date.now
+        }
 },{
     timestamps : true 
 })
