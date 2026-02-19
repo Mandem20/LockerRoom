@@ -5,9 +5,12 @@ import moment from 'moment'
 import { MdModeEdit, MdArrowUpward, MdArrowDownward, MdDelete, MdBlock } from "react-icons/md";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import ChangeUserRole from '../components/ChangeUserRole';
+import { useNavigate } from 'react-router-dom';
 
 const AllUsers = () => {
+    const navigate = useNavigate()
    const [allUser,setAllUsers] = useState([])
+    const [loading, setLoading] = useState(true)
    const [filteredUsers, setFilteredUsers] = useState([])
    const [openUpdateRole,setOpenUpdateRole] = useState(false)
    const [updateUserDetails,setUpdateUserDetails] = useState({
@@ -24,23 +27,29 @@ const AllUsers = () => {
    const [sortConfig, setSortConfig] = useState({ field: 'createdAt', direction: 'desc' })
 
    const fetchAllUsers = async() =>{
-      const fetchData = await fetch(SummaryApi.allUser.url,{
-        method : SummaryApi.allUser.method,
-        credentials : 'include'
-      })
+      setLoading(true)
+      try {
+        const fetchData = await fetch(SummaryApi.allUser.url,{
+          method : SummaryApi.allUser.method,
+          credentials : 'include'
+        })
 
-      const dataResponse = await fetchData.json()
+        const dataResponse = await fetchData.json()
 
-      if(dataResponse.success){
-        setAllUsers(dataResponse.data)
-        setFilteredUsers(dataResponse.data)
+        if(dataResponse.success){
+          setAllUsers(dataResponse.data)
+          setFilteredUsers(dataResponse.data)
+        } else if (fetchData.status === 403) {
+          toast.error('Access denied. Admin only.')
+          navigate('/')
+        } else if(dataResponse.error){
+          toast.error(dataResponse.message)
+        }
+      } catch (error) {
+        toast.error('Failed to fetch users')
+      } finally {
+        setLoading(false)
       }
-
-      if(dataResponse.error){
-        toast.error(dataResponse.message)
-      }
-
-
     }
 
     useEffect(()=>{
@@ -113,13 +122,12 @@ const AllUsers = () => {
         return sortConfig.direction === 'asc' ? <MdArrowUpward className="inline ml-1" /> : <MdArrowDownward className="inline ml-1" />
     }
 
-    const handleDeleteUser = async (userId, userRole) => {
-        if (userRole === "ADMIN") {
-            toast.error("Cannot delete admin user")
-            return
-        }
+    const handleDeleteUser = async (userId, userRole, userName) => {
+        const confirmMessage = userRole === "ADMIN" 
+            ? `Are you sure you want to delete admin user "${userName}"? This action cannot be undone.` 
+            : `Are you sure you want to delete user "${userName}"? This action cannot be undone.`
         
-        if (!window.confirm("Are you sure you want to delete this user?")) return
+        if (!window.confirm(confirmMessage)) return
 
         try {
             const response = await fetch(SummaryApi.deleteUser.url, {
@@ -144,11 +152,12 @@ const AllUsers = () => {
         }
     }
 
-    const handleToggleStatus = async (userId, userRole) => {
-        if (userRole === "ADMIN") {
-            toast.error("Cannot change status of admin user")
-            return
-        }
+    const handleToggleStatus = async (userId, userRole, userName) => {
+        const confirmMessage = userRole === "ADMIN" 
+            ? `Are you sure you want to toggle status for admin user "${userName}"?` 
+            : `Are you sure you want to toggle status for "${userName}"?`
+        
+        if (!window.confirm(confirmMessage)) return
 
         try {
             const response = await fetch(SummaryApi.toggleUserStatus.url, {
@@ -199,7 +208,7 @@ const AllUsers = () => {
                 >
                     <option value="">All Roles</option>
                     <option value="ADMIN">Admin</option>
-                    <option value="GENERAL">General</option>
+                    <option value="CUSTOMER">Customer</option>
                 </select>
             </div>
 
@@ -274,8 +283,8 @@ const AllUsers = () => {
                                 <td>{el?.mobile || '-'}</td>
                                 <td>{el?.role}</td>
                                 <td>
-                                    <span className={`px-2 py-1 rounded text-xs ${el?.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                        {el?.isActive ? 'Active' : 'Inactive'}
+                                    <span className={`px-2 py-1 rounded text-xs ${el?.isActive === false ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                        {el?.isActive === false ? 'Inactive' : 'Active'}
                                     </span>
                                 </td>
                                 <td>{moment(el?.createdAt).format('llll')}</td>
@@ -293,20 +302,18 @@ const AllUsers = () => {
                                         {el?.role !== "ADMIN" && (
                                             <button 
                                                 className='bg-red-100 p-2 rounded-full cursor-pointer hover:bg-red-500 hover:text-white' 
-                                                onClick={() => handleDeleteUser(el._id, el.role)}
+                                                onClick={() => handleDeleteUser(el._id, el.role, el.name)}
                                             >
                                                 <MdDelete/>
                                             </button>
                                         )}
-                                        {el?.role !== "ADMIN" && (
-                                            <button 
+                                        <button 
                                                 className={`p-2 rounded-full cursor-pointer ${el?.isActive ? 'bg-yellow-100 hover:bg-yellow-500 hover:text-white' : 'bg-green-100 hover:bg-green-500 hover:text-white'}`}
-                                                onClick={() => handleToggleStatus(el._id, el.role)}
+                                                onClick={() => handleToggleStatus(el._id, el.role, el.name)}
                                                 title={el?.isActive ? 'Deactivate' : 'Activate'}
                                             >
                                                 {el?.isActive ? <MdBlock/> : <IoCheckmarkCircle/>}
                                             </button>
-                                        )}
                                     </div>
                                 </td>
                             </tr>

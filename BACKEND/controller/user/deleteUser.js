@@ -22,9 +22,10 @@ const deleteUser = async(req,res) => {
             })
         }
 
-        if(user.role === "ADMIN"){
+        // Prevent admin from deleting themselves
+        if (user._id.toString() === req.userId.toString()) {
             return res.status(400).json({
-                message : "Cannot delete admin user",
+                message : "Cannot delete your own account",
                 error : true,
                 success : false
             })

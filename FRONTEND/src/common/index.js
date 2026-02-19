@@ -43,6 +43,10 @@ const SummaryApi = {
         url : `${BackendDomain}/api/update-order-status`,
         method : "post"
       },
+      sendOrderNotification : {
+        url : `${BackendDomain}/api/send-order-notification`,
+        method : "post"
+      },
       downloadInvoice : {
         url : `${BackendDomain}/api/download-invoice`,
         method : "get"

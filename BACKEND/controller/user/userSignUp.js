@@ -39,7 +39,7 @@ async function userSignUpController(req,res){
             ...req.body,
             name,
             email,
-            role : "GENERAL",
+            role : "CUSTOMER",
             password : hashPassword
         }
 

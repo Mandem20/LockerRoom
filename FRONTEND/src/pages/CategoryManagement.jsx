@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import SummaryApi from '../common'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 const CategoryManagement = () => {
+    const navigate = useNavigate()
     const [categories, setCategories] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
@@ -21,6 +23,9 @@ const CategoryManagement = () => {
             const data = await response.json()
             if (data.success) {
                 setCategories(data.data)
+            } else if (response.status === 403) {
+                toast.error('Access denied. Admin only.')
+                navigate('/')
             }
         } catch (error) {
             console.error('Error fetching categories:', error)

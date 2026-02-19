@@ -22,9 +22,10 @@ const toggleUserStatus = async(req,res) => {
             })
         }
 
-        if(user.role === "ADMIN"){
+        // Prevent admin from deactivating themselves
+        if (user._id.toString() === req.userId.toString()) {
             return res.status(400).json({
-                message : "Cannot change status of admin user",
+                message : "Cannot change your own status",
                 error : true,
                 success : false
             })

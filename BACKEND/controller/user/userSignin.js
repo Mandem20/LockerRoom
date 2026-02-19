@@ -15,13 +15,17 @@ async function userSignInController(req,res) {
         }
 
 
-    const user = await userModel.findOne({email})
+const user = await userModel.findOne({email})
     
     if (!user) {
         throw new Error("User not found")
     }
 
-const checkPassword = await bcrypt.compare(password,user.password)
+    if (user.isActive === false) {
+        throw new Error("Account is deactivated. Please contact admin.")
+    }
+
+    const checkPassword = await bcrypt.compare(password,user.password)
 
 console.log("checkPassword",checkPassword)
 
@@ -33,7 +37,10 @@ const tokenData = {
 const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: 60 * 60 * 8});
 const tokenOption = {
     httpOnly : true,
-    secure : true
+    secure : true,
+    sameSite : 'strict',
+    maxAge : 60 * 60 * 8 * 1000,
+    path : '/'
 }
 res.cookie("token",token,tokenOption).json({
     message : "Login Successfully",

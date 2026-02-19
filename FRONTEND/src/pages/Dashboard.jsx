@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import SummaryApi from '../common'
+import { toast } from 'react-toastify'
 import StatCard from '../components/StatCard'
 import BarChart from '../components/BarChart'
 import displayCEDICurrency from '../helpers/displayCurrency'
 import { FaUsers, FaBox, FaTags, FaShoppingCart, FaDollarSign, FaExclamationCircle, FaDownload } from 'react-icons/fa'
 
 const Dashboard = () => {
+    const navigate = useNavigate()
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalProducts: 0,
@@ -79,6 +81,12 @@ const Dashboard = () => {
             const productsData = await productsRes.json()
             const categoriesData = await categoriesRes.json()
             const statsData = await statsRes.json()
+
+            if (usersRes.status === 403 || statsRes.status === 403) {
+                toast.error('Access denied. Admin only.')
+                navigate('/')
+                return
+            }
 
             const products = productsData?.data || []
             const lowStock = products.filter(p => p.stock === 'Low Stock' || p.stock === 'Out of Stock').length

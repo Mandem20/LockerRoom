@@ -1,13 +1,15 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaUsers, FaBox, FaTags, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaHome, FaShoppingCart } from 'react-icons/fa'
+import { FaUsers, FaBox, FaTags, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaHome, FaShoppingCart, FaUserCircle, FaChartBar } from 'react-icons/fa'
 
-const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen }) => {
+const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen, isLoggingOut = false }) => {
     const location = useLocation()
     
     const menuItems = [
         { path: '', label: 'Dashboard', icon: <FaHome /> },
         { path: 'orders', label: 'Orders', icon: <FaShoppingCart /> },
+        { path: 'customers', label: 'Customers', icon: <FaUserCircle /> },
+        { path: 'analytics', label: 'Analytics', icon: <FaChartBar /> },
         { path: 'all-products', label: 'Products', icon: <FaBox /> },
         { path: 'All-users', label: 'Users', icon: <FaUsers /> },
         { path: 'categories', label: 'Categories', icon: <FaTags /> },
@@ -108,14 +110,20 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
                 <div className={`p-3 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
                     <button 
                         onClick={onLogout}
+                        disabled={isLoggingOut}
                         className={`
                             flex items-center gap-3 px-3 py-3 w-full rounded-lg hover:bg-red-50 text-gray-700 hover:text-red-600 transition-all
                             ${isCollapsed ? 'justify-center' : 'px-4'}
+                            ${isLoggingOut ? 'opacity-50 cursor-not-allowed' : ''}
                         `}
                         title={isCollapsed ? 'Logout' : ''}
                     >
-                        <FaSignOutAlt className='text-lg' />
-                        {!isCollapsed && <span className='font-medium'>Logout</span>}
+                        {isLoggingOut ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
+                        ) : (
+                            <FaSignOutAlt className='text-lg' />
+                        )}
+                        {!isCollapsed && <span className='font-medium'>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>}
                     </button>
                 </div>
             </aside>

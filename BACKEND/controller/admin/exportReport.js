@@ -19,7 +19,7 @@ const exportReport = async(req,res) => {
                 filename = 'products-report'
                 break
             case 'users':
-                data = await userModel.find({ role: 'GENERAL' }).sort({ createdAt: -1 }).lean()
+                data = await userModel.find({ role: 'CUSTOMER' }).sort({ createdAt: -1 }).lean()
                 data = data.map(u => ({
                     name: u.name,
                     email: u.email,

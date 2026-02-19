@@ -14,7 +14,7 @@ const getDashboardStats = async(req,res) => {
 
         const totalOrders = await OrderModel.countDocuments()
         
-        const totalCustomers = await userModel.countDocuments({ role: "GENERAL" })
+        const totalCustomers = await userModel.countDocuments({ role: "CUSTOMER" })
 
         const revenue = totalRevenue[0]?.total || 0
 

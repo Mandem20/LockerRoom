@@ -5,14 +5,20 @@ import './index.css';
 import App from './App.jsx';
 import { RouterProvider } from 'react-router-dom';
 import router from './routes/index.jsx';
-import { store } from './store/store.js';
+import { store, persistor } from './store/store.js';
 import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { SocketProvider } from './context/SocketContext.jsx';
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />  
+      <PersistGate loading={null} persistor={persistor}>
+        <SocketProvider>
+          <RouterProvider router={router} />  
+        </SocketProvider>
+      </PersistGate>
     </Provider>
   </StrictMode>,
 )

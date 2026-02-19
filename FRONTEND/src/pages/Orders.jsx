@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import SummaryApi from '../common'
 import { toast } from 'react-toastify'
-import { FaEye, FaSearch, FaFilter, FaEdit, FaDownload } from 'react-icons/fa'
+import { FaEye, FaSearch, FaFilter, FaEdit, FaDownload, FaList, FaClock, FaEnvelope, FaSms } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 const Orders = () => {
+    const navigate = useNavigate()
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
+    const [viewMode, setViewMode] = useState('table')
     const [filters, setFilters] = useState({
         search: '',
         status: '',
@@ -23,6 +26,9 @@ const Orders = () => {
             const data = await response.json()
             if (data.success) {
                 setOrders(data.data || [])
+            } else if (response.status === 403) {
+                toast.error('Access denied. Admin only.')
+                navigate('/')
             }
         } catch (error) {
             console.error('Error fetching orders:', error)
@@ -104,6 +110,30 @@ const Orders = () => {
         }
     }
 
+    const handleSendNotification = async (orderId, type) => {
+        try {
+            const response = await fetch(SummaryApi.sendOrderNotification.url, {
+                method: SummaryApi.sendOrderNotification.method,
+                credentials: 'include',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ 
+                    orderId, 
+                    type,
+                    emailMessage: { subject: 'Order Status Update', body: '' },
+                    smsMessage: ''
+                })
+            })
+            const data = await response.json()
+            if (data.success) {
+                toast.success(`${type === 'email' ? 'Email' : 'SMS'} notification sent`)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error('Failed to send notification')
+        }
+    }
+
     const filteredOrders = orders.filter(order => {
         if (filters.search) {
             const search = filters.search.toLowerCase()
@@ -121,11 +151,24 @@ const Orders = () => {
         return true
     })
 
+    const groupedOrders = () => {
+        const groups = {}
+        filteredOrders.forEach(order => {
+            const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'Unknown'
+            if (!groups[date]) {
+                groups[date] = []
+            }
+            groups[date].push(order)
+        })
+        return Object.entries(groups).sort((a, b) => new Date(b[0]) - new Date(a[0]))
+    }
+
     const getStatusColor = (status) => {
         switch (status?.toLowerCase()) {
             case 'paid': return 'bg-green-100 text-green-700'
             case 'pending': return 'bg-yellow-100 text-yellow-700'
             case 'failed': return 'bg-red-100 text-red-700'
+            case 'refund': return 'bg-orange-100 text-orange-700'
             default: return 'bg-gray-100 text-gray-700'
         }
     }
@@ -137,6 +180,7 @@ const Orders = () => {
             case 'shipped': return 'bg-purple-100 text-purple-700'
             case 'delivered': return 'bg-green-100 text-green-700'
             case 'cancelled': return 'bg-red-100 text-red-700'
+            case 'refund': return 'bg-orange-100 text-orange-700'
             default: return 'bg-gray-100 text-gray-700'
         }
     }
@@ -145,8 +189,9 @@ const Orders = () => {
         'pending': ['Processing', 'Cancelled'],
         'processing': ['Shipped', 'Cancelled'],
         'shipped': ['Delivered'],
-        'delivered': [],
-        'cancelled': []
+        'delivered': ['Refund'],
+        'cancelled': [],
+        'refund': []
     }
 
     const canChangeStatus = (currentStatus) => {
@@ -156,8 +201,28 @@ const Orders = () => {
     return (
         <div className='space-y-4'>
             <div className='bg-white p-4 rounded-lg shadow-sm'>
-                <h1 className='text-2xl font-bold text-gray-800'>Orders</h1>
-                <p className='text-gray-500 text-sm mt-1'>Manage and track customer orders</p>
+                <div className='flex justify-between items-center'>
+                    <div>
+                        <h1 className='text-2xl font-bold text-gray-800'>Orders</h1>
+                        <p className='text-gray-500 text-sm mt-1'>Manage and track customer orders</p>
+                    </div>
+                    <div className='flex gap-2'>
+                        <button
+                            onClick={() => setViewMode('table')}
+                            className={`p-2 rounded ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            title='Table View'
+                        >
+                            <FaList />
+                        </button>
+                        <button
+                            onClick={() => setViewMode('timeline')}
+                            className={`p-2 rounded ${viewMode === 'timeline' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            title='Timeline View'
+                        >
+                            <FaClock />
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Filters */}
@@ -187,6 +252,7 @@ const Orders = () => {
                             <option value="paid">Paid</option>
                             <option value="pending">Pending</option>
                             <option value="failed">Failed</option>
+                            <option value="refund">Refund</option>
                         </select>
                     </div>
                     <div className='min-w-[150px]'>
@@ -202,6 +268,7 @@ const Orders = () => {
                             <option value="shipped">Shipped</option>
                             <option value="delivered">Delivered</option>
                             <option value="cancelled">Cancelled</option>
+                            <option value="refund">Refund</option>
                         </select>
                     </div>
                     <button
@@ -311,6 +378,84 @@ const Orders = () => {
                 </div>
             </div>
 
+            {/* Timeline View */}
+            {viewMode === 'timeline' && (
+                <div className='bg-white rounded-lg shadow-sm p-4'>
+                    {loading ? (
+                        <div className='space-y-4'>
+                            {Array.from({ length: 5 }).map((_, i) => (
+                                <div key={i} className='h-20 bg-gray-200 rounded animate-pulse'></div>
+                            ))}
+                        </div>
+                    ) : groupedOrders().length === 0 ? (
+                        <div className='py-8 text-center text-gray-500'>No orders found</div>
+                    ) : (
+                        <div className='space-y-6'>
+                            {groupedOrders().map(([date, dateOrders]) => (
+                                <div key={date}>
+                                    <h3 className='text-sm font-semibold text-gray-500 mb-3'>{date}</h3>
+                                    <div className='space-y-3'>
+                                        {dateOrders.map((order) => (
+                                            <div key={order._id} className='flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50'>
+                                                <div className='flex-shrink-0 w-12 h-12'>
+                                                    {order.product_details?.image?.[0] ? (
+                                                        <img 
+                                                            src={order.product_details.image[0]} 
+                                                            alt={order.product_details.name}
+                                                            className='w-12 h-12 object-cover rounded'
+                                                        />
+                                                    ) : (
+                                                        <div className='w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400'>
+                                                            <FaDownload />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className='flex-1 min-w-0'>
+                                                    <div className='flex items-center gap-2'>
+                                                        <span className='text-sm font-mono text-gray-800'>{order.orderId}</span>
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(order.payment_status)}`}>
+                                                            {order.payment_status}
+                                                        </span>
+                                                        <span className={`text-xs px-2 py-0.5 rounded-full ${getOrderStatusColor(order.order_status)}`}>
+                                                            {order.order_status}
+                                                        </span>
+                                                    </div>
+                                                    <p className='text-sm text-gray-600 truncate'>
+                                                        {order.product_details?.name || 'Unknown Product'}
+                                                    </p>
+                                                    <p className='text-xs text-gray-500'>
+                                                        {order.userId?.email}
+                                                    </p>
+                                                </div>
+                                                <div className='text-right'>
+                                                    <p className='font-medium text-gray-800'>GHS {order.totalAmt?.toLocaleString() || 0}</p>
+                                                    <p className='text-xs text-gray-500'>{order.payment_mode || '-'}</p>
+                                                </div>
+                                                <div className='flex gap-2'>
+                                                    <button
+                                                        onClick={() => handleDownloadInvoice(order._id)}
+                                                        className='p-2 bg-green-50 hover:bg-green-100 rounded text-green-600'
+                                                        title='Download Invoice'
+                                                    >
+                                                        <FaDownload />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setSelectedOrder(order)}
+                                                        className='p-2 bg-blue-50 hover:bg-blue-100 rounded text-blue-600'
+                                                    >
+                                                        <FaEye />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* Order Detail Modal */}
             {selectedOrder && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
@@ -390,6 +535,7 @@ const Orders = () => {
                                         <option value='pending'>Pending</option>
                                         <option value='paid'>Paid</option>
                                         <option value='failed'>Failed</option>
+                                        <option value='refund'>Refund</option>
                                     </select>
                                     <button
                                         onClick={() => {
@@ -420,6 +566,7 @@ const Orders = () => {
                                                 <option value="shipped" disabled={!orderStatusOptions[selectedOrder.order_status || 'pending']?.includes('shipped')}>Shipped</option>
                                                 <option value="delivered" disabled={!orderStatusOptions[selectedOrder.order_status || 'pending']?.includes('delivered')}>Delivered</option>
                                                 <option value="cancelled" disabled={!orderStatusOptions[selectedOrder.order_status || 'pending']?.includes('cancelled')}>Cancelled</option>
+                                                <option value="refund" disabled={!orderStatusOptions[selectedOrder.order_status || 'pending']?.includes('refund')}>Refund</option>
                                             </>
                                         ) : (
                                             <option value={selectedOrder.order_status || 'pending'}>
@@ -458,6 +605,31 @@ const Orders = () => {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Send Notification */}
+                            <div className='border-t pt-4 mt-4'>
+                                <p className='text-sm text-gray-500 mb-2'>Send Notification</p>
+                                <div className='flex gap-2'>
+                                    <button
+                                        onClick={() => handleSendNotification(selectedOrder._id, 'email')}
+                                        className='flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium'
+                                    >
+                                        <FaEnvelope />
+                                        Send Email
+                                    </button>
+                                    <button
+                                        onClick={() => handleSendNotification(selectedOrder._id, 'sms')}
+                                        className='flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm font-medium'
+                                    >
+                                        <FaSms />
+                                        Send SMS
+                                    </button>
+                                </div>
+                                <p className='text-xs text-gray-500 mt-2'>
+                                    Email: {selectedOrder.userId?.email || 'Not available'} | 
+                                    Phone: {selectedOrder.userId?.phoneNumber || 'Not available'}
+                                </p>
+                            </div>
                         </div>
 
                         <button

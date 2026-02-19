@@ -8,6 +8,8 @@ import AdminPanel from "../pages/AdminPanel";
 import Dashboard from "../pages/Dashboard";
 import CategoryManagement from "../pages/CategoryManagement";
 import AllUsers from "../pages/AllUsers";
+import Customers from "../pages/Customers";
+import Analytics from "../pages/Analytics";
 import AllProducts from "../pages/AllProducts";
 import Orders from "../pages/Orders";
 import CategoryProduct from "../pages/CategoryProduct";
@@ -85,6 +87,14 @@ const router = createBrowserRouter([
                     {
                         path : "all-users",
                         element : <AllUsers/>
+                    },
+                    {
+                        path : "customers",
+                        element : <Customers/>
+                    },
+                    {
+                        path : "analytics",
+                        element : <Analytics/>
                     },
                     {
                         path : "all-products",
