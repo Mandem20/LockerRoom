@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import SummaryApi from '../common'
 import { toast } from 'react-toastify'
 import moment from 'moment'
-import { FaSearch, FaEnvelope, FaPhone, FaEye, FaShoppingCart, FaUserSlash, FaUserCheck, FaFilter } from 'react-icons/fa'
+import { FaSearch, FaEnvelope, FaPhone, FaEye, FaShoppingCart, FaUserSlash, FaUserCheck, FaFilter, FaMapMarkerAlt, FaVenusMars, FaCalendar, FaUser } from 'react-icons/fa'
 import { MdModeEdit, MdDelete, MdBlock } from 'react-icons/md'
 import { IoCheckmarkCircle } from 'react-icons/io5'
 import { useNavigate } from 'react-router-dom'
@@ -15,6 +15,7 @@ const Customers = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null)
     const [customerOrders, setCustomerOrders] = useState([])
     const [showOrdersModal, setShowOrdersModal] = useState(false)
+    const [showDetailsModal, setShowDetailsModal] = useState(false)
     const [filters, setFilters] = useState({
         search: '',
         status: ''
@@ -90,6 +91,11 @@ const Customers = () => {
         setSelectedCustomer(customer)
         await fetchCustomerOrders(customer._id)
         setShowOrdersModal(true)
+    }
+
+    const handleViewDetails = (customer) => {
+        setSelectedCustomer(customer)
+        setShowDetailsModal(true)
     }
 
     const handleToggleStatus = async (customerId) => {
@@ -262,6 +268,13 @@ const Customers = () => {
                                         <td className='px-4 py-3'>
                                             <div className='flex gap-2'>
                                                 <button
+                                                    onClick={() => handleViewDetails(customer)}
+                                                    className='p-2 bg-blue-50 hover:bg-blue-100 rounded text-blue-600'
+                                                    title='View Details'
+                                                >
+                                                    <FaEye />
+                                                </button>
+                                                <button
                                                     onClick={() => handleViewOrders(customer)}
                                                     className='p-2 bg-purple-50 hover:bg-purple-100 rounded text-purple-600'
                                                     title='View Orders'
@@ -348,6 +361,147 @@ const Customers = () => {
                         >
                             Close
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {showDetailsModal && selectedCustomer && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
+                    <div className='bg-white rounded-lg max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto'>
+                        <div className='flex justify-between items-start mb-6'>
+                            <div className='flex items-center gap-4'>
+                                {selectedCustomer.profilePic ? (
+                                    <img 
+                                        src={selectedCustomer.profilePic} 
+                                        alt={selectedCustomer.name}
+                                        className='w-16 h-16 rounded-full object-cover'
+                                    />
+                                ) : (
+                                    <div className='w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center'>
+                                        <FaUser className='text-2xl text-gray-500' />
+                                    </div>
+                                )}
+                                <div>
+                                    <h2 className='text-xl font-bold text-gray-800'>{selectedCustomer.name}</h2>
+                                    <p className='text-sm text-gray-500'>{selectedCustomer.email}</p>
+                                    <span className={`text-xs px-2 py-1 rounded-full mt-1 inline-block ${selectedCustomer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                        {selectedCustomer.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setShowDetailsModal(false)}
+                                className='text-gray-400 hover:text-gray-600 text-xl'
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                            <div>
+                                <h3 className='font-semibold text-gray-800 mb-3 flex items-center gap-2'>
+                                    <FaUser className='text-red-600' /> Personal Information
+                                </h3>
+                                <div className='space-y-3'>
+                                    <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
+                                        <FaEnvelope className='text-gray-400' />
+                                        <div>
+                                            <p className='text-xs text-gray-500'>Email</p>
+                                            <p className='text-sm font-medium'>{selectedCustomer.email || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                    <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
+                                        <FaPhone className='text-gray-400' />
+                                        <div>
+                                            <p className='text-xs text-gray-500'>Phone</p>
+                                            <p className='text-sm font-medium'>{selectedCustomer.phone || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                    {selectedCustomer.altPhone && (
+                                        <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
+                                            <FaPhone className='text-gray-400' />
+                                            <div>
+                                                <p className='text-xs text-gray-500'>Alternate Phone</p>
+                                                <p className='text-sm font-medium'>{selectedCustomer.altPhone}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
+                                        <FaVenusMars className='text-gray-400' />
+                                        <div>
+                                            <p className='text-xs text-gray-500'>Gender</p>
+                                            <p className='text-sm font-medium capitalize'>{selectedCustomer.gender || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                    <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
+                                        <FaCalendar className='text-gray-400' />
+                                        <div>
+                                            <p className='text-xs text-gray-500'>Birth Date</p>
+                                            <p className='text-sm font-medium'>
+                                                {selectedCustomer.birthDate ? moment(selectedCustomer.birthDate).format('MMMM DD, YYYY') : 'N/A'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
+                                        <FaCalendar className='text-gray-400' />
+                                        <div>
+                                            <p className='text-xs text-gray-500'>Member Since</p>
+                                            <p className='text-sm font-medium'>
+                                                {selectedCustomer.createdAt ? moment(selectedCustomer.createdAt).format('MMMM DD, YYYY') : 'N/A'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className='font-semibold text-gray-800 mb-3 flex items-center gap-2'>
+                                    <FaMapMarkerAlt className='text-red-600' /> Saved Addresses
+                                </h3>
+                                {selectedCustomer.addresses && selectedCustomer.addresses.length > 0 ? (
+                                    <div className='space-y-3'>
+                                        {selectedCustomer.addresses.map((addr, index) => (
+                                            <div key={index} className={`p-3 rounded-lg border ${addr.default ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}>
+                                                <div className='flex items-center justify-between'>
+                                                    <p className='font-medium text-sm'>{addr.label}</p>
+                                                    {addr.default && (
+                                                        <span className='text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full'>Default</span>
+                                                    )}
+                                                </div>
+                                                <p className='text-sm text-gray-600 mt-1'>{addr.address}</p>
+                                                {(addr.city || addr.region) && (
+                                                    <p className='text-xs text-gray-500 mt-1'>
+                                                        {[addr.city, addr.region].filter(Boolean).join(', ')}
+                                                    </p>
+                                                )}
+                                                {addr.phone && (
+                                                    <p className='text-xs text-gray-500 mt-1'>Phone: {addr.phone}</p>
+                                                )}
+                                                {addr.additionalPhone && (
+                                                    <p className='text-xs text-gray-500'>Alt: {addr.additionalPhone}</p>
+                                                )}
+                                                {addr.gpsAddress && (
+                                                    <p className='text-xs text-gray-500'>GPS: {addr.gpsAddress}</p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className='p-4 bg-gray-50 rounded-lg text-center text-gray-500 text-sm'>
+                                        No addresses saved
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className='mt-6 flex justify-end'>
+                            <button 
+                                onClick={() => setShowDetailsModal(false)}
+                                className='px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-700'
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

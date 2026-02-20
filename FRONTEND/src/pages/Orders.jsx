@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import SummaryApi from '../common'
 import { toast } from 'react-toastify'
-import { FaEye, FaSearch, FaFilter, FaEdit, FaDownload, FaList, FaClock, FaEnvelope, FaSms } from 'react-icons/fa'
+import { FaEye, FaSearch, FaFilter, FaEdit, FaDownload, FaList, FaClock, FaEnvelope, FaSms, FaUser, FaMapMarkerAlt, FaPhone } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 const Orders = () => {
@@ -290,6 +290,7 @@ const Orders = () => {
                         <thead className='bg-gray-50'>
                             <tr>
                                 <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase'>Order ID</th>
+                                <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase'>Customer</th>
                                 <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase'>Product</th>
                                 <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase'>Amount</th>
                                 <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase'>Payment Mode</th>
@@ -303,14 +304,14 @@ const Orders = () => {
                             {loading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i}>
-                                        <td colSpan={8} className='px-4 py-4'>
+                                        <td colSpan={9} className='px-4 py-4'>
                                             <div className='h-4 bg-gray-200 rounded animate-pulse'></div>
                                         </td>
                                     </tr>
                                 ))
                             ) : filteredOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className='px-4 py-8 text-center text-gray-500'>
+                                    <td colSpan={9} className='px-4 py-8 text-center text-gray-500'>
                                         No orders found
                                     </td>
                                 </tr>
@@ -319,6 +320,15 @@ const Orders = () => {
                                     <tr key={order._id} className='hover:bg-gray-50'>
                                         <td className='px-4 py-3 text-sm text-gray-800 font-mono'>
                                             {order.orderId}
+                                        </td>
+                                        <td className='px-4 py-3'>
+                                            <div className='text-sm'>
+                                                <p className='font-medium text-gray-800'>{order.userId?.name || 'Unknown'}</p>
+                                                <p className='text-xs text-gray-500'>{order.userId?.email}</p>
+                                                {order.userId?.phone && (
+                                                    <p className='text-xs text-gray-500'>{order.userId.phone}</p>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className='px-4 py-3'>
                                             <div className='flex items-center gap-3'>
@@ -483,6 +493,41 @@ const Orders = () => {
                                     </span>
                                 </div>
                             </div>
+
+                            {/* Customer Information */}
+                            <div className='border-t pt-4 mt-4'>
+                                <p className='text-sm text-gray-500 mb-2 flex items-center gap-2'>
+                                    <FaUser className='text-red-500' /> Customer Information
+                                </p>
+                                <div className='bg-gray-50 rounded-lg p-3 space-y-2'>
+                                    <div className='flex items-center gap-2'>
+                                        <FaUser className='text-gray-400 text-xs' />
+                                        <p className='text-sm font-medium'>{selectedOrder.userId?.name || 'Unknown'}</p>
+                                    </div>
+                                    <div className='flex items-center gap-2'>
+                                        <FaEnvelope className='text-gray-400 text-xs' />
+                                        <p className='text-sm text-gray-600'>{selectedOrder.userId?.email || 'N/A'}</p>
+                                    </div>
+                                    {selectedOrder.userId?.phone && (
+                                        <div className='flex items-center gap-2'>
+                                            <FaPhone className='text-gray-400 text-xs' />
+                                            <p className='text-sm text-gray-600'>{selectedOrder.userId.phone}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Delivery Address */}
+                            {selectedOrder.delivery_address && (
+                                <div className='border-t pt-4 mt-4'>
+                                    <p className='text-sm text-gray-500 mb-2 flex items-center gap-2'>
+                                        <FaMapMarkerAlt className='text-red-500' /> Delivery Address
+                                    </p>
+                                    <div className='bg-gray-50 rounded-lg p-3'>
+                                        <p className='text-sm text-gray-700'>{selectedOrder.delivery_address}</p>
+                                    </div>
+                                </div>
+                            )}
 
                             {selectedOrder.payment_mode && (
                                 <div className='mt-4'>

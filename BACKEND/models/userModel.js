@@ -38,6 +38,30 @@ const userSchema = new mongoose.Schema({
         type : Number,
         default : null
     },
+    addresses : {
+        type : Array,
+        default : []
+    },
+    phone : {
+        type : String,
+        default : ""
+    },
+    altPhone : {
+        type : String,
+        default : ""
+    },
+    gender : {
+        type : String,
+        default : ""
+    },
+    birthDate : {
+        type : String,
+        default : ""
+    },
+    twoFactorEnabled : {
+        type : Boolean,
+        default : false
+    },
 },{
     timestamps : true
 })

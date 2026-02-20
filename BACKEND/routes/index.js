@@ -11,6 +11,8 @@ const { authToken, adminOnly } = require('../middleware/authToken')
 const userLogout = require('../controller/user/userLogout')
 const allUsers = require('../controller/user/allUsers')
 const updateUser = require('../controller/user/updateUser')
+const updateMyProfile = require('../controller/user/updateMyProfile')
+const updateMyAddress = require('../controller/user/updateMyAddress')
 const deleteUser = require('../controller/user/deleteUser')
 const toggleUserStatus = require('../controller/user/toggleUserStatus')
 const UploadProductController = require('../controller/product/uploadProduct')
@@ -51,6 +53,8 @@ const sendOrderNotification = require('../controller/admin/sendOrderNotification
 router.post("/signup", userSignUpController)
 router.post("/signin",userSignInController)
 router.get("/user-details",authToken,userDetailsController)
+router.post("/update-my-profile",authToken,updateMyProfile)
+router.post("/update-my-address",authToken,updateMyAddress)
 router.get("/userLogout",userLogout)
 
 //password reset

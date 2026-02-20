@@ -1,27 +1,23 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaUsers, FaBox, FaTags, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaHome, FaShoppingCart, FaUserCircle, FaChartBar, FaCog } from 'react-icons/fa'
+import { FaHome, FaShoppingCart, FaHeart, FaBox, FaUser, FaCog, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaMapMarkerAlt, FaCreditCard, FaShieldAlt } from 'react-icons/fa'
 
-const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen, isLoggingOut = false }) => {
+const CustomerSidebar = ({ user, wishlistCount = 0, onLogout, isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen, isLoggingOut = false }) => {
     const location = useLocation()
     
     const menuItems = [
-        { path: '', label: 'Dashboard', icon: <FaHome /> },
-        { path: 'orders', label: 'Orders', icon: <FaShoppingCart /> },
-        { path: 'customers', label: 'Customers', icon: <FaUserCircle /> },
-        { path: 'analytics', label: 'Analytics', icon: <FaChartBar /> },
-        { path: 'all-products', label: 'Products', icon: <FaBox /> },
-        { path: 'All-users', label: 'Users', icon: <FaUsers /> },
-        { path: 'categories', label: 'Categories', icon: <FaTags /> },
-        { path: 'settings', label: 'Settings', icon: <FaCog /> },
+        { path: '/my-account', label: 'Dashboard', icon: <FaHome /> },
+        { path: '/orders', label: 'My Orders', icon: <FaBox /> },
+        { path: '/cart', label: 'Cart', icon: <FaShoppingCart />, badge: null },
+        { path: '/wishlist', label: 'Wishlist', icon: <FaHeart />, badge: wishlistCount },
+        { path: '/my-account/addresses', label: 'Addresses', icon: <FaMapMarkerAlt /> },
+        { path: '/my-account/payment-methods', label: 'Payment Methods', icon: <FaCreditCard /> },
+        { path: '/my-account/profile', label: 'Profile', icon: <FaUser /> },
+        { path: '/my-account/security', label: 'Security', icon: <FaShieldAlt /> },
     ]
 
     const isActive = (path) => {
-        const currentPath = location.pathname
-        if (path === '') {
-            return currentPath === '/admin-panel' || currentPath.endsWith('admin-panel')
-        }
-        return currentPath.includes(path)
+        return location.pathname === path || location.pathname.includes(path)
     }
 
     const handleLinkClick = () => {
@@ -32,7 +28,6 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
 
     return (
         <>
-            {/* Overlay for mobile */}
             {mobileOpen && (
                 <div 
                     className='md:hidden fixed inset-0 bg-black bg-opacity-50 z-30'
@@ -40,14 +35,12 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
                 />
             )}
 
-            {/* Sidebar */}
             <aside className={`
                 bg-white flex flex-col transition-all duration-300 ease-in-out
                 ${isCollapsed ? 'w-20' : 'w-64'}
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                 fixed md:relative z-40 h-full
             `}>
-                {/* Collapse Toggle - Desktop */}
                 <button 
                     className='hidden md:flex absolute -right-3 top-6 bg-white border rounded-full p-1 shadow-md hover:bg-gray-100 z-10'
                     onClick={() => setIsCollapsed(!isCollapsed)}
@@ -55,7 +48,6 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
                     {isCollapsed ? <FaChevronRight size={12} /> : <FaChevronLeft size={12} />}
                 </button>
 
-                {/* User Profile Section */}
                 <div className={`flex justify-center items-center flex-col border-b p-4 ${isCollapsed ? 'py-6' : 'py-8'}`}>
                     <div className='relative'>
                         {user?.profilePic ? (
@@ -76,12 +68,11 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
                     {!isCollapsed && (
                         <>
                             <p className='capitalize text-lg font-semibold mt-3'>{user?.name}</p>
-                            <p className='text-xs text-gray-500'>{user?.role}</p>
+                            <p className='text-xs text-gray-500'>{user?.email}</p>
                         </>
                     )}
                 </div>
                 
-                {/* Navigation */}
                 <nav className='flex-1 p-3 overflow-y-auto'>
                     <ul className='space-y-1'>
                         {menuItems.map((item) => (
@@ -99,7 +90,14 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
                                     `}
                                     title={isCollapsed ? item.label : ''}
                                 >
-                                    <span className='text-lg'>{item.icon}</span>
+                                    <span className='text-lg relative'>
+                                        {item.icon}
+                                        {item.badge > 0 && (
+                                            <span className='absolute -top-2 -right-2 bg-red-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center'>
+                                                {item.badge > 9 ? '9+' : item.badge}
+                                            </span>
+                                        )}
+                                    </span>
                                     {!isCollapsed && <span className='font-medium'>{item.label}</span>}
                                 </Link>
                             </li>
@@ -107,7 +105,6 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
                     </ul>
                 </nav>
 
-                {/* Logout Button */}
                 <div className={`p-3 border-t ${isCollapsed ? 'flex justify-center' : ''}`}>
                     <button 
                         onClick={onLogout}
@@ -132,4 +129,4 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
     )
 }
 
-export default AdminSidebar
+export default CustomerSidebar

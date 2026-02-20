@@ -12,12 +12,20 @@ import Customers from "../pages/Customers";
 import Analytics from "../pages/Analytics";
 import AllProducts from "../pages/AllProducts";
 import Orders from "../pages/Orders";
+import Settings from "../pages/Settings";
 import CategoryProduct from "../pages/CategoryProduct";
 import CategoryBrand from "../pages/CategoryBrand";
 import ProductDetails from "../pages/ProductDetails";
 import Cart from "../pages/Cart";
 import SearchProduct from "../pages/SearchProduct";
 import Wishlist from "../pages/Wishlist";
+import CustomerLayout from "../pages/CustomerLayout";
+import CustomerDashboard from "../pages/CustomerDashboard";
+import CustomerOrders from "../pages/CustomerOrders";
+import CustomerProfile from "../pages/CustomerProfile";
+import CustomerAddresses from "../pages/CustomerAddresses";
+import CustomerPaymentMethods from "../pages/CustomerPaymentMethods";
+import CustomerSecurity from "../pages/CustomerSecurity";
 
 const router = createBrowserRouter([
     {
@@ -77,6 +85,46 @@ const router = createBrowserRouter([
                 element : <Wishlist/>
             },
             {
+                path : "my-account",
+                element : <CustomerLayout/>,
+                children : [
+                    {
+                        path : "",
+                        element : <CustomerDashboard/>
+                    },
+                    {
+                        path : "orders",
+                        element : <CustomerOrders/>
+                    },
+                    {
+                        path : "profile",
+                        element : <CustomerProfile/>
+                    },
+                    {
+                        path : "addresses",
+                        element : <CustomerAddresses/>
+                    },
+                    {
+                        path : "payment-methods",
+                        element : <CustomerPaymentMethods/>
+                    },
+                    {
+                        path : "security",
+                        element : <CustomerSecurity/>
+                    }
+                ]
+            },
+            {
+                path : "orders",
+                element : <CustomerLayout/>,
+                children : [
+                    {
+                        path : "",
+                        element : <CustomerOrders/>
+                    }
+                ]
+            },
+            {
                 path : "admin-panel",
                 element : <AdminPanel/>,
                 children : [
@@ -107,6 +155,10 @@ const router = createBrowserRouter([
                     {
                         path : "orders",
                         element : <Orders/>
+                    },
+                    {
+                        path : "settings",
+                        element : <Settings/>
                     }
                 ]
             },

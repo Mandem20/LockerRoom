@@ -23,10 +23,18 @@ const SummaryApi = {
       url : `${BackendDomain}/api/all-user`,
       method : 'get'
      },
-      updateUser : {
-        url : `${BackendDomain}/api/update-user`,
-        method : "post"
-      },
+       updateUser : {
+         url : `${BackendDomain}/api/update-user`,
+         method : "post"
+       },
+       updateMyProfile : {
+         url : `${BackendDomain}/api/update-my-profile`,
+         method : "post"
+       },
+       updateMyAddress : {
+         url : `${BackendDomain}/api/update-my-address`,
+         method : "post"
+       },
       dashboardStats : {
         url : `${BackendDomain}/api/dashboard-stats`,
         method : "get"
