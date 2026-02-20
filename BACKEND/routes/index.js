@@ -35,6 +35,9 @@ const filterProductController = require('../controller/product/filterProduct')
 const deleteProductController = require('../controller/product/deleteProduct')
 const { addToWishlist, getWishlist, removeFromWishlist, checkWishlist } = require('../controller/product/wishlistController')
 const { forgotPasswordController, verifyOtpController, resetPasswordController } = require('../controller/user/forgotPassword')
+const verifyCustomerController = require('../controller/user/verifyCustomer')
+const { createRefundRequest, getMyRefundRequests, getRefundRequestDetails } = require('../controller/user/refundController')
+const { getAllRefundRequests, updateRefundStatus, getRefundStats } = require('../controller/admin/refundAdminController')
 
 //category
 const createCategory = require('../controller/category/createCategory')
@@ -61,6 +64,19 @@ router.get("/userLogout",userLogout)
 router.post("/forgot-password", forgotPasswordController)
 router.post("/verify-otp", verifyOtpController)
 router.post("/reset-password", resetPasswordController)
+
+//customer verification
+router.post("/verify-customer", verifyCustomerController)
+
+//refund request
+router.post("/refund-request", authToken, createRefundRequest)
+router.get("/my-refund-requests", authToken, getMyRefundRequests)
+router.post("/refund-details", authToken, getRefundRequestDetails)
+
+//admin refund management
+router.get("/all-refund-requests", authToken, adminOnly, getAllRefundRequests)
+router.post("/update-refund-status", authToken, adminOnly, updateRefundStatus)
+router.get("/refund-stats", authToken, adminOnly, getRefundStats)
 
 //admin panel
 router.get("/all-user",authToken,adminOnly,allUsers)
