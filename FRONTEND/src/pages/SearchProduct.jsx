@@ -18,8 +18,11 @@ const SearchProduct = () => {
   const category = params.category || ""
   const brand = params.brand || ""
 
+  const queryParams = new URLSearchParams(location.search)
+  const queryCategory = queryParams.get("category") || ""
+
   const fetchProduct = async (page = 1) => {
-    if (!keyword && !category && !brand) {
+    if (!keyword && !category && !brand && !queryCategory) {
       navigate("/")
       return
     }
@@ -27,15 +30,16 @@ const SearchProduct = () => {
     try {
       setLoading(true)
 
-      const queryParams = new URLSearchParams()
-      if (keyword) queryParams.append("keyword", keyword)
-      if (category) queryParams.append("category", category)
-      if (brand) queryParams.append("brand", brand)
-      queryParams.append("page", page)
-      queryParams.append("limit", 12)
+      const qParams = new URLSearchParams()
+      if (keyword) qParams.append("keyword", keyword)
+      if (category) qParams.append("category", category)
+      if (brand) qParams.append("brand", brand)
+      if (queryCategory) qParams.append("category", queryCategory)
+      qParams.append("page", page)
+      qParams.append("limit", 12)
 
       const response = await axios.get(
-        `${SummaryApi.searchProduct.url}?${queryParams.toString()}`
+        `${SummaryApi.searchProduct.url}?${qParams.toString()}`
       )
 
       const products = response.data.data || []
@@ -64,7 +68,7 @@ const SearchProduct = () => {
   useEffect(() => {
     isFirstRender.current = true
     fetchProduct(1)
-  }, [params.keyword, params.category, params.brand])
+  }, [params.keyword, params.category, params.brand, location.search])
 
   return (
     <div className="container mx-auto p-4">

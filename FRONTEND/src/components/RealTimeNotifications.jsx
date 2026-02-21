@@ -3,7 +3,7 @@ import { useSocket } from '../context/SocketContext'
 import { FaBell } from 'react-icons/fa'
 
 const RealTimeNotifications = () => {
-    const socket = useSocket()
+    const { socket } = useSocket()
     const [notifications, setNotifications] = useState([])
 
     useEffect(() => {

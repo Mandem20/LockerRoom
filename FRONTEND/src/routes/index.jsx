@@ -1,31 +1,36 @@
 import { createBrowserRouter } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import App from '../App'
-import Home from "../pages/Home";
-import Login from "../pages/Login";
-import ForgotPassword from "../pages/ForgotPassword";
-import SignUp from "../pages/SignUp";
-import AdminPanel from "../pages/AdminPanel";
-import Dashboard from "../pages/Dashboard";
-import CategoryManagement from "../pages/CategoryManagement";
-import AllUsers from "../pages/AllUsers";
-import Customers from "../pages/Customers";
-import Analytics from "../pages/Analytics";
-import AllProducts from "../pages/AllProducts";
-import Orders from "../pages/Orders";
-import Settings from "../pages/Settings";
-import CategoryProduct from "../pages/CategoryProduct";
-import CategoryBrand from "../pages/CategoryBrand";
-import ProductDetails from "../pages/ProductDetails";
-import Cart from "../pages/Cart";
-import SearchProduct from "../pages/SearchProduct";
-import Wishlist from "../pages/Wishlist";
-import CustomerLayout from "../pages/CustomerLayout";
-import CustomerDashboard from "../pages/CustomerDashboard";
-import CustomerOrders from "../pages/CustomerOrders";
-import CustomerProfile from "../pages/CustomerProfile";
-import CustomerAddresses from "../pages/CustomerAddresses";
-import CustomerPaymentMethods from "../pages/CustomerPaymentMethods";
-import CustomerSecurity from "../pages/CustomerSecurity";
+
+const Home = lazy(() => import("../pages/Home"));
+const Login = lazy(() => import("../pages/Login"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const SignUp = lazy(() => import("../pages/SignUp"));
+const AdminPanel = lazy(() => import("../pages/AdminPanel"));
+const Dashboard = lazy(() => import("../pages/Dashboard"));
+const CategoryManagement = lazy(() => import("../pages/CategoryManagement"));
+const AllUsers = lazy(() => import("../pages/AllUsers"));
+const Customers = lazy(() => import("../pages/Customers"));
+const Analytics = lazy(() => import("../pages/Analytics"));
+const AllProducts = lazy(() => import("../pages/AllProducts"));
+const Orders = lazy(() => import("../pages/Orders"));
+const Settings = lazy(() => import("../pages/Settings"));
+const CategoryProduct = lazy(() => import("../pages/CategoryProduct"));
+const CategoryBrand = lazy(() => import("../pages/CategoryBrand"));
+const ProductDetails = lazy(() => import("../pages/ProductDetails"));
+const Cart = lazy(() => import("../pages/Cart"));
+const SearchProduct = lazy(() => import("../pages/SearchProduct"));
+const Wishlist = lazy(() => import("../pages/Wishlist"));
+const CustomerLayout = lazy(() => import("../pages/CustomerLayout"));
+const CustomerDashboard = lazy(() => import("../pages/CustomerDashboard"));
+const CustomerOrders = lazy(() => import("../pages/CustomerOrders"));
+const CustomerProfile = lazy(() => import("../pages/CustomerProfile"));
+const CustomerAddresses = lazy(() => import("../pages/CustomerAddresses"));
+const CustomerPaymentMethods = lazy(() => import("../pages/CustomerPaymentMethods"));
+const CustomerSecurity = lazy(() => import("../pages/CustomerSecurity"));
+const Help = lazy(() => import("../pages/Help"));
+
+const Loading = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
 const router = createBrowserRouter([
     {
@@ -67,6 +72,10 @@ const router = createBrowserRouter([
             {
                 path : "search",
                 element : <SearchProduct/>
+            },
+            {
+                path : "help",
+                element : <Help/>
             },
             {
                 path : "search/:keyword",

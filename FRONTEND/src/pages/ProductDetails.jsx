@@ -6,7 +6,8 @@ import { FaStarHalfAlt } from "react-icons/fa";
 import { FaFacebook, FaTwitter, FaWhatsapp, FaLink, FaCheck, FaHeart, FaRegHeart } from "react-icons/fa";
 import displayCEDICurrency from '../helpers/displayCurrency';
 import VerticalCardProduct from '../components/VerticalCardProduct';
-import RecommendedProductDisplay from '../components/RecommendedProductDisplay';
+import RelatedProductDisplay from '../components/RelatedProductDisplay';
+import RecommendedProducts from '../components/RecommendedProducts';
 import addToCart from '../helpers/addToCart';
 import addToWishlist from '../helpers/addToWishlist';
 import Context from '../context';
@@ -44,6 +45,7 @@ const ProductDetails = () => {
 const [zoomImage,setZoomImage]=useState(false)
 const [copied, setCopied] = useState(false)
 const [inWishlist, setInWishlist] = useState(false)
+const [wishlistItems, setWishlistItems] = useState([])
 
  const { fetchUserAddToCart } = useContext(Context)
 
@@ -87,6 +89,22 @@ const [inWishlist, setInWishlist] = useState(false)
       }
     }
 
+    const fetchWishlistItems = async () => {
+      try {
+        const response = await fetch(SummaryApi.getWishlist.url, {
+          method: SummaryApi.getWishlist.method,
+          credentials: 'include'
+        })
+        const result = await response.json()
+        if (result.success && result.data) {
+          const items = result.data.map(item => item._id)
+          setWishlistItems(items)
+        }
+      } catch (e) {
+        console.error("Error fetching wishlist:", e)
+      }
+    }
+
     const handleWishlist = async (productId) => {
       const result = await addToWishlist(productId)
       if (result.success) {
@@ -96,6 +114,7 @@ const [inWishlist, setInWishlist] = useState(false)
 
     useEffect(()=>{
        fetchProductDetails()
+       fetchWishlistItems()
     },[params])
 
     const handleMouseEnterProduct = (imageURL) =>{
@@ -186,7 +205,7 @@ const [inWishlist, setInWishlist] = useState(false)
                             {/**Product image zoom */}
                             {
                               zoomImage && (
-                                        <div className='hidden lg:block absolute min-w-[500px] overflow-hidden min-h-[400px] bg-slate-200 p-1 -right-[510px] top-0'>
+                                    <div className='hidden lg:block absolute min-w-[500px] overflow-hidden min-h-[400px] bg-slate-200 p-1 -right-[510px] top-0'>
                                     <div className='w-full h-full min-h-[400px] min-w-[500px]  mix-blend-multiply scale-150' 
                                     style={{
                                       backgroundImage:`url(${activeImage})`,
@@ -356,7 +375,7 @@ const [inWishlist, setInWishlist] = useState(false)
                         {inWishlist ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
                       </button>
                       <div className='flex items-center gap-1'>
-                         <p className='text-slate-600 font-medium'>Share:</p>
+                         <p className='text-slate-600 font-medium'>SHARE THIS PRODUCT:</p>
                          <div className='flex gap-2'>
                            {shareOptions.map((option, index) => (
                              <button
@@ -372,11 +391,13 @@ const [inWishlist, setInWishlist] = useState(false)
                        </div>
                       </div>
          {
-          data.category && (
-             <RecommendedProductDisplay  category={data?.category} heading={"Recommended Product"}/>
-          )
-         }
-          
+           data.category && (
+              <RelatedProductDisplay  category={data?.category} heading={"Related Products"}/>
+           )
+          }
+
+          <RecommendedProducts currentProductId={data?._id} wishlistItems={wishlistItems} />
+
 
     </div>
   )

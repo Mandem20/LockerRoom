@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import './App.css'
 import { Outlet } from 'react-router-dom'
 import Header from './components/Header'
@@ -9,6 +9,8 @@ import Context from './context'
 import { useDispatch } from 'react-redux'
 import { setUserDetails } from './store/userSlice'
 import RealTimeNotifications from './components/RealTimeNotifications'
+
+const Loading = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
 function App() {
   const dispatch = useDispatch()
@@ -61,7 +63,9 @@ function App() {
 
     <Header/>
     <main className='min-h-[calc(100vh-120px)] pt-16'>
-        <Outlet/>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+          <Outlet/>
+        </Suspense>
     </main>
     <Footer/>
     <RealTimeNotifications/>

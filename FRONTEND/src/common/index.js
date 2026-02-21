@@ -144,10 +144,18 @@ const SummaryApi = {
       method : 'post'
      },
      searchProduct : {
-      url : `${BackendDomain}/api/search`,
-      method : 'get'
-     },
-      filterProduct : {
+       url : `${BackendDomain}/api/search`,
+       method : 'get'
+      },
+      searchSuggestions : {
+       url : `${BackendDomain}/api/search-suggestions`,
+       method : 'get'
+      },
+      recommendations : {
+       url : `${BackendDomain}/api/recommendations`,
+       method : 'post'
+      },
+       filterProduct : {
        url : `${BackendDomain}/api/filter-product`,
        method : 'post'
       },

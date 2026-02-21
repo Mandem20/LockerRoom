@@ -3,7 +3,6 @@ import Logo from './Logo'
 import {  GrSearch } from "react-icons/gr";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
-import { FaHeart } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import SummaryApi from '../common';
@@ -23,6 +22,9 @@ const Header = () => {
     const URLSearch = new URLSearchParams(searchInput?.search)
     const searchQuery = URLSearch.getAll("q")
     const [search,setSearch] = useState(searchQuery)
+    const [suggestions, setSuggestions] = useState([])
+    const [showSuggestions, setShowSuggestions] = useState(false)
+    const searchRef = useRef(null)
     const hasUserTyped = useRef(false)
 
     const handleLogout = async() =>{
@@ -45,23 +47,62 @@ const Header = () => {
     }
 
    useEffect(() => {
-        if (!hasUserTyped.current) return
-         
-        const timer = setTimeout(() => {
-            if (search) {
-                navigate(`/search/${search}`)
-            } else {
-                navigate("/")
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setShowSuggestions(false)
             }
-        }, 500)
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+   }, [])
 
-        return () => clearTimeout(timer)
-   }, [search, navigate])
+   useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (!search || search.length < 2) {
+                setSuggestions([])
+                return
+            }
+            try {
+                const query = new URLSearchParams({ q: search }).toString()
+                const response = await fetch(`${SummaryApi.searchSuggestions.url}?${query}`)
+                const data = await response.json()
+                if (data.success) {
+                    setSuggestions(data.data)
+                }
+            } catch (error) {
+                console.error('Failed to fetch suggestions:', error)
+            }
+        }
+        
+        const debounceTimer = setTimeout(fetchSuggestions, 300)
+        return () => clearTimeout(debounceTimer)
+   }, [search])
+
+    useEffect(() => {
+         if (!hasUserTyped.current) return
+         
+         const timer = setTimeout(() => {
+             if (search) {
+                 navigate(`/search/${search}`)
+             } else {
+                 navigate("/")
+             }
+         }, 500)
+
+         return () => clearTimeout(timer)
+    }, [search, navigate])
 
     const handleSearch =(e) =>{
        const { value } = e.target
        setSearch(value)
+       setShowSuggestions(true)
        hasUserTyped.current = true
+    }
+
+    const handleSuggestionClick = (suggestion) => {
+        setSearch(suggestion.value)
+        setShowSuggestions(false)
+        navigate(`/search/${suggestion.value}`)
     }
   return (
     <header className='h-22 shadow-md bg-white fixed w-full z-40'>
@@ -72,11 +113,34 @@ const Header = () => {
                 </Link>
             </div>
 
-            <div className='hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2'>
-                <input type='text' placeholder='Search products, brands, categories'className='w-full outline-none' onChange={handleSearch } value={search}/>
+            <div className='hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2 relative' ref={searchRef}>
+                <input 
+                    type='text' 
+                    placeholder='Search products, brands, categories'
+                    className='w-full outline-none'
+                    onChange={handleSearch } 
+                    value={search}
+                    onFocus={() => setShowSuggestions(true)}
+                />
                 <div className='text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white'>
                     <GrSearch/> 
                 </div>
+                {showSuggestions && suggestions.length > 0 && (
+                    <div className='absolute top-full left-0 right-0 bg-white shadow-lg rounded-lg mt-1 max-h-80 overflow-y-auto z-50'>
+                        {suggestions.map((suggestion, index) => (
+                            <div
+                                key={index}
+                                className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2'
+                                onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                                <span className='text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-600 uppercase'>
+                                    {suggestion.type}
+                                </span>
+                                <span>{suggestion.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className='flex items-center gap-7'>
@@ -117,7 +181,7 @@ const Header = () => {
                   }
               
                </div>
-                  
+                   
                   {
                     user?._id && (
                 <Link to={"/cart"} className='text-2xl relative'>
@@ -130,13 +194,9 @@ const Header = () => {
                     )
                   }
 
-                  {
-                    user?._id && (
-                <Link to={"/wishlist"} className='text-2xl relative ml-3'>
-                    <span><FaHeart/></span>
-                </Link>
-                    )
-                  }
+                  <Link to={"/help"} className='text-xl ml-3'>
+                    Help
+                  </Link>
 
 
             <div>

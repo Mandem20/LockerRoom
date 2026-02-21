@@ -2,9 +2,11 @@
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const http = require('http')
 require('dotenv').config()
 const connectDB = require('./config/db')
 const router = require('./routes')
+const { initializeSocket } = require('./config/socket')
 
 const app = express()
 
@@ -22,10 +24,13 @@ app.use("/api", router)
 
 const PORT = 8080 || process.env.PORT 
 
+const server = http.createServer(app)
+
+initializeSocket(server)
+
 connectDB().then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log("connected to DB")
         console.log("Server is running on port", PORT)
     })
 })
-
