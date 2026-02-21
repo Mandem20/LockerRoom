@@ -8,6 +8,7 @@ import addToWishlist from '../helpers/addToWishlist'
 import Context from '../context'
 import { useContext } from 'react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import LazyImage from './LazyImage'
 //CategoryWiseProduct//
 
 const HorizontalCardProduct = ({category, heading}) => {
@@ -115,7 +116,7 @@ const HorizontalCardProduct = ({category, heading}) => {
                             <FaRegHeart className='text-gray-500 text-sm' />
                         )}
                     </button>
-                    <img src={product.productImage[0]} className='object-fill h-full  hover:scale-110 transition-all'/>
+                    <LazyImage src={product.productImage[0]} className='object-fill h-full hover:scale-110 transition-all' alt={product?.productName}/>
                   </div>
                   <div className='p-4'>
                     <h2 className='font-medium text-base md:text-md text-ellipsis line-clamp-2 text-black'>{product?.productName}</h2>

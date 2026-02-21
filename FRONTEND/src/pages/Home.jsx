@@ -4,10 +4,14 @@ import BannerProduct from '../components/BannerProduct'
 import HorizontalCardProduct from '../components/HorizontalCardProduct'
 import VerticalCardProduct from '../components/VerticalCardProduct'
 import BrandCategoryList from '../components/BrandCategoryList'
+import { BreadcrumbSchema } from '../components/StructuredData'
 
 const Home = () => {
   return (
     <div>
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: 'https://lockerroom.com' }
+      ]} />
       <CategoryList/>
       <BannerProduct/>
       <HorizontalCardProduct category={"jersey"} heading={"Rep Ur Jersey"}/>

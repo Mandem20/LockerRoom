@@ -13,6 +13,7 @@ import addToWishlist from '../helpers/addToWishlist';
 import Context from '../context';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
+import { ProductSchema, BreadcrumbSchema } from '../components/StructuredData';
 
 const ProductDetails = () => {
     const [data,setData] = useState({
@@ -197,6 +198,12 @@ const [wishlistItems, setWishlistItems] = useState([])
   ]
   return (
     <div className='container mx-auto p-8'>
+      <ProductSchema product={data} />
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: 'https://lockerroom.com' },
+        { name: data?.category || 'Products', url: `https://lockerroom.com/category/${data?.category}` },
+        { name: data?.productName, url: `https://lockerroom.com/product/${data?._id}` }
+      ]} />
           <div className='min-h-[200px] flex flex-col lg:flex-row gap-4'>
             {/**Product Image */}
                 <div className='h-96 flex flex-col lg:flex-row-reverse gap-4'>

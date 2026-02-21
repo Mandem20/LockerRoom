@@ -1,11 +1,16 @@
 import React from 'react'
 import logo from '../assets/IMG_2808.JPG'
 
-const Logo = ({w, h}) => {
+const Logo = ({ w = 70, h = 70 }) => {
   return (
-    <div className='w-[70px] h-[70px]'>
-        <img src={logo} width={w} height={h} alt='Logo'/>
-    </div>
+    <img 
+      src={logo} 
+      width={w} 
+      height={h} 
+      alt='LockerRoom Logo'
+      className='object-contain'
+      style={{ background: 'transparent' }}
+    />
   )
 }
 

@@ -32,6 +32,7 @@ const BrandCategoryList = ({ heading }) => {
                 src={brand.logo}
                 alt={brand.label}
                 className="w-full h-full object-contain p-1 hover:scale-110 transition-all"
+                loading="lazy"
               />
             </div>
             <p className="text-center text-sm md:text-base capitalize">

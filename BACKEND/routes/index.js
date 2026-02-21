@@ -41,6 +41,20 @@ const verifyCustomerController = require('../controller/user/verifyCustomer')
 const { createRefundRequest, getMyRefundRequests, getRefundRequestDetails } = require('../controller/user/refundController')
 const { getAllRefundRequests, updateRefundStatus, getRefundStats } = require('../controller/admin/refundAdminController')
 
+//footer
+const {
+    getFooterSettings,
+    updateFooterSettings,
+    getFooterSections,
+    createFooterSection,
+    updateFooterSection,
+    deleteFooterSection,
+    getFooterLinks,
+    createFooterLink,
+    updateFooterLink,
+    deleteFooterLink
+} = require('../controller/footer/footerController')
+
 //category
 const createCategory = require('../controller/category/createCategory')
 const getCategories = require('../controller/category/getCategories')
@@ -127,6 +141,18 @@ router.post("/wishlist", authToken, addToWishlist)
 router.get("/wishlist", authToken, getWishlist)
 router.post("/wishlist/remove", authToken, removeFromWishlist)
 router.post("/wishlist/check", authToken, checkWishlist)
+
+//footer
+router.get("/footer-settings", getFooterSettings)
+router.post("/footer-settings", authToken, adminOnly, updateFooterSettings)
+router.get("/footer-sections", getFooterSections)
+router.post("/footer-sections", authToken, adminOnly, createFooterSection)
+router.post("/footer-sections/update", authToken, adminOnly, updateFooterSection)
+router.post("/footer-sections/delete", authToken, adminOnly, deleteFooterSection)
+router.get("/footer-links", getFooterLinks)
+router.post("/footer-links", authToken, adminOnly, createFooterLink)
+router.post("/footer-links/update", authToken, adminOnly, updateFooterLink)
+router.post("/footer-links/delete", authToken, adminOnly, deleteFooterLink)
 
 
 module.exports = router

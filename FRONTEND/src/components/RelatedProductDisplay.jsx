@@ -93,7 +93,7 @@ const RelatedProductDisplay = ({category, heading}) => {
                       return(
                 <Link key={product._id} to={"/product/"+product?._id} className='min-w-[280px] bg-white rounded-sm shadow hover:shadow-lg transition-shadow' onClick={scrollTop}>
                     <div className='bg-slate-200 h-40 p-4 flex justify-center items-center'>
-                      <img src={product.productImage[0]} className='object-fill h-full hover:scale-110 transition-transform mix-blend-multiply' alt={product?.productName}/>
+                      <img src={product.productImage[0]} className='object-fill h-full hover:scale-110 transition-transform mix-blend-multiply' alt={product?.productName} loading="lazy"/>
                     </div>
                    <div className='p-4 grid gap-3'>
                      <h2 className='font-medium text-base md:text-md text-ellipsis line-clamp-2 text-black'>{product?.productName}</h2>

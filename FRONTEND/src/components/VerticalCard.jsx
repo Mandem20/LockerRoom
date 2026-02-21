@@ -7,6 +7,7 @@ import addToWishlist from '../helpers/addToWishlist'
 import { Link } from 'react-router-dom'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import { toast } from 'react-toastify'
+import LazyImage from './LazyImage'
 
 const VerticalCard = ({ loading, data = [] }) => {
   const loadingList = new Array(13).fill(null)
@@ -65,7 +66,7 @@ const VerticalCard = ({ loading, data = [] }) => {
                 </span>
               )}
 
-              <img
+              <LazyImage
                 src={product?.productImage?.[0]}
                 alt={product?.productName}
                 className='object-fill h-full hover:scale-110 transition-all mix-blend-multiply'

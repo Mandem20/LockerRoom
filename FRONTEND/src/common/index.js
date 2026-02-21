@@ -188,9 +188,25 @@ const SummaryApi = {
         method : 'post'
        },
        checkWishlist : {
-        url : `${BackendDomain}/api/wishlist/check`,
-        method : 'post'
-       }
+         url : `${BackendDomain}/api/wishlist/check`,
+         method : 'post'
+        },
+        getFooterSettings : {
+         url : `${BackendDomain}/api/footer-settings`,
+         method : 'get'
+        },
+        getFooterSections : {
+         url : `${BackendDomain}/api/footer-sections`,
+         method : 'get'
+        },
+        getFooterLinks : {
+          url : `${BackendDomain}/api/footer-links`,
+          method : 'get'
+         },
+         updateFooterSettings : {
+          url : `${BackendDomain}/api/footer-settings`,
+          method : 'post'
+         }
 }
 
 export default SummaryApi

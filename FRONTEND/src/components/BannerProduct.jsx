@@ -64,7 +64,7 @@ const BannerProduct = ({ images = defaultImages, height = 'h-48 md:h-64 lg:h-96'
                            key={index} 
                            style={{ transform: `translateX(-${currentImage * 100}%)` }}
                         >
-                           <img src={imageURL} className={`w-full ${height} object-contain`} alt={`Slide ${index + 1}`} />
+                           <img src={imageURL} className={`w-full ${height} object-contain`} alt={`Slide ${index + 1}`} loading="lazy" />
                         </div>
                      )
                   })

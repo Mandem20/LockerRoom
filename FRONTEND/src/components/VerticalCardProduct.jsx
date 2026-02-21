@@ -8,6 +8,7 @@ import addToWishlist from '../helpers/addToWishlist'
 import Context from '../context'
 import { useContext } from 'react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import LazyImage from './LazyImage'
 
 
 const VerticalCardProduct = ({category, heading}) => {
@@ -97,9 +98,9 @@ const VerticalCardProduct = ({category, heading}) => {
               ) : (
                   data.map((product)=>{
                     return(
-              <Link key={product._id}  to={"product/"+product?._id} className='w-full min-w-[340px]  md:min-w-[320px] max-w-[300px] md:max-w-[330px]  bg-white rounded-sm shadow relative'>
+              <Link key={product._id}  to={"product/"+product?._id} className='w-full min-w-[340px]  md:min-w-[320px] max-w-[300px] md:max-w-[330px] bg-white rounded-sm shadow relative'>
                   <div className='bg-white-200 h-40 p-4 min-w-[300px] md:min-w-[145px] flex justify-center items-center'>
-                    <img src={product.productImage[0]} className='object-fill h-full  hover:scale-110 transition-all mix-blend-multiply'/>
+                    <LazyImage src={product.productImage[0]} className='object-fill h-full hover:scale-110 transition-all mix-blend-multiply' alt={product?.productName}/>
                   </div>
                   <button 
                     className='absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100'

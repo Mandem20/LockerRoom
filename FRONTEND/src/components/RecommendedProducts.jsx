@@ -102,6 +102,7 @@ const RecommendedProducts = ({ currentProductId, wishlistItems = [] }) => {
                     src={product.productImage?.[0]} 
                     className='object-fill h-full hover:scale-110 transition-transform mix-blend-multiply' 
                     alt={product.productName}
+                    loading="lazy"
                   />
                 </div>
                 <div className='p-4 grid gap-3'>
