@@ -10,6 +10,10 @@ const addToCart = mongoose.Schema({
     type : String,
     default : null
   },
+  color : {
+    type : String,
+    default : null
+  },
   userId : {
     type : String,
     ref : 'product'

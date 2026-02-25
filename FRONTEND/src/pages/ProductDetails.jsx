@@ -27,6 +27,7 @@ const ProductDetails = () => {
         rating : 0,
         gender : "",
         color : "",
+        colorVariants : [],
         material : "",
         price : "",
         sellingPrice : ""
@@ -38,6 +39,7 @@ const ProductDetails = () => {
     const productImageListLoading = new Array(4).fill(null)
     const [activeImage,setActiveImage] = useState("")
     const [selectedSize, setSelectedSize] = useState("")
+    const [selectedColor, setSelectedColor] = useState("")
 
     const [zoomImageCoordinate,setZoomImageCoordinate] = useState({
       x : 0,
@@ -66,9 +68,21 @@ const [wishlistItems, setWishlistItems] = useState([])
           const dataResponse = await response.json()
 
           setData(dataResponse?.data)
-          setActiveImage(dataResponse?.data?.productImage[0])
-          if (dataResponse?.data?.sizes && dataResponse?.data?.sizes.length > 0) {
-              setSelectedSize(dataResponse?.data?.sizes[0])
+          
+          if (dataResponse?.data?.colorVariants && dataResponse?.data?.colorVariants.length > 0) {
+              const firstColor = dataResponse?.data?.colorVariants[0]
+              setSelectedColor(firstColor)
+              setActiveImage(firstColor?.images[0] || dataResponse?.data?.productImage[0])
+              if (firstColor?.sizes && firstColor?.sizes.length > 0) {
+                  setSelectedSize(firstColor?.sizes[0])
+              } else if (dataResponse?.data?.sizes && dataResponse?.data?.sizes.length > 0) {
+                  setSelectedSize(dataResponse?.data?.sizes[0])
+              }
+          } else {
+              setActiveImage(dataResponse?.data?.productImage[0])
+              if (dataResponse?.data?.sizes && dataResponse?.data?.sizes.length > 0) {
+                  setSelectedSize(dataResponse?.data?.sizes[0])
+              }
           }
           
           checkWishlistStatus(dataResponse?.data?._id)
@@ -114,12 +128,39 @@ const [wishlistItems, setWishlistItems] = useState([])
     }
 
     useEffect(()=>{
+       window.scrollTo({ top: 0, behavior: 'instant' })
        fetchProductDetails()
        fetchWishlistItems()
     },[params])
 
     const handleMouseEnterProduct = (imageURL) =>{
-     setActiveImage(imageURL)
+      setActiveImage(imageURL)
+    }
+
+    const handleColorSelect = (colorVariant) => {
+        setSelectedColor(colorVariant)
+        if (colorVariant.images && colorVariant.images.length > 0) {
+            setActiveImage(colorVariant.images[0])
+        }
+        if (colorVariant.sizes && colorVariant.sizes.length > 0) {
+            if (!colorVariant.sizes.includes(selectedSize)) {
+                setSelectedSize(colorVariant.sizes[0])
+            }
+        }
+    }
+
+    const getDisplayImages = () => {
+        if (selectedColor && selectedColor.images && selectedColor.images.length > 0) {
+            return selectedColor.images
+        }
+        return data?.productImage || []
+    }
+
+    const getDisplaySizes = () => {
+        if (selectedColor && selectedColor.sizes && selectedColor.sizes.length > 0) {
+            return selectedColor.sizes
+        }
+        return data?.sizes || []
     }
 
     const handleZoomImage = useCallback((e) =>{
@@ -140,20 +181,24 @@ const [wishlistItems, setWishlistItems] = useState([])
     }
 
     const handleAddToCart = async(e,id) =>{
-        if (Array.isArray(data?.sizes) && data.sizes.length > 0 && !selectedSize) {
+        const availableSizes = getDisplaySizes()
+        if (Array.isArray(availableSizes) && availableSizes.length > 0 && !selectedSize) {
             toast.error('Please select a size')
             return
         }
-        await addToCart(e, id, selectedSize)
+        const color = selectedColor?.colorName || data?.color || null
+        await addToCart(e, id, selectedSize, color)
         fetchUserAddToCart()
     } 
 
   const handleBuyProduct = async(e,id) =>{
-      if (Array.isArray(data?.sizes) && data.sizes.length > 0 && !selectedSize) {
+      const availableSizes = getDisplaySizes()
+      if (Array.isArray(availableSizes) && availableSizes.length > 0 && !selectedSize) {
         toast.error('Please select a size')
         return
     }
-      await addToCart(e, id, selectedSize)
+      const color = selectedColor?.colorName || data?.color || null
+      await addToCart(e, id, selectedSize, color)
       fetchUserAddToCart()
       navigate("/cart")
   }
@@ -244,7 +289,7 @@ const [wishlistItems, setWishlistItems] = useState([])
                               ) : (
                               <div className='flex gap-2 lg:flex-col overflow-scroll scrollbar-none h-full'>
                                           {
-                                data?.productImage?.map((imgURL,index) => {
+                                getDisplayImages().map((imgURL,index) => {
                                   return(
                                         <div className='h-20 w-20 bg-slate-200 p-1 rounded' key={imgURL}>
                                           <img src={imgURL} className='w-full h-full object-scale-down mix-blend-multiply cursor-pointer' onMouseEnter={()=>handleMouseEnterProduct(imgURL)} onClick={()=>handleMouseEnterProduct(imgURL)}/>
@@ -326,30 +371,57 @@ const [wishlistItems, setWishlistItems] = useState([])
                           </span>
                        )}
                       </div>
-                      <h2 className='capitalize'>Colour : {data?.color}</h2>
+                       <h2 className='capitalize'>
+                        {data?.colorVariants && data?.colorVariants.length > 0 ? (
+                            <div className="my-2">
+                                <p className="font-medium mb-1">Select Color:</p>
+                                <div className="flex gap-2 flex-wrap">
+                                    {data.colorVariants.map((colorVariant, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => handleColorSelect(colorVariant)}
+                                            className={`px-4 py-2 border rounded-full font-medium transition-colors ${
+                                                selectedColor?.colorName === colorVariant.colorName 
+                                                ? 'bg-red-600 text-white border-red-600' 
+                                                : 'border-gray-300 hover:border-red-600'
+                                            }`}
+                                        >
+                                            {colorVariant.colorName}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <>Colour : {data?.color}</>
+                        )}
+                       </h2>
                       
-                      <div className="my-2">
-                        <p className="font-medium mb-1">Select Size:</p>
-                        <div className="flex gap-2 flex-wrap">
-                          {Array.isArray(data?.sizes) && data.sizes.map((size, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => setSelectedSize(size)}
-                              className={`px-4 py-2 border rounded-full font-medium transition-colors ${
-                                selectedSize === size 
-                                ? 'bg-red-600 text-white border-red-600' 
-                                : 'border-gray-300 hover:border-red-600'
-                              }`}
-                            >
-                              {size}
-                            </button>
-                          ))}
-                          {(!Array.isArray(data?.sizes) || data.sizes.length === 0) && (
-                            <span className="text-slate-500">No sizes available</span>
-                          )}
-                        </div>
-                      </div>
+                       <div className="my-2">
+                         <p className="font-medium mb-1">Select Size:</p>
+                         <div className="flex gap-2 flex-wrap">
+                           {(() => {
+                             const displaySizes = getDisplaySizes()
+                             return Array.isArray(displaySizes) && displaySizes.map((size, idx) => (
+                               <button
+                                 key={idx}
+                                 type="button"
+                                 onClick={() => setSelectedSize(size)}
+                                 className={`px-4 py-2 border rounded-full font-medium transition-colors ${
+                                   selectedSize === size 
+                                   ? 'bg-red-600 text-white border-red-600' 
+                                   : 'border-gray-300 hover:border-red-600'
+                                 }`}
+                               >
+                                 {size}
+                               </button>
+                             ))
+                           })()}
+                           {getDisplaySizes().length === 0 && (
+                             <span className="text-slate-500">No sizes available</span>
+                           )}
+                         </div>
+                       </div>
                       <div className='flex items-center gap-3 my-2'>
                         <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-red-600 font-medium hover:bg-red-600 hover:text-white' onClick={(e)=>handleBuyProduct(e,data?._id)} >Buy</button>
                         <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-white bg-red-600 font-medium hover:bg-white hover:text-red-600' onClick={(e)=>handleAddToCart(e,data?._id)}>Add To Cart</button>
@@ -397,11 +469,11 @@ const [wishlistItems, setWishlistItems] = useState([])
                          </div>
                        </div>
                       </div>
-         {
-           data.category && (
-              <RelatedProductDisplay  category={data?.category} heading={"Related Products"}/>
-           )
-          }
+          {
+            data.category && (
+               <RelatedProductDisplay  category={data?.category} heading={"Related Products"} gender={data?.gender}/>
+            )
+           }
 
           <RecommendedProducts currentProductId={data?._id} wishlistItems={wishlistItems} />
 

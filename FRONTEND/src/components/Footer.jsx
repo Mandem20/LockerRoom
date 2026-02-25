@@ -5,6 +5,7 @@ import NewsletterForm from './Footer/NewsletterForm'
 import SocialIcons from './Footer/SocialIcons'
 import PaymentIcons from './Footer/PaymentIcons'
 import { useCountry } from '../context/CountryContext'
+import { useLanguage } from '../context/LanguageContext'
 import Logo from './Logo'
 
 const countries = [
@@ -25,21 +26,6 @@ const countries = [
   { code: 'US', name: 'United States', currency: 'USD', flag: '🇺🇸' },
   { code: 'CA', name: 'Canada', currency: 'CAD', flag: '🇨🇦' },
   { code: 'AU', name: 'Australia', currency: 'AUD', flag: '🇦🇺' },
-]
-
-const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'sw', name: 'Kiswahili', flag: '🇰🇪' },
-  { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
-  { code: 'yo', name: 'Yorùbá', flag: '🇳🇬' },
-  { code: 'ig', name: 'Igbo', flag: '🇳🇬' },
-  { code: 'am', name: 'Twi', flag: '🇬🇭' },
-  { code: 'ar', name: 'العربية', flag: '🇪🇬' },
-  { code: 'zu', name: 'Zulu', flag: '🇿🇦' },
 ]
 
 const translations = {
@@ -184,15 +170,7 @@ const Footer = () => {
   const [sections, setSections] = useState([])
   const [links, setLinks] = useState([])
   const { selectedCountry, changeCountry, countries: countryList } = useCountry()
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0])
-
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('selectedLanguage')
-    if (savedLanguage) {
-      const lang = languages.find(l => l.code === savedLanguage)
-      if (lang) setSelectedLanguage(lang)
-    }
-  }, [])
+  const { selectedLanguage, changeLanguage, languages } = useLanguage()
 
   const handleCountryChange = (e) => {
     const country = countryList.find(c => c.code === e.target.value)
@@ -203,12 +181,8 @@ const Footer = () => {
   }
 
   const handleLanguageChange = (e) => {
-    const lang = languages.find(l => l.code === e.target.value)
-    if (lang) {
-      setSelectedLanguage(lang)
-      localStorage.setItem('selectedLanguage', lang.code)
-      trackClick('footer', 'change_language', lang.code)
-    }
+    changeLanguage(e.target.value)
+    trackClick('footer', 'change_language', e.target.value)
   }
 
   const t = translations[selectedLanguage.code] || translations.en

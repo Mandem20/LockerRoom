@@ -16,7 +16,7 @@ const productCategory = [
     { id : 15, label : "Gloves", value : "gloves" },
     { id : 16, label : "Headwear", value : "headwear" },
     { id : 17, label : "Underwear", value : "underwear" },
-    { id : 18, label : "Shin Pads", value : "shinpads" },
+    { id : 18, label : "Pads", value : "pads" },
     { id : 19, label : "Vest", value : "vest" },
     { id : 20, label : "Tracksuit", value : "tracksuit" },
     { id : 21, label : "Sneakers", value : "sneakers" },

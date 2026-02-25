@@ -149,17 +149,32 @@ const Cart = () => {
                             <div key={product?._id+"Add To Cart Loading"} className='w-full bg-white border border-slate-200 rounded-lg overflow-hidden'>
                                 <div className='flex'>
                                     <div className='w-24 md:w-32 h-24 md:h-32 bg-slate-100 flex-shrink-0'>
-                                        {product?.productId?.productImage?.[0] ? (
-                                            <img 
-                                                src={product?.productId?.productImage[0]} 
-                                                alt={product?.productId?.productName}
-                                                className='w-full h-full object-cover'
-                                            />
-                                        ) : (
-                                            <div className='w-full h-full flex items-center justify-center text-slate-400'>
-                                                No Image
-                                            </div>
-                                        )}
+                                        {(() => {
+                                            let imageUrl = null
+                                            if (product?.color && product?.productId?.colorVariants) {
+                                                const colorVariant = product.productId.colorVariants.find(
+                                                    c => c.colorName.toLowerCase() === product.color.toLowerCase()
+                                                )
+                                                if (colorVariant && colorVariant.images && colorVariant.images.length > 0) {
+                                                    imageUrl = colorVariant.images[0]
+                                                }
+                                            }
+                                            if (!imageUrl && product?.productId?.productImage?.[0]) {
+                                                imageUrl = product?.productId?.productImage[0]
+                                            }
+                                            
+                                            return imageUrl ? (
+                                                <img 
+                                                    src={imageUrl} 
+                                                    alt={product?.productId?.productName}
+                                                    className='w-full h-full object-cover'
+                                                />
+                                            ) : (
+                                                <div className='w-full h-full flex items-center justify-center text-slate-400'>
+                                                    No Image
+                                                </div>
+                                            )
+                                        })()}
                                     </div>
                                     <div className='p-3 flex-1 relative'>
                                         {/**Delete product */}

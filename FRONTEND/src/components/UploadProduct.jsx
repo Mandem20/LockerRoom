@@ -26,11 +26,15 @@ const UploadProduct = ({
         quantity : "",
         location : "",
         color : "",
+        colorVariants : [],
         gender : "",
         price : "",
         sellingPrice : "",
         rating : 0
     })
+    const [colorInput, setColorInput] = useState("")
+    const [selectedColorIndex, setSelectedColorIndex] = useState(null)
+    const [colorSizeInput, setColorSizeInput] = useState({})
     const [openFullScreenImage,setOpenFullScreenImage] = useState(false)
     const [fullScreenImage,setFullScreenImage] = useState("")
     const [sizeInput, setSizeInput] = useState("")
@@ -112,6 +116,90 @@ const UploadProduct = ({
             ...previous,
             sizes: newSizes
         }))
+    }
+
+    const handleAddColorVariant = () => {
+        if (!colorInput.trim()) return
+        const existingColor = data.colorVariants.find(
+            c => c.colorName.toLowerCase() === colorInput.trim().toLowerCase()
+        )
+        if (existingColor) {
+            toast.error("Color already added")
+            return
+        }
+        setData((previous) => ({
+            ...previous,
+            colorVariants: [...previous.colorVariants, { colorName: colorInput.trim(), images: [], sizes: [] }]
+        }))
+        setColorInput("")
+    }
+
+    const handleAddColorSize = (colorIndex) => {
+        const sizeVal = colorSizeInput[colorIndex]?.trim()
+        if (!sizeVal) return
+        
+        const newColorVariants = [...data.colorVariants]
+        if (newColorVariants[colorIndex].sizes.includes(sizeVal)) {
+            toast.error("Size already added for this color")
+            return
+        }
+        newColorVariants[colorIndex].sizes.push(sizeVal)
+        setData((previous) => ({
+            ...previous,
+            colorVariants: newColorVariants
+        }))
+        setColorSizeInput(prev => ({ ...prev, [colorIndex]: "" }))
+    }
+
+    const handleRemoveColorSize = (colorIndex, sizeIndex) => {
+        const newColorVariants = [...data.colorVariants]
+        newColorVariants[colorIndex].sizes.splice(sizeIndex, 1)
+        setData((previous) => ({
+            ...previous,
+            colorVariants: newColorVariants
+        }))
+    }
+
+    const handleRemoveColorVariant = (index) => {
+        const newColorVariants = [...data.colorVariants]
+        newColorVariants.splice(index, 1)
+        setData((previous) => ({
+            ...previous,
+            colorVariants: newColorVariants
+        }))
+        if (selectedColorIndex === index) {
+            setSelectedColorIndex(null)
+        } else if (selectedColorIndex > index) {
+            setSelectedColorIndex(selectedColorIndex - 1)
+        }
+    }
+
+    const handleUploadColorImage = async(e, colorIndex) => {
+        const file = e.target.files[0]
+        const uploadImageCloudinary = await uploadImage(file)
+
+        setData((previous) => {
+            const newColorVariants = [...previous.colorVariants]
+            newColorVariants[colorIndex].images = [
+                ...newColorVariants[colorIndex].images,
+                uploadImageCloudinary.url
+            ]
+            return {
+                ...previous,
+                colorVariants: newColorVariants
+            }
+        })
+    }
+
+    const handleDeleteColorImage = (colorIndex, imageIndex) => {
+        setData((previous) => {
+            const newColorVariants = [...previous.colorVariants]
+            newColorVariants[colorIndex].images.splice(imageIndex, 1)
+            return {
+                ...previous,
+                colorVariants: newColorVariants
+            }
+        })
     }
 
     {/**upload product */}
@@ -367,17 +455,140 @@ const UploadProduct = ({
                 ))}
             </div>
 
-            <label htmlFor='color' className='mt-3'>Colour :</label>
-            <input 
-            type="text" 
-            id='color' 
-            placeholder='enter product colour' 
-            name='color'
-            value={data.color} 
-            onChange={handleOnChange}
-            className='p-2 bg-slate-100 border rounded'
-            required
-            />
+            <label htmlFor='color' className='mt-3'>Colour Variants :</label>
+            <div className='flex gap-2 mb-2'>
+                <input 
+                type="text" 
+                id='color' 
+                placeholder='e.g., Red, Blue, Green' 
+                name='color'
+                value={colorInput} 
+                onChange={(e) => setColorInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddColorVariant())}
+                className='p-2 bg-slate-100 border rounded flex-1'
+                />
+                <button
+                    type='button'
+                    onClick={handleAddColorVariant}
+                    className='px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600'
+                >
+                    Add Color
+                </button>
+            </div>
+
+            <div className='space-y-4 mb-2'>
+                {data.colorVariants.map((colorVariant, colorIndex) => (
+                    <div key={colorIndex} className='border rounded p-3 bg-slate-50'>
+                        <div className='flex justify-between items-center mb-2'>
+                            <span className='font-medium'>{colorVariant.colorName}</span>
+                            <div className='flex gap-2'>
+                                <button
+                                    type='button'
+                                    onClick={() => setSelectedColorIndex(selectedColorIndex === colorIndex ? null : colorIndex)}
+                                    className='text-sm text-blue-600 hover:text-blue-800'
+                                >
+                                    {selectedColorIndex === colorIndex ? 'Close' : 'Add Images'}
+                                </button>
+                                <button
+                                    type='button'
+                                    onClick={() => handleRemoveColorVariant(colorIndex)}
+                                    className='text-red-500 hover:text-red-700'
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {colorVariant.images.length > 0 && (
+                            <div className='flex gap-2 flex-wrap mb-2'>
+                                {colorVariant.images.map((img, imgIndex) => (
+                                    <div key={imgIndex} className='relative group'>
+                                        <img 
+                                            src={img}
+                                            alt={img} 
+                                            width={60} 
+                                            height={60}    
+                                            className='bg-slate-100 border cursor-pointer' 
+                                            onClick={()=>{
+                                                setOpenFullScreenImage(true)
+                                                setFullScreenImage(img)
+                                            }}
+                                        />
+                                        <div className='absolute bottom-0 right-0 p-1 text-white bg-red-600 rounded-full cursor-pointer hidden group-hover:block' 
+                                            onClick={() => handleDeleteColorImage(colorIndex, imgIndex)}>
+                                            <MdDelete/>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {selectedColorIndex === colorIndex && (
+                            <label htmlFor={`colorImageInput-${colorIndex}`}>
+                                <div className='p-2 bg-slate-100 border rounded h-20 w-full flex justify-center items-center cursor-pointer'>
+                                    <div className='text-slate-500 flex justify-center items-center flex-col gap-1'>
+                                        <span className='text-2xl'> <FaCloudUploadAlt /></span>
+                                        <p className='text-xs'>Upload Image</p>
+                                        <input 
+                                            type="file" 
+                                            id={`colorImageInput-${colorIndex}`} 
+                                            className='hidden' 
+                                            onChange={(e) => handleUploadColorImage(e, colorIndex)}
+                                        />
+                                    </div>
+                                </div>
+                            </label>
+                        )}
+
+                        <div className='mt-3'>
+                            <p className='text-sm font-medium mb-1'>Sizes for {colorVariant.colorName}:</p>
+                            <div className='flex gap-2 mb-2'>
+                                <input 
+                                    type="text" 
+                                    placeholder='e.g., S, M, L' 
+                                    value={colorSizeInput[colorIndex] || ""}
+                                    onChange={(e) => setColorSizeInput(prev => ({ ...prev, [colorIndex]: e.target.value }))}
+                                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddColorSize(colorIndex))}
+                                    className='p-2 bg-slate-100 border rounded flex-1 text-sm'
+                                />
+                                <button
+                                    type='button'
+                                    onClick={() => handleAddColorSize(colorIndex)}
+                                    className='px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm'
+                                >
+                                    Add
+                                </button>
+                            </div>
+                            <div className='flex gap-2 flex-wrap'>
+                                {colorVariant.sizes.map((size, sizeIndex) => (
+                                    <span key={sizeIndex} className='px-2 py-1 bg-slate-200 rounded-full flex items-center gap-1 text-sm'>
+                                        {size}
+                                        <button
+                                            type='button'
+                                            onClick={() => handleRemoveColorSize(colorIndex, sizeIndex)}
+                                            className='text-red-500 hover:text-red-700'
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {data.colorVariants.length === 0 && (
+                <input 
+                type="text" 
+                id='color' 
+                placeholder='enter product colour' 
+                name='color'
+                value={data.color} 
+                onChange={handleOnChange}
+                className='p-2 bg-slate-100 border rounded'
+                />
+            )}
 
              <label htmlFor='description' className='mt-3'>Description :</label>
                <textarea 

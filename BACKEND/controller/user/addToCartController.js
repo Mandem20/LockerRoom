@@ -2,12 +2,13 @@ const addToCartModel = require("../../models/cartProduct")
 
 const addToCartController = async(req,res)=>{
     try {
-         const { productId, size } = req?.body
+         const { productId, size, color } = req?.body
          const currentUser = req.userId
 
          const isProductAvailable = await addToCartModel.findOne({ 
              productId,
              size: size || null,
+             color: color || null,
              userId: currentUser
          })
 
@@ -30,6 +31,7 @@ const addToCartController = async(req,res)=>{
             productId : productId,
             quantity : 1,
             size : size || null,
+            color : color || null,
             userId : currentUser,
          }
 

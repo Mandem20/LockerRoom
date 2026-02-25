@@ -11,7 +11,7 @@ import Context from '../context'
 import scrollTop from '../helpers/scrollTop'
 
 
-const RelatedProductDisplay = ({category, heading}) => {
+const RelatedProductDisplay = ({category, heading, gender}) => {
     const [data,setData] = useState([])
     const [loading,setLoading] = useState(true)
     const loadingList = new Array(6).fill(null)
@@ -25,12 +25,12 @@ const RelatedProductDisplay = ({category, heading}) => {
     }
 
      const fetchData = async()=>{
-         setLoading(true)
-          const categoryProduct = await fetchCategoryWiseProduct(category)
+          setLoading(true)
+          const categoryProduct = await fetchCategoryWiseProduct(category, gender)
           setLoading(false)
 
-         setData(categoryProduct?.data)
-     }
+          setData(categoryProduct?.data)
+      }
      useEffect(()=>{
          fetchData() 
      },[])

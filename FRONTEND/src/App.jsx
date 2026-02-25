@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import { setUserDetails } from './store/userSlice'
 import RealTimeNotifications from './components/RealTimeNotifications'
 import { CountryProvider } from './context/CountryContext'
+import { LanguageProvider } from './context/LanguageContext'
 import StructuredData from './components/StructuredData'
 
 const Loading = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -59,6 +60,7 @@ function App() {
         cartProductCount, // current user add to cart product count
         fetchUserAddToCart
     }}>
+    <LanguageProvider>
     <CountryProvider>
     <StructuredData />
     <ToastContainer
@@ -74,6 +76,7 @@ function App() {
     <Footer/>
     <RealTimeNotifications/>
     </CountryProvider>
+    </LanguageProvider>
     </Context.Provider>
     </>
   )

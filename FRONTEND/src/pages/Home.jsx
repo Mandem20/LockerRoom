@@ -20,11 +20,13 @@ const Home = () => {
 
       <HorizontalCardProduct category={"sneakers"} heading={"Trending Sneakers"}/>
 
+       <HorizontalCardProduct category={"balls"} heading={"Rock it"}/>
+       <HorizontalCardProduct category={"socks"} heading={"Socks"}/>
       <VerticalCardProduct category={"polo"} heading={"Teams polo's shirt"}/>
 
       <BrandCategoryList heading={"Shop Our Top Brands"}/>
 
-      <VerticalCardProduct category={"shinpads"} heading={"Guard Your Shin"}/>
+      <VerticalCardProduct category={"pads"} heading={"Guard it"}/>
 
       <VerticalCardProduct category={"gloves"} heading={"Protect Your Hands"}/>
     </div>

@@ -2,8 +2,14 @@ const productModel = require("../../models/productModel")
 
 const getCategoryWiseProduct = async(req,res) =>{
     try {
-        const { category } = req?.body || req?.query
-        const product = await productModel.find({ category })
+        const { category, gender } = req?.body || req?.query
+        
+        let query = { category }
+        if (gender) {
+            query.gender = gender
+        }
+        
+        const product = await productModel.find(query)
 
         res.json({
             data : product,

@@ -34,6 +34,11 @@ const productSchema = new mongoose.Schema({
         },
         gender : String,
         color : String,
+        colorVariants : [{
+            colorName : String,
+            images : [String],
+            sizes : [String]
+        }],
         material : String,
         price : Number,
         sellingPrice : Number,
