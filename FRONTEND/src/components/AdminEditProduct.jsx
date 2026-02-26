@@ -323,10 +323,10 @@ const AdminEditProduct = ({
                    {
                        data?.productImage[0] ? (
                       <div className='flex items-center gap-2'>
-                           {
-                               data.productImage.map((el,index)=>{
-                               return(
-                                   <div className='relative group'>
+                            {
+                                data.productImage.map((el,index)=>{
+                                return(
+                                    <div className='relative group' key={`product-img-${index}`}>
                                    <img 
                                    src={el}
                                    alt={el} 
@@ -476,7 +476,7 @@ const AdminEditProduct = ({
                         {colorVariant.images.length > 0 && (
                             <div className='flex gap-2 flex-wrap mb-2'>
                                 {colorVariant.images.map((img, imgIndex) => (
-                                    <div key={imgIndex} className='relative group'>
+                                    <div key={`color-${colorIndex}-img-${imgIndex}`} className='relative group'>
                                         <img 
                                             src={img}
                                             alt={img} 

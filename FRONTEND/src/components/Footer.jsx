@@ -224,11 +224,11 @@ const Footer = () => {
               <img src={settings.logo} alt="Logo" className="h-16 mb-4" loading="lazy" />
             ) : (
               <div className='mb-4'>
-                <Logo w={64} h={64} />
+                <Logo w={76} h={76} />
               </div>
             )}
             <p className='text-[#a0a0a0] text-sm leading-relaxed mb-4 font-normal'>
-              {settings?.description || 'Your No.1 AUTHENTIC, REPLICA & CUSTOMIZE Online Sportswear store'}
+              {settings?.description || 'Your No.1 AUTHENTIC, REPLICA & CUSTOMIZE Sportswear, Accessories, and Equipments online store'}
             </p>
             {settings?.email && (
               <p className='text-[#a0a0a0] text-sm mb-1 font-normal'>Email: {settings.email}</p>

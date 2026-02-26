@@ -23,7 +23,7 @@ const productCategory = [
     { id : 22, label : "Gaming", value : "gaming" },
     { id : 23, label : "Headset & Pods", value : "headsetpods" },
     { id : 24, label : "Towels", value : "towels" },
-    { id : 25, label : "Supplement", value : "supplement" },
+    { id : 25, label : "Nutrition", value : "nutrition" },
     { id : 26, label : "Unclassified", value : "unclassified" },
 ]
 

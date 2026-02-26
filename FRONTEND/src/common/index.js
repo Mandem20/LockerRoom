@@ -115,10 +115,14 @@ const SummaryApi = {
        url : `${BackendDomain}/api/get-colorProduct`,
        method : 'get'
       },
-     categoryWiseProduct : {
-      url : `${BackendDomain}/api/category-product`,
-      method : 'post'
-     },
+      categoryWiseProduct : {
+       url : `${BackendDomain}/api/category-product`,
+       method : 'post'
+      },
+      availableFilters : {
+       url : `${BackendDomain}/api/available-filters`,
+       method : 'post'
+      },
      ProductDetails : {
        url : `${BackendDomain}/api/product-details`,
        method : 'post'

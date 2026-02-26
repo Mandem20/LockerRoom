@@ -43,13 +43,19 @@ const filterProductController = async(req,res) => {
 
         if (sizeList.length > 0) {
             filterConditions.push({ 
-                sizes: { $in: sizeList }
+                $or: [
+                    { sizes: { $in: sizeList } },
+                    { 'colorVariants.sizes': { $in: sizeList } }
+                ]
             })
         }
 
         if (colorList.length > 0) {
             filterConditions.push({ 
-                color: { $regex: colorList.join('|'), $options: 'i' }
+                $or: [
+                    { color: { $regex: colorList.join('|'), $options: 'i' } },
+                    { 'colorVariants.colorName': { $regex: colorList.join('|'), $options: 'i' } }
+                ]
             })
         }
 

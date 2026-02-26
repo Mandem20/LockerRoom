@@ -242,18 +242,18 @@ const [wishlistItems, setWishlistItems] = useState([])
     { icon: copied ? <FaCheck /> : <FaLink />, label: copied ? 'Copied!' : 'Copy Link', onClick: copyLink, color: copied ? 'bg-green-600' : 'bg-gray-600 hover:bg-gray-700' },
   ]
   return (
-    <div className='container mx-auto p-8'>
+    <div className='container mx-auto px-3 md:px-6 lg:p-8'>
       <ProductSchema product={data} />
       <BreadcrumbSchema items={[
         { name: 'Home', url: 'https://lockerroom.com' },
         { name: data?.category || 'Products', url: `https://lockerroom.com/category/${data?.category}` },
         { name: data?.productName, url: `https://lockerroom.com/product/${data?._id}` }
       ]} />
-          <div className='min-h-[200px] flex flex-col lg:flex-row gap-4'>
+          <div className='min-h-[200px] flex flex-col md:flex-row gap-4 md:gap-6'>
             {/**Product Image */}
-                <div className='h-96 flex flex-col lg:flex-row-reverse gap-4'>
-                        <div className='h-[300px] w-[300px] lg:h-96 lg:w-96 bg-slate-200 relative p-2'>
-                               <img src={activeImage} className='h-full w-full object-scale-down mix-blend-multiply' onMouseMove={handleZoomImage} onMouseLeave={handleLeaveImageZoom}/>
+                <div className='flex flex-col md:flex-row-reverse gap-3 md:gap-4 w-full md:w-auto'>
+                        <div className='h-[280px] sm:h-[320px] md:h-72 lg:h-80 xl:h-96 w-full md:w-72 lg:w-80 xl:w-96 bg-slate-200 relative p-2'>
+                               <img src={activeImage} className='h-full w-full object-contain md:object-scale-down mix-blend-multiply' onMouseMove={handleZoomImage} onMouseLeave={handleLeaveImageZoom}/>
                             {/**Product image zoom */}
                             {
                               zoomImage && (
@@ -271,28 +271,28 @@ const [wishlistItems, setWishlistItems] = useState([])
                             }
                            
                         </div>
-                      <div className='h-full'>
+                      <div className='overflow-x-auto scrollbar-none'>
                              {
                               loading ? (
 
-                                 <div className='flex gap-2 lg:flex-col overflow-scroll scrollbar-none h-full'>
-                                          {
-                                productImageListLoading.map((el,index) => {
-                                  return(
-                                        <div className='h-20 w-20 bg-slate-200 rounded animate-pulse' key={"loadingImage"+index}>
-                                        </div>
-                                  )
-                                })
-                                          }
-                                 </div>
+                                 <div className='flex gap-2 md:flex-col overflow-x-auto md:overflow-x-hidden overflow-y-auto scrollbar-none'>
+                                           {
+                                 productImageListLoading.map((el,index) => {
+                                   return(
+                                         <div className='h-16 w-16 sm:h-20 sm:w-20 bg-slate-200 rounded animate-pulse flex-shrink-0' key={"loadingImage"+index}>
+                                         </div>
+                                   )
+                                 })
+                                           }
+                                  </div>
                             
                               ) : (
-                              <div className='flex gap-2 lg:flex-col overflow-scroll scrollbar-none h-full'>
+                              <div className='flex gap-2 md:flex-col overflow-x-auto md:overflow-x-hidden overflow-y-auto scrollbar-none'>
                                           {
                                 getDisplayImages().map((imgURL,index) => {
                                   return(
-                                        <div className='h-20 w-20 bg-slate-200 p-1 rounded' key={imgURL}>
-                                          <img src={imgURL} className='w-full h-full object-scale-down mix-blend-multiply cursor-pointer' onMouseEnter={()=>handleMouseEnterProduct(imgURL)} onClick={()=>handleMouseEnterProduct(imgURL)}/>
+                                        <div className='h-16 w-16 sm:h-20 sm:w-20 bg-slate-200 p-1 rounded flex-shrink-0' key={`${imgURL}-${index}`}>
+                                          <img src={imgURL} className='w-full h-full object-contain md:object-scale-down mix-blend-multiply cursor-pointer' onMouseEnter={()=>handleMouseEnterProduct(imgURL)} onClick={()=>handleMouseEnterProduct(imgURL)}/>
                                         </div>
                                   )
                                 })
@@ -333,16 +333,16 @@ const [wishlistItems, setWishlistItems] = useState([])
 
                     </div>
                 ) : (
-                    <div className='flex flex-col gap-1'>
-                      <p className='bg-blue-200 text-blue-600 px-2 rounded-full font-bold inline-block w-fit'>{data?.brandName}</p>
-                      <h2 className='text-2xl lg:text-4xl font-semibold capitalize'>{data?.productName}</h2>
+                    <div className='flex flex-col gap-1 w-full'>
+                      <p className='bg-blue-200 text-blue-600 px-2 py-0.5 rounded-full font-bold inline-block w-fit text-xs sm:text-sm'>{data?.brandName}</p>
+                      <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold capitalize leading-tight'>{data?.productName}</h2>
                       <p className='text-xs text-slate-400'>Product ID: {data?._id}</p>
-                      <h2 className=' text-green-700'>{data?.stock}</h2>
-                     <div className='flex items-center font-medium gap-5'>
+                      <h2 className='text-green-700 text-sm sm:text-base'>{data?.stock}</h2>
+                     <div className='flex items-center font-medium gap-3 sm:gap-5 text-xs sm:text-sm'>
                       <p className='capitalize'>{data?.gender}</p>
                       <p className='capitalize'>{data?.category}</p>
                      </div>
-                      <div className='flex items-center gap-2'>
+                      <div className='flex items-center gap-1 sm:gap-2 text-sm sm:text-base'>
                        {(() => {
                          const rating = data?.rating || 0
                          const fullStars = Math.floor(rating)
@@ -360,28 +360,28 @@ const [wishlistItems, setWishlistItems] = useState([])
                          }
                          return stars
                        })()}
-                       <span className='text-slate-500 text-sm ml-1'>({data?.rating || 0})</span>
+                       <span className='text-slate-500 text-xs sm:text-sm ml-1'>({data?.rating || 0})</span>
                       </div>
-                      <div className='flex items-center gap-2 text-2xl lg:text-3xl font-medium my-1'>
+                      <div className='flex items-center gap-2 text-xl sm:text-2xl lg:text-3xl font-medium my-1'>
                        <p className='text-red-600'>{displayCEDICurrency(data?.sellingPrice)}</p>
-                       <p className='text-slate-400 line-through'>{displayCEDICurrency(data?.price)}</p>
+                       <p className='text-slate-400 line-through text-base sm:text-lg'>{displayCEDICurrency(data?.price)}</p>
                        {data?.price > data?.sellingPrice && (
-                          <span className='text-sm bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium'>
+                          <span className='text-xs sm:text-sm bg-green-100 text-green-700 px-2 py-0.5 sm:py-1 rounded-full font-medium'>
                               -{Math.round(((data?.price - data?.sellingPrice) / data?.price) * 100)}%
                           </span>
                        )}
                       </div>
                        <h2 className='capitalize'>
                         {data?.colorVariants && data?.colorVariants.length > 0 ? (
-                            <div className="my-2">
-                                <p className="font-medium mb-1">Select Color:</p>
+                            <div className="my-2 sm:my-3">
+                                <p className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">Select Color:</p>
                                 <div className="flex gap-2 flex-wrap">
                                     {data.colorVariants.map((colorVariant, idx) => (
                                         <button
                                             key={idx}
                                             type="button"
                                             onClick={() => handleColorSelect(colorVariant)}
-                                            className={`px-4 py-2 border rounded-full font-medium transition-colors ${
+                                            className={`px-3 sm:px-4 py-1.5 sm:py-2 border rounded-full font-medium transition-colors text-xs sm:text-sm ${
                                                 selectedColor?.colorName === colorVariant.colorName 
                                                 ? 'bg-red-600 text-white border-red-600' 
                                                 : 'border-gray-300 hover:border-red-600'
@@ -393,58 +393,58 @@ const [wishlistItems, setWishlistItems] = useState([])
                                 </div>
                             </div>
                         ) : (
-                            <>Colour : {data?.color}</>
+                            <p className='text-sm sm:text-base'>Colour : {data?.color}</p>
                         )}
                        </h2>
                       
-                       <div className="my-2">
-                         <p className="font-medium mb-1">Select Size:</p>
-                         <div className="flex gap-2 flex-wrap">
-                           {(() => {
-                             const displaySizes = getDisplaySizes()
-                             return Array.isArray(displaySizes) && displaySizes.map((size, idx) => (
-                               <button
-                                 key={idx}
-                                 type="button"
-                                 onClick={() => setSelectedSize(size)}
-                                 className={`px-4 py-2 border rounded-full font-medium transition-colors ${
-                                   selectedSize === size 
-                                   ? 'bg-red-600 text-white border-red-600' 
-                                   : 'border-gray-300 hover:border-red-600'
-                                 }`}
-                               >
-                                 {size}
-                               </button>
-                             ))
-                           })()}
-                           {getDisplaySizes().length === 0 && (
-                             <span className="text-slate-500">No sizes available</span>
-                           )}
-                         </div>
-                       </div>
-                      <div className='flex items-center gap-3 my-2'>
-                        <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-red-600 font-medium hover:bg-red-600 hover:text-white' onClick={(e)=>handleBuyProduct(e,data?._id)} >Buy</button>
-                        <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[100px] text-white bg-red-600 font-medium hover:bg-white hover:text-red-600' onClick={(e)=>handleAddToCart(e,data?._id)}>Add To Cart</button>
+                        <div className="my-2 sm:my-3">
+                          <p className="font-medium mb-1 sm:mb-2 text-sm sm:text-base">Select Size:</p>
+                          <div className="flex gap-2 flex-wrap">
+                            {(() => {
+                              const displaySizes = getDisplaySizes()
+                              return Array.isArray(displaySizes) && displaySizes.map((size, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => setSelectedSize(size)}
+                                  className={`px-3 sm:px-4 py-1.5 sm:py-2 border rounded-full font-medium transition-colors text-xs sm:text-sm ${
+                                    selectedSize === size 
+                                    ? 'bg-red-600 text-white border-red-600' 
+                                    : 'border-gray-300 hover:border-red-600'
+                                  }`}
+                                >
+                                  {size}
+                                </button>
+                              ))
+                            })()}
+                            {getDisplaySizes().length === 0 && (
+                              <span className="text-slate-500 text-sm">No sizes available</span>
+                            )}
+                          </div>
+                        </div>
+                      <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 my-3 sm:my-4'>
+                         <button className='border-2 border-red-600 rounded px-3 sm:px-4 py-2.5 sm:py-2 min-w-[100px] sm:min-w-[120px] text-red-600 font-medium hover:bg-red-600 hover:text-white text-sm sm:text-base' onClick={(e)=>handleBuyProduct(e,data?._id)} >Buy</button>
+                         <button className='border-2 border-red-600 rounded px-3 sm:px-4 py-2.5 sm:py-2 min-w-[100px] sm:min-w-[120px] text-white bg-red-600 font-medium hover:bg-white hover:text-red-600 text-sm sm:text-base' onClick={(e)=>handleAddToCart(e,data?._id)}>Add To Cart</button>
                       </div>
 
-                      <div>
-                        <p className='text-slate-600 font-medium my-1'>Description :</p>
-                        <div className='text-slate-600 whitespace-pre-wrap leading-relaxed'>
+                      <div className='mt-3 sm:mt-4'>
+                        <p className='text-slate-600 font-medium my-1 sm:my-2 text-sm sm:text-base'>Description :</p>
+                        <div className='text-slate-600 whitespace-pre-wrap leading-relaxed text-sm sm:text-base'>
                           {data?.description}
                         </div>
                       </div>
-                      <h2 className='text-slate-600 font-medium my-1'>Material Type : {data?.material}</h2>
+                      <h2 className='text-slate-600 font-medium my-1 sm:my-2 text-sm sm:text-base'>Material Type : {data?.material}</h2>
 
                 </div>
                 )
                }
 
 
-           </div>
-                    <div className='my-3 flex gap-4 items-center'>
+            </div>
+                    <div className='my-4 sm:my-6 flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between'>
                       <button
                         onClick={() => handleWishlist(data?._id)}
-                        className={`p-2 rounded-full transition-colors ${
+                        className={`p-2.5 sm:p-2 rounded-full transition-colors w-fit ${
                           inWishlist 
                           ? 'bg-red-100 text-red-600' 
                           : 'bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600'
@@ -453,22 +453,22 @@ const [wishlistItems, setWishlistItems] = useState([])
                       >
                         {inWishlist ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
                       </button>
-                      <div className='flex items-center gap-1'>
-                         <p className='text-slate-600 font-medium'>SHARE THIS PRODUCT:</p>
+                      <div className='flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2'>
+                         <p className='text-slate-600 font-medium text-sm sm:text-base'>SHARE THIS PRODUCT:</p>
                          <div className='flex gap-2'>
                            {shareOptions.map((option, index) => (
                              <button
                                key={index}
                                onClick={option.onClick}
-                               className={`${option.color} text-white p-2 rounded-full transition-colors`}
+                               className={`${option.color} text-white p-2 sm:p-2 rounded-full transition-colors`}
                                title={option.label}
                              >
                                {option.icon}
                              </button>
                            ))}
                          </div>
+                        </div>
                        </div>
-                      </div>
           {
             data.category && (
                <RelatedProductDisplay  category={data?.category} heading={"Related Products"} gender={data?.gender}/>

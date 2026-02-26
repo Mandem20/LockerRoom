@@ -3,8 +3,8 @@ const genderType = [
     { id : 2, label : "Womens'", value : "womens'" },
     { id : 3, label : "Boys'", value : "boys'" },
     { id : 4, label : "Girls'", value : "girls'" },
-    { id : 5, label : "Unisex", value : "unisex" },
-
+    { id : 5, label : "Adult Unisex", value : "Adult_unisex" },
+    { id : 6, label : "Kids Unisex", value : "Kids_unisex" },
 
 ]
 
