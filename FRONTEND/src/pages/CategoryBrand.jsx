@@ -7,6 +7,7 @@ import fetchCategories from '../helpers/fetchCategories'
 import genderType from '../helpers/genderType'
 import sizeVariation from '../helpers/sizeVariation'
 import fetchColors from '../helpers/fetchColors'
+import Breadcrumb from '../components/Breadcrumb'
 
 const CategoryBrand = () => {
     const params = useParams()
@@ -298,6 +299,7 @@ const CategoryBrand = () => {
 
     return (
         <div className='container mx-auto p-2 lg:p-4'>
+            <Breadcrumb items={[{ label: brandName, href: `/brand-category/${brandName}` }]} />
             <h2 className='text-xl lg:text-2xl font-bold py-2 lg:py-4 capitalize'>{brandName} Products</h2>
             
             {/* Mobile Filter Drawer */}

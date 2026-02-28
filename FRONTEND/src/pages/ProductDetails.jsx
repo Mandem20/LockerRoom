@@ -14,6 +14,7 @@ import Context from '../context';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { ProductSchema, BreadcrumbSchema } from '../components/StructuredData';
+import Breadcrumb from '../components/Breadcrumb';
 
 const ProductDetails = () => {
     const [data,setData] = useState({
@@ -243,6 +244,7 @@ const [wishlistItems, setWishlistItems] = useState([])
   ]
   return (
     <div className='container mx-auto px-3 md:px-6 lg:p-8'>
+      <Breadcrumb items={data?.category ? [{ label: data.category, href: `/product-category?category=${data.category.toLowerCase()}` }, { label: data.productName }] : []} />
       <ProductSchema product={data} />
       <BreadcrumbSchema items={[
         { name: 'Home', url: 'https://lockerroom.com' },

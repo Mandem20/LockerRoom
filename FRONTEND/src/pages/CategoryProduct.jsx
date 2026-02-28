@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { FaFilter, FaTimes } from 'react-icons/fa'
 import VerticalCard from '../components/VerticalCard'
 import SummaryApi from '../common'
+import Breadcrumb from '../components/Breadcrumb'
 
 const CategoryProduct = () => {
     const [data, setData] = useState([])
@@ -480,6 +481,7 @@ const CategoryProduct = () => {
 
     return (
         <div className='container mx-auto px-2 md:px-4 lg:p-4'>
+            <Breadcrumb items={selectedCategories.length > 0 ? selectedCategories.map(cat => ({ label: cat })) : [{ label: 'All Products' }]} />
             {/* Mobile Filter Drawer */}
             {showMobileFilters && (
                 <div className='fixed inset-0 z-50 lg:hidden'>

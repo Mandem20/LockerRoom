@@ -3,6 +3,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import SummaryApi from "../common"
 import VerticalCard from "../components/VerticalCard"
+import Breadcrumb from "../components/Breadcrumb"
 
 const SearchProduct = () => {
   const location = useLocation()
@@ -72,6 +73,7 @@ const SearchProduct = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <Breadcrumb items={[{ label: keyword || 'Search Results' }]} />
       {loading && <p className="text-lg text-center">Loading...</p>}
 
       {!loading && data.length > 0 && (

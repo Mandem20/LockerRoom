@@ -6,6 +6,7 @@ import addToCart from '../helpers/addToCart'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaHeart, FaShoppingCart, FaTrash, FaArrowRight } from 'react-icons/fa'
 import { toast } from 'react-toastify'
+import Breadcrumb from '../components/Breadcrumb'
 
 const Wishlist = () => {
   const [data, setData] = useState([])
@@ -111,6 +112,7 @@ const Wishlist = () => {
 
   return (
     <div className='container mx-auto p-4'>
+      <Breadcrumb items={[{ label: 'Wishlist' }]} />
       <h2 className='text-2xl font-bold py-4'>My Wishlist</h2>
       
       {data.length > 0 ? (

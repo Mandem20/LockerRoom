@@ -8,6 +8,7 @@ import displayCEDICurrency from '../helpers/displayCurrency'
 import { MdDelete } from "react-icons/md";
 import { FaShippingFast, FaShieldAlt, FaUndo } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import Breadcrumb from '../components/Breadcrumb'
 
 const Cart = () => {
     const [data,setData] = useState([])
@@ -122,6 +123,7 @@ const Cart = () => {
     const totalPrice = subtotal + tax + shipping
   return (
     <div className='container mx-auto pt-6'>
+        <Breadcrumb items={[{ label: 'Cart' }]} />
         <div className='text-center text-lg my-3'>
          {
             data.length === 0 && !loading && (
