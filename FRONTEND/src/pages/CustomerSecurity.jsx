@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { useOutletContext, useNavigate } from 'react-router-dom'
+import { useOutletContext } from 'react-router-dom'
 import SummaryApi from '../common'
 import { toast } from 'react-toastify'
-import { FaShieldAlt, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle, FaMobileAlt, FaTrash, FaExclamationTriangle } from 'react-icons/fa'
+import { FaShieldAlt, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle, FaMobileAlt } from 'react-icons/fa'
 
 const CustomerSecurity = () => {
     const { user } = useOutletContext()
-    const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
     const [showCurrentPassword, setShowCurrentPassword] = useState(false)
     const [showNewPassword, setShowNewPassword] = useState(false)
@@ -14,9 +13,6 @@ const CustomerSecurity = () => {
     const [twoFactorEnabled, setTwoFactorEnabled] = useState(user?.twoFactorEnabled || false)
     const [showOtpInput, setShowOtpInput] = useState(false)
     const [otp, setOtp] = useState('')
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-    const [deletePassword, setDeletePassword] = useState('')
-    const [deleting, setDeleting] = useState(false)
     const [formData, setFormData] = useState({
         currentPassword: '',
         newPassword: '',
@@ -360,104 +356,6 @@ const CustomerSecurity = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div className='bg-white rounded-lg shadow-sm p-6 border border-red-200'>
-                <h2 className='text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2'>
-                    <FaTrash className='text-red-600' /> Delete Account
-                </h2>
-                
-                {!showDeleteConfirm ? (
-                    <div className='space-y-4'>
-                        <div className='p-4 bg-red-50 rounded-lg'>
-                            <div className='flex items-start gap-3'>
-                                <FaExclamationTriangle className='text-red-500 mt-1 flex-shrink-0' />
-                                <div>
-                                    <p className='text-sm text-red-700 font-medium'>Warning: This action cannot be undone</p>
-                                    <p className='text-sm text-red-600 mt-1'>
-                                        Deleting your account will permanently remove all your data including order history, saved addresses, and wishlist items.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <button
-                            onClick={() => setShowDeleteConfirm(true)}
-                            className='px-4 py-2 border border-red-600 text-red-600 rounded-lg hover:bg-red-50 flex items-center gap-2'
-                        >
-                            <FaTrash /> Delete My Account
-                        </button>
-                    </div>
-                ) : (
-                    <div className='space-y-4'>
-                        <div className='p-4 bg-red-50 rounded-lg border border-red-200'>
-                            <p className='text-sm text-red-700 font-medium mb-2'>
-                                Are you sure you want to delete your account? This is permanent.
-                            </p>
-                            <p className='text-sm text-red-600'>
-                                Type your password to confirm deletion.
-                            </p>
-                        </div>
-                        
-                        <div>
-                            <input
-                                type='password'
-                                value={deletePassword}
-                                onChange={(e) => setDeletePassword(e.target.value)}
-                                placeholder='Enter your password'
-                                className='w-full p-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500'
-                            />
-                        </div>
-                        
-                        <div className='flex gap-3'>
-                            <button
-                                onClick={async () => {
-                                    if (!deletePassword) {
-                                        toast.error('Please enter your password')
-                                        return
-                                    }
-                                    
-                                    setDeleting(true)
-                                    try {
-                                        const response = await fetch(SummaryApi.deleteMyAccount?.url || `${SummaryApi.current_user.url}/delete`, {
-                                            method: 'POST',
-                                            credentials: 'include',
-                                            headers: { 'content-type': 'application/json' },
-                                            body: JSON.stringify({ password: deletePassword })
-                                        })
-                                        
-                                        const data = await response.json()
-                                        
-                                        if (data.success) {
-                                            toast.success('Account deleted successfully')
-                                            navigate('/')
-                                        } else {
-                                            toast.error(data.message || 'Failed to delete account')
-                                        }
-                                    } catch (error) {
-                                        console.error('Delete account error:', error)
-                                        toast.error('Failed to delete account')
-                                    } finally {
-                                        setDeleting(false)
-                                    }
-                                }}
-                                disabled={deleting}
-                                className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center gap-2'
-                            >
-                                <FaTrash /> {deleting ? 'Deleting...' : 'Confirm Delete'}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowDeleteConfirm(false)
-                                    setDeletePassword('')
-                                }}
-                                className='px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100'
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     )

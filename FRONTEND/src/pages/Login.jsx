@@ -190,33 +190,37 @@ const Login = () => {
   }
 
   const socialButtons = [
-    { icon: <FaGoogle />, label: 'Google', color: 'bg-red-500 hover:bg-red-600', provider: 'Google' },
-    { icon: <FaFacebook />, label: 'Facebook', color: 'bg-blue-600 hover:bg-blue-700', provider: 'Facebook' },
-    { icon: <FaApple />, label: 'Apple', color: 'bg-gray-800 hover:bg-gray-900', provider: 'Apple' },
+    { icon: <FaGoogle className="text-lg" />, label: 'Continue with Google', color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700', provider: 'Google' },
+    { icon: <FaFacebook className="text-lg" />, label: 'Continue with Facebook', color: 'bg-[#1877F2] hover:bg-[#1865D6] text-white', provider: 'Facebook' },
+    { icon: <FaApple className="text-lg" />, label: 'Continue with Apple', color: 'bg-black hover:bg-gray-900 text-white', provider: 'Apple' },
   ]
 
   return (
     <section id='login'>
       <div className='mx-auto container p-4'>
-        <div className='bg-white p-5 w-full max-w-sm mx-auto'>
+        <div className='bg-white p-5 w-full max-w-sm mx-auto rounded-2xl shadow-lg'>
           <div className='w-20 h-20 mx-auto'>
             <img src={loginIcons} alt='login icon'/>
           </div>
 
-          <div className='flex justify-center gap-2 mt-4 mb-2'>
+          <div className='space-y-3 mt-6'>
             {socialButtons.map((btn, index) => (
               <button
                 key={index}
                 onClick={() => handleSocialLogin(btn.provider)}
-                className={`${btn.color} text-white p-3 rounded-full transition-colors`}
-                title={`Login with ${btn.label}`}
+                className={`${btn.color} w-full py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-all duration-200 font-medium`}
               >
                 {btn.icon}
+                <span>{btn.label}</span>
               </button>
             ))}
           </div>
 
-          <div className='text-center text-gray-500 text-sm my-2'>or</div>
+          <div className='flex items-center gap-4 my-6'>
+            <div className='flex-1 h-px bg-gray-300'></div>
+            <span className='text-sm text-gray-500'>or</span>
+            <div className='flex-1 h-px bg-gray-300'></div>
+          </div>
 
           <div className='flex border rounded mb-4'>
             <button

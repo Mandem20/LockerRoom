@@ -130,10 +130,15 @@ const Wishlist = () => {
                         -{Math.round(((product.price - product.sellingPrice) / product.price) * 100)}%
                       </span>
                     )}
+                    {product.stock === 'Out of Stock' && (
+                      <span className='absolute top-2 right-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-medium'>
+                        Out of Stock
+                      </span>
+                    )}
                     <img
                       src={product?.productImage?.[0]}
                       alt={product?.productName}
-                      className='w-full h-full object-cover'
+                      className={`w-full h-full object-cover ${product.stock === 'Out of Stock' ? 'opacity-50' : ''}`}
                     />
                   </div>
                 </Link>
@@ -169,9 +174,14 @@ const Wishlist = () => {
                   <div className='flex gap-2 mt-4'>
                     <button
                       onClick={(e) => handleMoveToCart(e, product)}
-                      className='flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors'
+                      disabled={product.stock === 'Out of Stock'}
+                      className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors ${
+                        product.stock === 'Out of Stock'
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-red-600 hover:bg-red-700 text-white'
+                      }`}
                     >
-                      <FaShoppingCart /> Move to Cart
+                      <FaShoppingCart /> {product.stock === 'Out of Stock' ? 'Unavailable' : 'Move to Cart'}
                     </button>
                     <button
                       onClick={(e) => {

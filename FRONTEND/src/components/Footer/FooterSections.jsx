@@ -29,6 +29,7 @@ const FooterSections = ({ sections, links, onLinkClick }) => {
 
   const defaultSupportLinks = [
     { label: 'Help Center', url: '/help' },
+    { label: 'Report a Product', url: '/report-product' },
     { label: 'Contact Us', url: '/contact' },
     { label: 'Track Order', url: '/track-order' },
     { label: 'Shipping Info', url: '/shipping' },
@@ -38,7 +39,7 @@ const FooterSections = ({ sections, links, onLinkClick }) => {
 
   const defaultLegalLinks = [
     { label: 'Terms & Conditions', url: '/terms' },
-    { label: 'Privacy Policy', url: '/privacy' },
+    { label: 'Privacy Policy', url: '/privacy-policy' },
     { label: 'Cookie Policy', url: '/cookies' },
     { label: 'Refund Policy', url: '/refund' }
   ]

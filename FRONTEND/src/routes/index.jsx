@@ -29,6 +29,10 @@ const CustomerAddresses = lazy(() => import("../pages/CustomerAddresses"));
 const CustomerPaymentMethods = lazy(() => import("../pages/CustomerPaymentMethods"));
 const CustomerSecurity = lazy(() => import("../pages/CustomerSecurity"));
 const Help = lazy(() => import("../pages/Help"));
+const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
+const TermsConditions = lazy(() => import("../pages/TermsConditions"));
+const CookiePolicy = lazy(() => import("../pages/CookiePolicy"));
+const ReportProduct = lazy(() => import("../pages/ReportProduct"));
 
 const Loading = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -76,6 +80,22 @@ const router = createBrowserRouter([
             {
                 path : "help",
                 element : <Help/>
+            },
+            {
+                path : "privacy-policy",
+                element : <PrivacyPolicy/>
+            },
+            {
+                path : "terms",
+                element : <TermsConditions/>
+            },
+            {
+                path : "cookies",
+                element : <CookiePolicy/>
+            },
+            {
+                path : "report-product",
+                element : <ReportProduct/>
             },
             {
                 path : "search/:keyword",

@@ -90,6 +90,7 @@ const SignUp = () => {
     const [loading, setLoading] = useState(false)
     const [selectedCountryCode, setSelectedCountryCode] = useState('+233')
     const [showCountryDropdown, setShowCountryDropdown] = useState(false)
+    const [acceptTerms, setAcceptTerms] = useState(false)
     
     const[data,setData] = useState ({
       email : "",
@@ -182,6 +183,11 @@ const SignUp = () => {
     const handleSubmit = async(e) =>{
         e.preventDefault()
 
+        if(!acceptTerms){
+          toast.error('Please accept the Terms & Conditions and Privacy Policy to continue')
+          return
+        }
+
         if(data.password === data.confirmPassword){
        const dataResponse = await fetch(SummaryApi.SignUP.url,{
         method : SummaryApi.SignUP.method,
@@ -209,9 +215,9 @@ const SignUp = () => {
     }
 
     const socialButtons = [
-      { icon: <FaGoogle />, label: 'Google', color: 'bg-red-500 hover:bg-red-600', provider: 'Google' },
-      { icon: <FaFacebook />, label: 'Facebook', color: 'bg-blue-600 hover:bg-blue-700', provider: 'Facebook' },
-      { icon: <FaApple />, label: 'Apple', color: 'bg-gray-800 hover:bg-gray-900', provider: 'Apple' },
+      { icon: <FaGoogle className="text-lg" />, label: 'Continue with Google', color: 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700', provider: 'Google' },
+      { icon: <FaFacebook className="text-lg" />, label: 'Continue with Facebook', color: 'bg-[#1877F2] hover:bg-[#1865D6] text-white', provider: 'Facebook' },
+      { icon: <FaApple className="text-lg" />, label: 'Continue with Apple', color: 'bg-black hover:bg-gray-900 text-white', provider: 'Apple' },
     ]
 
   return (
@@ -234,20 +240,24 @@ const SignUp = () => {
         </form>
         </div>
 
-        <div className='flex justify-center gap-2 mt-4 mb-2'>
+        <div className='space-y-3 mt-6'>
           {socialButtons.map((btn, index) => (
             <button
               key={index}
               onClick={() => handleSocialLogin(btn.provider)}
-              className={`${btn.color} text-white p-3 rounded-full transition-colors`}
-              title={`Sign up with ${btn.label}`}
+              className={`${btn.color} w-full py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-all duration-200 font-medium`}
             >
               {btn.icon}
+              <span>{btn.label}</span>
             </button>
           ))}
         </div>
 
-        <div className='text-center text-gray-500 text-sm my-2'>or</div>
+        <div className='flex items-center gap-4 my-6'>
+          <div className='flex-1 h-px bg-gray-300'></div>
+          <span className='text-sm text-gray-500'>or</span>
+          <div className='flex-1 h-px bg-gray-300'></div>
+        </div>
 
         <div className='flex border rounded mb-4'>
           <button
@@ -438,11 +448,32 @@ const SignUp = () => {
                  
                  </span>
                
-               </div>
-            </div>
+                </div>
+             </div>
           </div>
 
-          <button className='bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mx-auto block  mt-4'>Sign Up</button>
+          <div className='mt-4'>
+            <label className='flex items-start gap-3 cursor-pointer'>
+              <input
+                type='checkbox'
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                className='mt-1 w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500'
+              />
+              <span className='text-sm text-gray-600'>
+                I agree to the{' '}
+                <Link to='/terms' target='_blank' className='text-red-600 hover:underline'>Terms & Conditions</Link>
+                {' '}and{' '}
+                <Link to='/privacy-policy' target='_blank' className='text-red-600 hover:underline'>Privacy Policy</Link>
+                . I understand that my data will be processed in accordance with Ghana's Data Protection Act, 2012 (Act 843) and GDPR.
+              </span>
+            </label>
+          </div>
+
+          <button 
+            disabled={!acceptTerms}
+            className={`bg-red-600 hover:bg-red-700 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mx-auto block mt-4 ${!acceptTerms ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >Sign Up</button>
       </form>
         )}
 
