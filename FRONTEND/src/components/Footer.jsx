@@ -227,8 +227,8 @@ const Footer = () => {
                 <Logo w={76} h={76} />
               </div>
             )}
-            <p className='text-[#a0a0a0] text-sm leading-relaxed mb-4 font-normal'>
-              {settings?.description || 'Your No.1 AUTHENTIC, REPLICA & CUSTOMIZE Sportswear, Accessories, and Equipments online store'}
+            <p className='text-[#a0a0a0] text-sm leading-relaxed mb-4 font-bold'>
+              {settings?.description || 'Ghana\'s No.1 AUTHENTIC, REPLICA & CUSTOMIZE Sportswear, Accessories, and Equipments online store'}
             </p>
             {settings?.email && (
               <p className='text-[#a0a0a0] text-sm mb-1 font-normal'>Email: {settings.email}</p>
