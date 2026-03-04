@@ -105,7 +105,7 @@ const Header = () => {
         navigate(`/search/${suggestion.value}`)
     }
   return (
-    <header className='h-22 shadow-md bg-white fixed w-full z-40'>
+    <header className='h-22 shadow-md bg-white fixed w-full z-50'>
         <div className='h-full container mx-auto flex items-center px-4 justify-between'>
             <div className=''>
                 <Link to ={"/"}>
@@ -159,19 +159,22 @@ const Header = () => {
                   </div>
                         )
                     }
-                  {
+                    {
                     menuDisplay &&  (
-                     <div className='absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded'>
+                     <div className='absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded z-[60]'>
                     <nav>
                         {
                             user?.role === ROLE.ADMIN && (
                                 <>
-                                <Link to={"/admin-panel"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Admin Panel</Link>
+                                <Link to={"/admin-panel"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2' onClick={()=>setMenuDisplay(previous => !previous)}>Admin Panel</Link>
                                 <Link to={"/admin-panel/all-products"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Manage Products</Link>
                                 <Link to={"/admin-panel/all-users"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2'  onClick={()=>setMenuDisplay(previous => !previous)}>Manage Users</Link>
                                 </>
                             )
                         }
+                        {user?.isVendor && (
+                            <Link to={"/vendor-panel"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2' onClick={()=>setMenuDisplay(previous => !previous)}>Vendor Panel</Link>
+                        )}
                         {user?.role !== ROLE.ADMIN && (
                             <Link to={"/my-account"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2' onClick={()=>setMenuDisplay(previous => !previous)}>My Account</Link>
                         )}

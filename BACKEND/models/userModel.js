@@ -62,6 +62,15 @@ const userSchema = new mongoose.Schema({
         type : Boolean,
         default : false
     },
+    vendorId : {
+        type : mongoose.Schema.ObjectId,
+        ref : 'vendor',
+        default : null
+    },
+    isVendor : {
+        type : Boolean,
+        default : false
+    }
 },{
     timestamps : true
 })

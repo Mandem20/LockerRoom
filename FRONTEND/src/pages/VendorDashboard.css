@@ -1,0 +1,494 @@
+.vendor-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 4px 0;
+}
+
+.stat-change {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.stat-change.positive {
+    color: #10b981;
+}
+
+/* Wallet Section */
+.wallet-section h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+}
+
+.wallet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.wallet-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-card.primary {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    color: #fff;
+}
+
+.wallet-card.primary .wallet-label,
+.wallet-card.primary .wallet-subtext {
+    color: rgba(255,255,255,0.8);
+}
+
+.wallet-card.primary .wallet-value {
+    color: #fff;
+}
+
+.wallet-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.wallet-value {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 8px 0;
+    color: #1a1a2e;
+}
+
+.wallet-subtext {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.wallet-action {
+    margin-top: auto;
+    padding: 10px 20px;
+    background: #fff;
+    color: #ff6b6b;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.wallet-action:hover {
+    background: #f9fafb;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.dashboard-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.card-header a {
+    font-size: 14px;
+    color: #ff6b6b;
+    text-decoration: none;
+}
+
+.card-header a:hover {
+    text-decoration: underline;
+}
+
+.card-content {
+    padding: 16px 24px;
+}
+
+/* Orders List */
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.order-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.order-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a2e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.order-id {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.order-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.order-status .status {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: capitalize;
+}
+
+.order-status .status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.order-status .status.processing {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.order-status .status.shipped {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.order-status .status.delivered {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.order-amount {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+/* Products List */
+.products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.product-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a2e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.product-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff6b6b;
+}
+
+.product-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.product-rating {
+    font-size: 14px;
+    color: #f59e0b;
+}
+
+.product-stock {
+    font-size: 12px;
+    color: #10b981;
+}
+
+/* Orders Status Grid */
+.orders-status-grid h3 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+}
+
+.status-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.status-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.status-count {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.status-card.pending .status-count {
+    color: #f59e0b;
+}
+
+.status-card.processing .status-count {
+    color: #3b82f6;
+}
+
+.status-card.shipped .status-count {
+    color: #8b5cf6;
+}
+
+.status-card.delivered .status-count {
+    color: #10b981;
+}
+
+.status-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.empty-state span {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-state p {
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+/* Verification Banner */
+.verification-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #f59e0b;
+}
+
+.verification-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.verification-icon {
+    font-size: 32px;
+}
+
+.verification-content h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0 0 4px 0;
+}
+
+.verification-content p {
+    font-size: 14px;
+    color: #b45309;
+    margin: 0;
+}
+
+.btn-primary {
+    padding: 12px 24px;
+    background: #ff6b6b;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #ee5a5a;
+}
+
+/* Loading */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .wallet-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .status-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid,
+    .wallet-grid,
+    .dashboard-grid,
+    .status-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .verification-banner {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .verification-content {
+        flex-direction: column;
+    }
+}

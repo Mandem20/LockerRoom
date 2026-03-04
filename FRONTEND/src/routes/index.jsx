@@ -33,6 +33,15 @@ const PrivacyPolicy = lazy(() => import("../pages/PrivacyPolicy"));
 const TermsConditions = lazy(() => import("../pages/TermsConditions"));
 const CookiePolicy = lazy(() => import("../pages/CookiePolicy"));
 const ReportProduct = lazy(() => import("../pages/ReportProduct"));
+const BecomeVendor = lazy(() => import("../pages/BecomeVendor"));
+const VendorPanel = lazy(() => import("../pages/VendorPanel"));
+const VendorDashboard = lazy(() => import("../pages/VendorDashboard"));
+const VendorProducts = lazy(() => import("../pages/VendorProducts"));
+const VendorOrders = lazy(() => import("../pages/VendorOrders"));
+const VendorWallet = lazy(() => import("../pages/VendorWallet"));
+const VendorSettings = lazy(() => import("../pages/VendorSettings"));
+const VendorAnalytics = lazy(() => import("../pages/VendorAnalytics"));
+const VendorApplications = lazy(() => import("../pages/VendorApplications"));
 
 const Loading = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -154,6 +163,40 @@ const router = createBrowserRouter([
                 ]
             },
             {
+                path : "become-vendor",
+                element : <BecomeVendor/>
+            },
+            {
+                path : "vendor-panel",
+                element : <VendorPanel/>,
+                children : [
+                    {
+                        path : "",
+                        element : <VendorDashboard/>
+                    },
+                    {
+                        path : "products",
+                        element : <VendorProducts/>
+                    },
+                    {
+                        path : "orders",
+                        element : <VendorOrders/>
+                    },
+                    {
+                        path : "wallet",
+                        element : <VendorWallet/>
+                    },
+                    {
+                        path : "settings",
+                        element : <VendorSettings/>
+                    },
+                    {
+                        path : "analytics",
+                        element : <VendorAnalytics/>
+                    }
+                ]
+            },
+            {
                 path : "admin-panel",
                 element : <AdminPanel/>,
                 children : [
@@ -188,6 +231,10 @@ const router = createBrowserRouter([
                     {
                         path : "settings",
                         element : <Settings/>
+                    },
+                    {
+                        path : "vendor-applications",
+                        element : <VendorApplications/>
                     }
                 ]
             },

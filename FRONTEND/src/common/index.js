@@ -204,13 +204,144 @@ const SummaryApi = {
          method : 'get'
         },
         getFooterLinks : {
-          url : `${BackendDomain}/api/footer-links`,
-          method : 'get'
-         },
-         updateFooterSettings : {
-          url : `${BackendDomain}/api/footer-settings`,
-          method : 'post'
-         }
+           url : `${BackendDomain}/api/footer-links`,
+           method : "get"
+          },
+          updateFooterSettings : {
+           url : `${BackendDomain}/api/footer-settings`,
+           method : "post"
+          },
+          // Vendor API Endpoints
+          becomeVendor : {
+            url : `${BackendDomain}/api/become-vendor`,
+            method : "post"
+          },
+          vendorStatus : {
+            url : `${BackendDomain}/api/vendor-status`,
+            method : "get"
+          },
+          vendorProfile : {
+            url : `${BackendDomain}/api/vendor-profile`,
+            method : "get"
+          },
+          updateVendorProfile : {
+            url : `${BackendDomain}/api/vendor-profile`,
+            method : "post"
+          },
+          updateVendorBankDetails : {
+            url : `${BackendDomain}/api/vendor-bank-details`,
+            method : "post"
+          },
+          updateVendorPayoutSettings : {
+            url : `${BackendDomain}/api/vendor-payout-settings`,
+            method : "post"
+          },
+          uploadVendorVerificationDocuments : {
+            url : `${BackendDomain}/api/vendor-verification-documents`,
+            method : "post"
+          },
+          vendorProducts : {
+            url : `${BackendDomain}/api/vendor/products`,
+            method : "get"
+          },
+          uploadVendorProduct : {
+            url : `${BackendDomain}/api/vendor/products`,
+            method : "post"
+          },
+          vendorProductDetails : {
+            url : `${BackendDomain}/api/vendor/products`,
+            method : "get"
+          },
+          updateVendorProduct : {
+            url : `${BackendDomain}/api/vendor/products`,
+            method : "put"
+          },
+          deleteVendorProduct : {
+            url : `${BackendDomain}/api/vendor/products`,
+            method : "delete"
+          },
+          updateVendorInventory : {
+            url : `${BackendDomain}/api/vendor/inventory`,
+            method : "post"
+          },
+          bulkUpdateInventory : {
+            url : `${BackendDomain}/api/vendor/inventory/bulk`,
+            method : "post"
+          },
+          vendorProductAnalytics : {
+            url : `${BackendDomain}/api/vendor/product-analytics`,
+            method : "get"
+          },
+          vendorOrders : {
+            url : `${BackendDomain}/api/vendor/orders`,
+            method : "get"
+          },
+          vendorOrderDetails : {
+            url : `${BackendDomain}/api/vendor/orders`,
+            method : "get"
+          },
+          updateVendorOrderStatus : {
+            url : `${BackendDomain}/api/vendor/order-status`,
+            method : "post"
+          },
+          vendorOrderStats : {
+            url : `${BackendDomain}/api/vendor/order-stats`,
+            method : "get"
+          },
+          vendorRecentOrders : {
+            url : `${BackendDomain}/api/vendor/recent-orders`,
+            method : "get"
+          },
+          vendorDashboardStats : {
+            url : `${BackendDomain}/api/vendor/dashboard-stats`,
+            method : "get"
+          },
+          vendorAnalytics : {
+            url : `${BackendDomain}/api/vendor/analytics`,
+            method : "get"
+          },
+          vendorPerformanceMetrics : {
+            url : `${BackendDomain}/api/vendor/performance-metrics`,
+            method : "get"
+          },
+          vendorSalesChart : {
+            url : `${BackendDomain}/api/vendor/sales-chart`,
+            method : "get"
+          },
+          vendorPayouts : {
+            url : `${BackendDomain}/api/vendor/payouts`,
+            method : "get"
+          },
+          requestVendorPayout : {
+            url : `${BackendDomain}/api/vendor/request-payout`,
+            method : "post"
+          },
+          vendorWallet : {
+            url : `${BackendDomain}/api/vendor/wallet`,
+            method : "get"
+          },
+          vendorTransactions : {
+            url : `${BackendDomain}/api/vendor/transactions`,
+             method : "get"
+          },
+          // Admin Vendor Application API Endpoints
+          getAllVendorApplications : {
+            url : `${BackendDomain}/api/admin/vendor-applications`,
+            method : "get"
+          },
+          getVendorApplicationById : {
+            url : `${BackendDomain}/api/admin/vendor-applications`,
+            method : "get"
+          },
+          approveVendor : {
+            url : `${BackendDomain}/api/admin/approve-vendor`,
+            method : "post"
+          },
+          rejectVendor : {
+            url : `${BackendDomain}/api/admin/reject-vendor`,
+            method : "post"
+          }
+
 }
 
 export default SummaryApi

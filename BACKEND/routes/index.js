@@ -7,7 +7,7 @@ const router = express.Router()
 const userSignUpController = require("../controller/user/userSignUp")
 const userSignInController = require('../controller/user/userSignin')
 const userDetailsController = require('../controller/user/userDetails')
-const { authToken, adminOnly } = require('../middleware/authToken')
+const { authToken, adminOnly, vendorOnly, adminOrVendor } = require('../middleware/authToken')
 const userLogout = require('../controller/user/userLogout')
 const allUsers = require('../controller/user/allUsers')
 const updateUser = require('../controller/user/updateUser')
@@ -161,6 +161,108 @@ router.get("/footer-links", getFooterLinks)
 router.post("/footer-links", authToken, adminOnly, createFooterLink)
 router.post("/footer-links/update", authToken, adminOnly, updateFooterLink)
 router.post("/footer-links/delete", authToken, adminOnly, deleteFooterLink)
+
+
+//vendor routes
+const {
+    becomeVendor,
+    getVendorProfile,
+    updateVendorProfile,
+    updateBankDetails,
+    updatePayoutSettings,
+    uploadVerificationDocuments,
+    getVendorStatus
+} = require('../controller/vendor/vendorController')
+
+const {
+    uploadVendorProduct,
+    getVendorProducts,
+    getVendorProductById,
+    updateVendorProduct,
+    deleteVendorProduct,
+    updateVendorInventory,
+    bulkUpdateInventory,
+    getVendorProductAnalytics
+} = require('../controller/vendor/vendorProductController')
+
+const {
+    getVendorOrders,
+    getVendorOrderById,
+    updateVendorOrderStatus,
+    getVendorOrderStats,
+    getRecentVendorOrders
+} = require('../controller/vendor/vendorOrderController')
+
+const {
+    getVendorDashboardStats,
+    getVendorAnalytics,
+    getVendorPerformanceMetrics,
+    getVendorSalesChart
+} = require('../controller/vendor/vendorAnalyticsController')
+
+const {
+    getVendorPayouts,
+    requestPayout,
+    getVendorWallet,
+    getVendorTransactions
+} = require('../controller/vendor/vendorPayoutController')
+
+const {
+    getAllVendorApplications,
+    getVendorApplicationById,
+    approveVendor,
+    rejectVendor,
+    suspendVendor,
+    reactivateVendor,
+    getVendorStats
+} = require('../controller/vendor/vendorAdminController')
+
+//vendor authentication & profile
+router.post("/become-vendor", authToken, becomeVendor)
+router.get("/vendor-status", authToken, getVendorStatus)
+router.get("/vendor-profile", authToken, vendorOnly, getVendorProfile)
+router.post("/vendor-profile", authToken, vendorOnly, updateVendorProfile)
+router.post("/vendor-bank-details", authToken, vendorOnly, updateBankDetails)
+router.post("/vendor-payout-settings", authToken, vendorOnly, updatePayoutSettings)
+router.post("/vendor-verification-documents", authToken, vendorOnly, uploadVerificationDocuments)
+
+//vendor products
+router.get("/vendor/products", authToken, vendorOnly, getVendorProducts)
+router.post("/vendor/products", authToken, vendorOnly, uploadVendorProduct)
+router.get("/vendor/products", authToken, vendorOnly, getVendorProductById)
+router.put("/vendor/products", authToken, vendorOnly, updateVendorProduct)
+router.delete("/vendor/products", authToken, vendorOnly, deleteVendorProduct)
+router.post("/vendor/inventory", authToken, vendorOnly, updateVendorInventory)
+router.post("/vendor/inventory/bulk", authToken, vendorOnly, bulkUpdateInventory)
+router.get("/vendor/product-analytics", authToken, vendorOnly, getVendorProductAnalytics)
+
+//vendor orders
+router.get("/vendor/orders", authToken, vendorOnly, getVendorOrders)
+router.get("/vendor/orders/:id", authToken, vendorOnly, getVendorOrderById)
+router.post("/vendor/order-status", authToken, vendorOnly, updateVendorOrderStatus)
+router.get("/vendor/order-stats", authToken, vendorOnly, getVendorOrderStats)
+router.get("/vendor/recent-orders", authToken, vendorOnly, getRecentVendorOrders)
+
+//vendor analytics & dashboard
+router.get("/vendor/dashboard-stats", authToken, vendorOnly, getVendorDashboardStats)
+router.get("/vendor/analytics", authToken, vendorOnly, getVendorAnalytics)
+router.get("/vendor/performance-metrics", authToken, vendorOnly, getVendorPerformanceMetrics)
+router.get("/vendor/sales-chart", authToken, vendorOnly, getVendorSalesChart)
+
+//vendor payouts & wallet
+router.get("/vendor/payouts", authToken, vendorOnly, getVendorPayouts)
+router.post("/vendor/request-payout", authToken, vendorOnly, requestPayout)
+router.get("/vendor/wallet", authToken, vendorOnly, getVendorWallet)
+router.get("/vendor/transactions", authToken, vendorOnly, getVendorTransactions)
+
+//admin vendor management
+router.get("/admin/vendor-applications", authToken, adminOnly, getAllVendorApplications)
+router.get("/admin/vendor-applications/:id", authToken, adminOnly, getVendorApplicationById)
+router.post("/admin/approve-vendor", authToken, adminOnly, approveVendor)
+router.post("/admin/reject-vendor", authToken, adminOnly, rejectVendor)
+router.post("/admin/suspend-vendor", authToken, adminOnly, suspendVendor)
+router.post("/admin/reactivate-vendor", authToken, adminOnly, reactivateVendor)
+router.get("/admin/vendor-stats", authToken, adminOnly, getVendorStats)
 
 
 module.exports = router

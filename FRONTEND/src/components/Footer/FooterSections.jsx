@@ -24,7 +24,8 @@ const FooterSections = ({ sections, links, onLinkClick }) => {
     { label: 'About Us', url: '/about' },
     { label: 'Careers', url: '/careers' },
     { label: 'Blog', url: '/blog' },
-    { label: 'Press', url: '/press' }
+    { label: 'Press', url: '/press' },
+    { label: 'Become a Vendor', url: '/become-vendor' }
   ]
 
   const defaultSupportLinks = [

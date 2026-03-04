@@ -42,6 +42,11 @@ const productSchema = new mongoose.Schema({
         material : String,
         price : Number,
         sellingPrice : Number,
+        vendorId : {
+            type : mongoose.Schema.ObjectId,
+            ref : 'vendor',
+            default : null
+        },
         lastUpdated : {
             type: Date,
             default: Date.now
