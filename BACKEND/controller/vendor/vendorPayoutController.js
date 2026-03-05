@@ -169,8 +169,15 @@ const getVendorWallet = async (req, res) => {
 
         const completedRevenue = deliveredOrders.reduce((sum, order) => sum + order.totalAmt, 0)
 
-        const platformFee = completedRevenue * (vendor.platformFeePercent / 100)
-        const netRevenue = completedRevenue - platformFee
+        const commissionRate = vendor.platformFeePercent || 10
+        const paymentFeeRate = 2.5
+        const serviceFee = 1.00
+
+        const platformCommission = completedRevenue * (commissionRate / 100)
+        const paymentProcessingFee = completedRevenue * (paymentFeeRate / 100)
+        const totalServiceFee = deliveredOrders.length * serviceFee
+        const totalFees = platformCommission + paymentProcessingFee + totalServiceFee
+        const netRevenue = completedRevenue - totalFees
 
         const pendingOrders = await OrderModel.find({
             productId: { $in: vendorProductIds },
@@ -189,7 +196,7 @@ const getVendorWallet = async (req, res) => {
 
         const walletSummary = {
             totalEarnings: completedRevenue,
-            platformFees: platformFee,
+            platformFees: platformCommission,
             netEarnings: netRevenue,
             pendingEarnings: pendingRevenue,
             refundedAmount,
@@ -202,7 +209,17 @@ const getVendorWallet = async (req, res) => {
                 accountName: vendor.bankDetails.accountName,
                 accountNumber: vendor.bankDetails.accountNumber?.slice(-4)?.padStart(vendor.bankDetails.accountNumber?.length || 0, '*'),
                 bankCountry: vendor.bankDetails.bankCountry
-            } : null
+            } : null,
+            commissionBreakdown: {
+                totalSales: completedRevenue,
+                commissionRate: commissionRate,
+                platformCommission: platformCommission,
+                paymentFeeRate: paymentFeeRate,
+                paymentProcessingFee: paymentProcessingFee,
+                serviceFee: totalServiceFee,
+                totalFees: totalFees,
+                netEarnings: netRevenue
+            }
         }
 
         res.status(200).json({

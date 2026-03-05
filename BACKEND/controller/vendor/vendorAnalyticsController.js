@@ -3,9 +3,33 @@ const productModel = require('../../models/productModel')
 const VendorModel = require('../../models/vendorModel')
 const userModel = require('../../models/userModel')
 
+const dashboardCache = new Map()
+const CACHE_TTL = 60000
+
+const getCachedData = (key) => {
+    const cached = dashboardCache.get(key)
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.data
+    }
+    return null
+}
+
+const setCachedData = (key, data) => {
+    dashboardCache.set(key, { data, timestamp: Date.now() })
+}
+
+const clearVendorDashboardCache = (vendorId) => {
+    const cacheKey = `vendor_dashboard_${vendorId}`
+    dashboardCache.delete(cacheKey)
+}
+
+const clearAllVendorCaches = () => {
+    dashboardCache.clear()
+}
+
 const getVendorDashboardStats = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = await VendorModel.findOne({ userId: req.userId }).select('-bankDetails -payoutSettings')
         
         if (!vendor) {
             return res.status(404).json({
@@ -17,133 +41,180 @@ const getVendorDashboardStats = async (req, res) => {
 
         const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
 
-        const totalOrders = await OrderModel.countDocuments({ productId: { $in: vendorProductIds } })
-        
-        const pendingOrders = await OrderModel.countDocuments({ 
-            productId: { $in: vendorProductIds },
-            order_status: 'pending'
-        })
-        
-        const processingOrders = await OrderModel.countDocuments({ 
-            productId: { $in: vendorProductIds },
-            order_status: 'processing'
-        })
-        
-        const shippedOrders = await OrderModel.countDocuments({ 
-            productId: { $in: vendorProductIds },
-            order_status: 'shipped'
-        })
-        
-        const deliveredOrders = await OrderModel.countDocuments({ 
-            productId: { $in: vendorProductIds },
-            order_status: 'delivered'
-        })
+        if (vendorProductIds.length === 0) {
+            return res.status(200).json({
+                message: 'Dashboard stats fetched successfully',
+                data: {
+                    overview: {
+                        totalOrders: 0,
+                        pendingOrders: 0,
+                        processingOrders: 0,
+                        shippedOrders: 0,
+                        deliveredOrders: 0,
+                        totalRevenue: 0,
+                        totalSalesAmount: 0,
+                        walletBalance: vendor.walletBalance || 0,
+                        pendingBalance: vendor.pendingBalance || 0,
+                        availableBalance: vendor.availableBalance || 0,
+                        totalProducts: 0
+                    },
+                    today: { orders: 0, revenue: 0 },
+                    thisWeek: { revenue: 0, orders: 0 },
+                    monthly: { revenue: 0, orders: 0 },
+                    topProducts: [],
+                    recentOrders: [],
+                    sellerScore: vendor.performanceMetrics?.sellerScore || 0,
+                    averageRating: vendor.analytics?.averageRating || 0,
+                    verificationStatus: vendor.verificationStatus
+                },
+                success: true,
+                error: false
+            })
+        }
 
-        const revenueResult = await OrderModel.aggregate([
-            { 
-                $match: { 
-                    productId: { $in: vendorProductIds },
-                    order_status: { $nin: ['cancelled'] }
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalRevenue: { $sum: '$totalAmt' },
-                    totalSales: { $sum: '$subTotalAmt' }
-                }
-            }
-        ])
+        const cacheKey = `vendor_dashboard_${vendor._id}`
+        const cachedData = getCachedData(cacheKey)
+        
+        if (cachedData) {
+            return res.status(200).json({
+                message: 'Dashboard stats fetched successfully',
+                data: cachedData,
+                success: true,
+                error: false,
+                cached: true
+            })
+        }
 
         const today = new Date()
         today.setHours(0, 0, 0, 0)
-
-        const todayOrders = await OrderModel.countDocuments({
-            productId: { $in: vendorProductIds },
-            createdAt: { $gte: today }
-        })
-
-        const todayRevenueResult = await OrderModel.aggregate([
-            { 
-                $match: { 
-                    productId: { $in: vendorProductIds },
-                    createdAt: { $gte: today },
-                    order_status: { $nin: ['cancelled'] }
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    revenue: { $sum: '$totalAmt' }
-                }
-            }
-        ])
-
         const thisWeek = new Date(today)
         thisWeek.setDate(thisWeek.getDate() - 7)
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
 
-        const weeklyRevenueResult = await OrderModel.aggregate([
-            { 
-                $match: { 
-                    productId: { $in: vendorProductIds },
-                    createdAt: { $gte: thisWeek },
-                    order_status: { $nin: ['cancelled'] }
+        const [orderStatsResult, todayResult, weeklyResult, monthlyResult, topProducts, recentOrders] = await Promise.all([
+            OrderModel.aggregate([
+                { $match: { productId: { $in: vendorProductIds } } },
+                {
+                    $group: {
+                        _id: '$order_status',
+                        count: { $sum: 1 },
+                        totalRevenue: { $sum: '$totalAmt' }
+                    }
                 }
-            },
-            {
-                $group: {
-                    _id: null,
-                    revenue: { $sum: '$totalAmt' },
-                    orders: { $sum: 1 }
+            ]),
+            OrderModel.aggregate([
+                { 
+                    $match: { 
+                        productId: { $in: vendorProductIds },
+                        createdAt: { $gte: today }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        orders: { $sum: 1 },
+                        revenue: { $sum: '$totalAmt' }
+                    }
                 }
-            }
+            ]),
+            OrderModel.aggregate([
+                { 
+                    $match: { 
+                        productId: { $in: vendorProductIds },
+                        createdAt: { $gte: thisWeek },
+                        order_status: { $nin: ['cancelled', 'refunded'] }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        revenue: { $sum: '$totalAmt' },
+                        orders: { $sum: 1 }
+                    }
+                }
+            ]),
+            OrderModel.aggregate([
+                { 
+                    $match: { 
+                        productId: { $in: vendorProductIds },
+                        createdAt: { $gte: firstDayOfMonth },
+                        order_status: { $nin: ['cancelled', 'refunded'] }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        revenue: { $sum: '$totalAmt' },
+                        orders: { $sum: 1 }
+                    }
+                }
+            ]),
+            productModel
+                .find({ 'more_details.vendorId': vendor._id })
+                .sort({ rating: -1 })
+                .limit(5)
+                .select('productName productImage sellingPrice rating quantity')
+                .lean(),
+            OrderModel
+                .find({ productId: { $in: vendorProductIds } })
+                .populate('userId', 'name email')
+                .populate('productId', 'productName productImage')
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .lean()
         ])
 
-        const topProducts = await productModel
-            .find({ 'more_details.vendorId': vendor._id })
-            .sort({ rating: -1 })
-            .limit(5)
-            .select('productName productImage sellingPrice rating quantity')
+        const orderStats = {
+            totalOrders: 0,
+            pendingOrders: 0,
+            processingOrders: 0,
+            shippedOrders: 0,
+            deliveredOrders: 0,
+            totalRevenue: 0
+        }
 
-        const recentOrders = await OrderModel
-            .find({ productId: { $in: vendorProductIds } })
-            .populate('userId', 'name email')
-            .populate('productId', 'productName productImage')
-            .sort({ createdAt: -1 })
-            .limit(5)
+        orderStatsResult.forEach(stat => {
+            orderStats.totalOrders += stat.count
+            orderStats.totalRevenue += stat.totalRevenue || 0
+            if (stat._id === 'pending') orderStats.pendingOrders = stat.count
+            if (stat._id === 'processing') orderStats.processingOrders = stat.count
+            if (stat._id === 'shipped') orderStats.shippedOrders = stat.count
+            if (stat._id === 'delivered') orderStats.deliveredOrders = stat.count
+        })
 
         const stats = {
             overview: {
-                totalOrders,
-                pendingOrders,
-                processingOrders,
-                shippedOrders,
-                deliveredOrders,
-                totalRevenue: revenueResult[0]?.totalRevenue || 0,
-                totalSalesAmount: revenueResult[0]?.totalSales || 0,
-                walletBalance: vendor.walletBalance,
-                pendingBalance: vendor.pendingBalance,
-                availableBalance: vendor.availableBalance,
-                totalProducts: vendor.analytics.totalProducts
+                ...orderStats,
+                totalSalesAmount: orderStats.totalRevenue,
+                walletBalance: vendor.walletBalance || 0,
+                pendingBalance: vendor.pendingBalance || 0,
+                availableBalance: vendor.availableBalance || 0,
+                totalProducts: vendor.analytics?.totalProducts || 0
             },
             today: {
-                orders: todayOrders,
-                revenue: todayRevenueResult[0]?.revenue || 0
+                orders: todayResult[0]?.orders || 0,
+                revenue: todayResult[0]?.revenue || 0
             },
             thisWeek: {
-                revenue: weeklyRevenueResult[0]?.revenue || 0,
-                orders: weeklyRevenueResult[0]?.orders || 0
+                revenue: weeklyResult[0]?.revenue || 0,
+                orders: weeklyResult[0]?.orders || 0
+            },
+            monthly: {
+                revenue: monthlyResult[0]?.revenue || 0,
+                orders: monthlyResult[0]?.orders || 0
             },
             topProducts,
             recentOrders,
-            sellerScore: vendor.performanceMetrics.sellerScore,
-            averageRating: vendor.analytics.averageRating,
+            sellerScore: vendor.performanceMetrics?.sellerScore || 0,
+            averageRating: vendor.analytics?.averageRating || 0,
             verificationStatus: vendor.verificationStatus
         }
 
-        await VendorModel.findByIdAndUpdate(vendor._id, {
+        setCachedData(cacheKey, stats)
+
+        VendorModel.findByIdAndUpdate(vendor._id, {
             lastActiveAt: new Date()
-        })
+        }).exec()
 
         res.status(200).json({
             message: 'Dashboard stats fetched successfully',
@@ -476,5 +547,7 @@ module.exports = {
     getVendorDashboardStats,
     getVendorAnalytics,
     getVendorPerformanceMetrics,
-    getVendorSalesChart
+    getVendorSalesChart,
+    clearVendorDashboardCache,
+    clearAllVendorCaches
 }

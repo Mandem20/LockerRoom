@@ -1,6 +1,7 @@
 const OrderModel = require('../../models/order.model')
 const productModel = require('../../models/productModel')
 const VendorModel = require('../../models/vendorModel')
+const { clearVendorDashboardCache } = require('./vendorAnalyticsController')
 
 const getVendorOrders = async (req, res) => {
     try {
@@ -151,8 +152,9 @@ const updateVendorOrderStatus = async (req, res) => {
         const statusFlow = {
             'pending': ['processing', 'cancelled'],
             'processing': ['shipped', 'cancelled'],
-            'shipped': ['delivered'],
-            'delivered': [],
+            'shipped': ['delivered', 'fulfilled'],
+            'delivered': ['fulfilled'],
+            'fulfilled': [],
             'cancelled': []
         }
 
@@ -172,6 +174,8 @@ const updateVendorOrderStatus = async (req, res) => {
         })
 
         await order.save()
+
+        clearVendorDashboardCache(vendor._id)
 
         res.status(200).json({
             message: 'Order status updated successfully',
@@ -225,6 +229,21 @@ const getVendorOrderStats = async (req, res) => {
             order_status: 'delivered'
         })
         
+        const fulfilledOrders = await OrderModel.countDocuments({ 
+            productId: { $in: vendorProductIds },
+            order_status: 'fulfilled'
+        })
+        
+        const refundedOrders = await OrderModel.countDocuments({ 
+            productId: { $in: vendorProductIds },
+            order_status: 'refunded'
+        })
+
+        const refundRequestedOrders = await OrderModel.countDocuments({ 
+            productId: { $in: vendorProductIds },
+            order_status: 'refund_requested'
+        })
+        
         const cancelledOrders = await OrderModel.countDocuments({ 
             productId: { $in: vendorProductIds },
             order_status: 'cancelled'
@@ -234,7 +253,8 @@ const getVendorOrderStats = async (req, res) => {
             { 
                 $match: { 
                     productId: { $in: vendorProductIds },
-                    order_status: { $in: ['delivered', 'shipped', 'processing'] }
+                    order_status: { $in: ['delivered', 'fulfilled', 'shipped', 'processing'] },
+                    payment_status: { $ne: 'refunded' }
                 }
             },
             {
@@ -252,6 +272,9 @@ const getVendorOrderStats = async (req, res) => {
             processingOrders,
             shippedOrders,
             deliveredOrders,
+            fulfilledOrders,
+            refundedOrders,
+            refundRequestedOrders,
             cancelledOrders,
             totalRevenue: revenueResult[0]?.totalRevenue || 0,
             totalSales: revenueResult[0]?.totalSales || 0
@@ -310,10 +333,137 @@ const getRecentVendorOrders = async (req, res) => {
     }
 }
 
+const requestVendorRefund = async (req, res) => {
+    try {
+        const vendor = await VendorModel.findOne({ userId: req.userId })
+        
+        if (!vendor) {
+            return res.status(404).json({
+                message: 'Vendor profile not found',
+                error: true,
+                success: false
+            })
+        }
+
+        const { orderId, note } = req.body
+
+        const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
+
+        const order = await OrderModel.findOne({
+            _id: orderId,
+            productId: { $in: vendorProductIds }
+        })
+
+        if (!order) {
+            return res.status(404).json({
+                message: 'Order not found',
+                error: true,
+                success: false
+            })
+        }
+
+        if (order.order_status === 'fulfilled' || order.order_status === 'refund_requested') {
+            return res.status(400).json({
+                message: 'Refund already requested or order is fulfilled',
+                error: true,
+                success: false
+            })
+        }
+
+        order.order_status = 'refund_requested'
+        order.order_status_history.push({
+            status: 'refund_requested',
+            updatedAt: new Date(),
+            note: note || 'Refund requested by vendor'
+        })
+
+        await order.save()
+
+        res.status(200).json({
+            message: 'Refund request submitted successfully',
+            data: order,
+            success: true,
+            error: false
+        })
+    } catch (err) {
+        res.status(400).json({
+            message: err.message || err,
+            data: [],
+            error: true,
+            success: false
+        })
+    }
+}
+
+const processVendorRefund = async (req, res) => {
+    try {
+        const vendor = await VendorModel.findOne({ userId: req.userId })
+        
+        if (!vendor) {
+            return res.status(404).json({
+                message: 'Vendor profile not found',
+                error: true,
+                success: false
+            })
+        }
+
+        const { orderId, note } = req.body
+
+        const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
+
+        const order = await OrderModel.findOne({
+            _id: orderId,
+            productId: { $in: vendorProductIds }
+        })
+
+        if (!order) {
+            return res.status(404).json({
+                message: 'Order not found',
+                error: true,
+                success: false
+            })
+        }
+
+        if (order.order_status !== 'refund_requested' && order.order_status !== 'cancelled') {
+            return res.status(400).json({
+                message: 'Order must be in refund_requested or cancelled status to process refund',
+                error: true,
+                success: false
+            })
+        }
+
+        order.order_status = 'refunded'
+        order.payment_status = 'refunded'
+        order.order_status_history.push({
+            status: 'refunded',
+            updatedAt: new Date(),
+            note: note || 'Refund processed by vendor'
+        })
+
+        await order.save()
+
+        res.status(200).json({
+            message: 'Refund processed successfully',
+            data: order,
+            success: true,
+            error: false
+        })
+    } catch (err) {
+        res.status(400).json({
+            message: err.message || err,
+            data: [],
+            error: true,
+            success: false
+        })
+    }
+}
+
 module.exports = {
     getVendorOrders,
     getVendorOrderById,
     updateVendorOrderStatus,
     getVendorOrderStats,
-    getRecentVendorOrders
+    getRecentVendorOrders,
+    requestVendorRefund,
+    processVendorRefund
 }

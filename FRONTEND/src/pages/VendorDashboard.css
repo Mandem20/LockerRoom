@@ -66,7 +66,7 @@
 
 .wallet-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
@@ -457,6 +457,64 @@
     align-items: center;
     justify-content: center;
     min-height: 400px;
+}
+
+/* Skeleton Loading */
+.skeleton {
+    animation: pulse 1.5s infinite;
+    background: #e5e7eb;
+}
+
+.skeleton-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #e5e7eb;
+}
+
+.skeleton-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skeleton-label {
+    width: 60%;
+    height: 14px;
+    border-radius: 4px;
+    background: #e5e7eb;
+}
+
+.skeleton-value {
+    width: 80%;
+    height: 28px;
+    border-radius: 4px;
+    background: #e5e7eb;
+}
+
+.skeleton-change {
+    width: 40%;
+    height: 12px;
+    border-radius: 4px;
+    background: #e5e7eb;
+}
+
+.skeleton-title {
+    width: 200px;
+    height: 20px;
+    border-radius: 4px;
+    background: #e5e7eb;
+    margin-bottom: 16px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* Responsive */

@@ -280,8 +280,20 @@ const SummaryApi = {
             url : `${BackendDomain}/api/vendor/orders`,
             method : "get"
           },
+          vendorOrderById : {
+            url : `${BackendDomain}/api/vendor/orders`,
+            method : "get"
+          },
           updateVendorOrderStatus : {
             url : `${BackendDomain}/api/vendor/order-status`,
+            method : "post"
+          },
+          requestVendorRefund : {
+            url : `${BackendDomain}/api/vendor/refund-request`,
+            method : "post"
+          },
+          processVendorRefund : {
+            url : `${BackendDomain}/api/vendor/process-refund`,
             method : "post"
           },
           vendorOrderStats : {

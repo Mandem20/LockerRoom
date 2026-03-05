@@ -126,6 +126,12 @@ const VendorWallet = () => {
                     💰 Wallet Overview
                 </button>
                 <button 
+                    className={activeTab === 'commission' ? 'active' : ''}
+                    onClick={() => setActiveTab('commission')}
+                >
+                    📊 Commission Breakdown
+                </button>
+                <button 
                     className={activeTab === 'bank' ? 'active' : ''}
                     onClick={() => setActiveTab('bank')}
                 >
@@ -192,6 +198,75 @@ const VendorWallet = () => {
                             <p className="flow-note">
                                 Funds become available after order is delivered and payment is confirmed
                             </p>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'commission' && (
+                    <div className="commission-breakdown">
+                        <div className="commission-header">
+                            <h3>Commission & Fees Breakdown</h3>
+                            <p>Detailed breakdown of platform fees deducted from your sales</p>
+                        </div>
+
+                        <div className="commission-summary">
+                            <div className="summary-item">
+                                <span className="summary-label">Total Sales Amount</span>
+                                <span className="summary-value">{displayCEDICurrency(wallet?.commissionBreakdown?.totalSales || 0)}</span>
+                            </div>
+                            <div className="summary-item">
+                                <span className="summary-label">Platform Commission ({wallet?.commissionBreakdown?.commissionRate || 10}%)</span>
+                                <span className="summary-value negative">-{displayCEDICurrency(wallet?.commissionBreakdown?.platformCommission || 0)}</span>
+                            </div>
+                            <div className="summary-item">
+                                <span className="summary-label">Payment Processing Fee ({wallet?.commissionBreakdown?.paymentFeeRate || 2.5}%)</span>
+                                <span className="summary-value negative">-{displayCEDICurrency(wallet?.commissionBreakdown?.paymentProcessingFee || 0)}</span>
+                            </div>
+                            <div className="summary-item">
+                                <span className="summary-label">Service Fee</span>
+                                <span className="summary-value negative">-{displayCEDICurrency(wallet?.commissionBreakdown?.serviceFee || 0)}</span>
+                            </div>
+                            <div className="summary-item total">
+                                <span className="summary-label">Total Fees Deducted</span>
+                                <span className="summary-value negative">{displayCEDICurrency(wallet?.commissionBreakdown?.totalFees || 0)}</span>
+                            </div>
+                            <div className="summary-item net">
+                                <span className="summary-label">Net Earnings (Your Share)</span>
+                                <span className="summary-value positive">{displayCEDICurrency(wallet?.commissionBreakdown?.netEarnings || 0)}</span>
+                            </div>
+                        </div>
+
+                        <div className="commission-chart">
+                            <h4>Fee Distribution</h4>
+                            <div className="chart-bar">
+                                <div 
+                                    className="bar-segment platform" 
+                                    style={{ width: `${((wallet?.commissionBreakdown?.platformCommission || 0) / (wallet?.commissionBreakdown?.totalSales || 1)) * 100}%` }}
+                                >
+                                    <span>Platform {((wallet?.commissionBreakdown?.platformCommission || 0) / (wallet?.commissionBreakdown?.totalSales || 1) * 100).toFixed(1)}%</span>
+                                </div>
+                                <div 
+                                    className="bar-segment payment" 
+                                    style={{ width: `${((wallet?.commissionBreakdown?.paymentProcessingFee || 0) / (wallet?.commissionBreakdown?.totalSales || 1)) * 100}%` }}
+                                >
+                                    <span>Payment {((wallet?.commissionBreakdown?.paymentProcessingFee || 0) / (wallet?.commissionBreakdown?.totalSales || 1) * 100).toFixed(1)}%</span>
+                                </div>
+                                <div 
+                                    className="bar-segment net" 
+                                    style={{ width: `${((wallet?.commissionBreakdown?.netEarnings || 0) / (wallet?.commissionBreakdown?.totalSales || 1)) * 100}%` }}
+                                >
+                                    <span>Your Share {((wallet?.commissionBreakdown?.netEarnings || 0) / (wallet?.commissionBreakdown?.totalSales || 1) * 100).toFixed(1)}%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="commission-note">
+                            <h4>💡 How it's calculated</h4>
+                            <ul>
+                                <li><strong>Platform Commission:</strong> {wallet?.commissionBreakdown?.commissionRate || 10}% of sale price - covers platform services</li>
+                                <li><strong>Payment Processing:</strong> {wallet?.commissionBreakdown?.paymentFeeRate || 2.5}% - covers payment gateway fees</li>
+                                <li><strong>Service Fee:</strong> Fixed fee per transaction for order management</li>
+                            </ul>
                         </div>
                     </div>
                 )}

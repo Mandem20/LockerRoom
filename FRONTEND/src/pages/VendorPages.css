@@ -2002,3 +2002,325 @@
     margin: 0;
     line-height: 1.6;
 }
+
+/* Invoice Modal */
+.invoice-modal {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.invoice-actions {
+    margin-bottom: 20px;
+}
+
+.invoice-content {
+    background: #fff;
+    padding: 20px;
+}
+
+.invoice-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #dc2626;
+    padding-bottom: 20px;
+}
+
+.invoice-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #dc2626;
+    letter-spacing: 4px;
+}
+
+.invoice-number {
+    font-size: 16px;
+    color: #6b7280;
+    margin-top: 8px;
+}
+
+.vendor-info,
+.customer-info {
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.vendor-info strong,
+.customer-info strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+
+.invoice-table th,
+.invoice-table td {
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: left;
+}
+
+.invoice-table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+
+.invoice-totals {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.invoice-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 40px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.invoice-row.total {
+    font-size: 18px;
+    font-weight: bold;
+    color: #dc2626;
+    border-bottom: none;
+    padding-top: 12px;
+}
+
+.invoice-footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Action buttons in orders table */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-print {
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-print:hover {
+    background: #2563eb;
+}
+
+.btn-fulfilled {
+    padding: 6px 12px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-fulfilled:hover {
+    background: #059669;
+}
+
+.btn-refund {
+    padding: 6px 12px;
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-refund:hover {
+    background: #d97706;
+}
+
+.btn-process-refund {
+    padding: 6px 12px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-process-refund:hover {
+    background: #dc2626;
+}
+
+/* Fulfilled stat item */
+.orders-stats .stat-item.fulfilled {
+    background: #dbeafe;
+}
+
+.orders-stats .stat-item.fulfilled .stat-value {
+    color: #2563eb;
+}
+
+/* Refunded stat item */
+.orders-stats .stat-item.refunded {
+    background: #fef2f2;
+}
+
+.orders-stats .stat-item.refunded .stat-value {
+    color: #dc2626;
+}
+
+/* Commission Breakdown */
+.commission-breakdown {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.commission-header {
+    margin-bottom: 24px;
+}
+
+.commission-header h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #1a1a2e;
+}
+
+.commission-header p {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.commission-summary {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item.total {
+    border-top: 2px solid #e5e7eb;
+    margin-top: 8px;
+    padding-top: 16px;
+}
+
+.summary-item.net {
+    border-top: 2px solid #10b981;
+    margin-top: 8px;
+    padding-top: 16px;
+    font-weight: bold;
+}
+
+.summary-label {
+    color: #6b7280;
+}
+
+.summary-value {
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.summary-value.negative {
+    color: #dc2626;
+}
+
+.summary-value.positive {
+    color: #10b981;
+    font-size: 18px;
+}
+
+.commission-chart {
+    margin-bottom: 24px;
+}
+
+.commission-chart h4 {
+    font-size: 16px;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+}
+
+.chart-bar {
+    display: flex;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #e5e7eb;
+}
+
+.bar-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 60px;
+    transition: width 0.3s ease;
+}
+
+.bar-segment.platform {
+    background: #f59e0b;
+}
+
+.bar-segment.payment {
+    background: #8b5cf6;
+}
+
+.bar-segment.net {
+    background: #10b981;
+}
+
+.commission-note {
+    background: #eff6ff;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #3b82f6;
+}
+
+.commission-note h4 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #1e40af;
+}
+
+.commission-note ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.commission-note li {
+    padding: 8px 0;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.commission-note li strong {
+    color: #1e40af;
+}

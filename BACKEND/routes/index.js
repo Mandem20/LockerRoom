@@ -190,7 +190,9 @@ const {
     getVendorOrderById,
     updateVendorOrderStatus,
     getVendorOrderStats,
-    getRecentVendorOrders
+    getRecentVendorOrders,
+    requestVendorRefund,
+    processVendorRefund
 } = require('../controller/vendor/vendorOrderController')
 
 const {
@@ -240,6 +242,8 @@ router.get("/vendor/product-analytics", authToken, vendorOnly, getVendorProductA
 router.get("/vendor/orders", authToken, vendorOnly, getVendorOrders)
 router.get("/vendor/orders/:id", authToken, vendorOnly, getVendorOrderById)
 router.post("/vendor/order-status", authToken, vendorOnly, updateVendorOrderStatus)
+router.post("/vendor/refund-request", authToken, vendorOnly, requestVendorRefund)
+router.post("/vendor/process-refund", authToken, vendorOnly, processVendorRefund)
 router.get("/vendor/order-stats", authToken, vendorOnly, getVendorOrderStats)
 router.get("/vendor/recent-orders", authToken, vendorOnly, getRecentVendorOrders)
 
