@@ -4,7 +4,7 @@ const productModel = require('../../models/productModel')
 
 const getVendorPayouts = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -63,7 +63,7 @@ const getVendorPayouts = async (req, res) => {
 
 const requestPayout = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -149,7 +149,7 @@ const requestPayout = async (req, res) => {
 
 const getVendorWallet = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -240,7 +240,7 @@ const getVendorWallet = async (req, res) => {
 
 const getVendorTransactions = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({

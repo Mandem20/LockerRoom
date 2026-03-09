@@ -5,14 +5,48 @@ const orderSchema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'user'
     },
+    parentOrderId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'ParentOrder',
+        default: null
+    },
+    subOrderNumber: {
+        type: String,
+        default: null
+    },
        orderId : {
         type : String,
         required : [true, "Provide orderId"],
         unique : true
     },
-        productId : {
+       productId : {
        type : mongoose.Schema.ObjectId,
         ref : 'product'
+    },
+    vendorId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'vendor'
+    },
+    additionalItems: [{
+        productId: mongoose.Schema.ObjectId,
+        productName: String,
+        productImage: [String],
+        quantity: Number,
+        price: Number,
+        size: String,
+        color: String
+    }],
+    quantity: {
+        type: Number,
+        default: 1
+    },
+    multiVendor: {
+        type: Boolean,
+        default: false
+    },
+    parentOrderNumber: {
+        type: String,
+        default: null
     },
        product_details : {
         name  : String,
@@ -55,6 +89,49 @@ const orderSchema = new mongoose.Schema({
     invoice_receipt : {
         type : Number,
         default : "",
+    },
+    commission: {
+        rate: Number,
+        type: {
+            type: String,
+            enum: ['default', 'category_based', 'tier_based', 'vendor_override'],
+            default: 'default'
+        },
+        platformCommission: {
+            type: Number,
+            default: 0
+        },
+        netVendorEarnings: {
+            type: Number,
+            default: 0
+        },
+        transactionId: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'CommissionTransaction'
+        },
+        calculatedAt: Date
+    },
+    vendorEarnings: {
+        type: Number,
+        default: 0
+    },
+    platformFees: {
+        paymentGatewayFee: {
+            type: Number,
+            default: 0
+        },
+        fixedTransactionFee: {
+            type: Number,
+            default: 0
+        },
+        platformServiceFee: {
+            type: Number,
+            default: 0
+        },
+        totalFees: {
+            type: Number,
+            default: 0
+        }
     }
     
 },{

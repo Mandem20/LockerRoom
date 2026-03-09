@@ -32,14 +32,13 @@ const AdminProductCard = ({
         }
 
         try {
-            const response = await fetch(SummaryApi.deleteProduct.url, {
-                method: SummaryApi.deleteProduct.method,
-                credentials: 'include',
-                headers: {
-                    "content-type": "application/json"
-                },
-                body: JSON.stringify({ productId: data._id })
-            })
+            const response = await fetch(
+                SummaryApi.deleteAdminVendorProduct.url.replace(':id', data._id),
+                {
+                    method: SummaryApi.deleteAdminVendorProduct.method,
+                    credentials: 'include'
+                }
+            )
 
             const result = await response.json()
 

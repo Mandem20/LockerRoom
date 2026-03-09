@@ -75,13 +75,9 @@ const VendorProducts = () => {
         if (!window.confirm('Are you sure you want to delete this product?')) return
         
         try {
-            const response = await fetch(SummaryApi.deleteVendorProduct.url, {
+            const response = await fetch(SummaryApi.deleteVendorProduct.url.replace(':id', productId), {
                 method: 'DELETE',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId })
+                credentials: 'include'
             })
             const data = await response.json()
             

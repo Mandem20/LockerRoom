@@ -29,7 +29,7 @@ const clearAllVendorCaches = () => {
 
 const getVendorDashboardStats = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId }).select('-bankDetails -payoutSettings')
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId }).select('-bankDetails -payoutSettings')
         
         if (!vendor) {
             return res.status(404).json({
@@ -39,7 +39,12 @@ const getVendorDashboardStats = async (req, res) => {
             })
         }
 
-        const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
+        const vendorProductIds = await productModel.distinct('_id', {
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        })
 
         if (vendorProductIds.length === 0) {
             return res.status(200).json({
@@ -150,7 +155,12 @@ const getVendorDashboardStats = async (req, res) => {
                 }
             ]),
             productModel
-                .find({ 'more_details.vendorId': vendor._id })
+                .find({
+                    $or: [
+                        { 'more_details.vendorId': vendor._id },
+                        { vendorId: vendor._id }
+                    ]
+                })
                 .sort({ rating: -1 })
                 .limit(5)
                 .select('productName productImage sellingPrice rating quantity')
@@ -234,7 +244,7 @@ const getVendorDashboardStats = async (req, res) => {
 
 const getVendorAnalytics = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -257,7 +267,12 @@ const getVendorAnalytics = async (req, res) => {
             startDate.setFullYear(startDate.getFullYear() - 1)
         }
 
-        const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
+        const vendorProductIds = await productModel.distinct('_id', {
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        })
 
         const dailyRevenue = await OrderModel.aggregate([
             {
@@ -373,7 +388,7 @@ const getVendorAnalytics = async (req, res) => {
 
 const getVendorPerformanceMetrics = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -383,7 +398,12 @@ const getVendorPerformanceMetrics = async (req, res) => {
             })
         }
 
-        const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
+        const vendorProductIds = await productModel.distinct('_id', {
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        })
 
         const totalOrders = await OrderModel.countDocuments({ 
             productId: { $in: vendorProductIds }
@@ -407,7 +427,12 @@ const getVendorPerformanceMetrics = async (req, res) => {
             ? (cancelledOrders / totalOrders * 100)
             : 0
 
-        const products = await productModel.find({ 'more_details.vendorId': vendor._id })
+        const products = await productModel.find({
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        })
         const avgRating = products.length > 0 
             ? products.reduce((sum, p) => sum + (p.rating || 0), 0) / products.length
             : 0
@@ -472,7 +497,7 @@ const getPerformanceGrade = (score) => {
 
 const getVendorSalesChart = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -492,7 +517,12 @@ const getVendorSalesChart = async (req, res) => {
         const startDate = new Date()
         startDate.setDate(startDate.getDate() - days)
 
-        const vendorProductIds = await productModel.distinct('_id', { 'more_details.vendorId': vendor._id })
+        const vendorProductIds = await productModel.distinct('_id', {
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        })
 
         const salesData = await OrderModel.aggregate([
             {

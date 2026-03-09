@@ -42,6 +42,10 @@ const VendorWallet = lazy(() => import("../pages/VendorWallet"));
 const VendorSettings = lazy(() => import("../pages/VendorSettings"));
 const VendorAnalytics = lazy(() => import("../pages/VendorAnalytics"));
 const VendorApplications = lazy(() => import("../pages/VendorApplications"));
+const VendorManagement = lazy(() => import("../pages/VendorManagement"));
+const VendorProductManagement = lazy(() => import("../pages/VendorProductManagement"));
+const VendorOrderManagement = lazy(() => import("../pages/VendorOrderManagement"));
+const CommissionManagement = lazy(() => import("../pages/CommissionManagement"));
 
 const Loading = () => <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -235,6 +239,22 @@ const router = createBrowserRouter([
                     {
                         path : "vendor-applications",
                         element : <VendorApplications/>
+                    },
+                    {
+                        path : "vendor-management",
+                        element : <VendorManagement/>
+                    },
+                    {
+                        path : "vendor-products",
+                        element : <VendorProductManagement/>
+                    },
+                    {
+                        path : "vendor-orders",
+                        element : <VendorOrderManagement/>
+                    },
+                    {
+                        path : "commission-payout",
+                        element : <CommissionManagement/>
                     }
                 ]
             },

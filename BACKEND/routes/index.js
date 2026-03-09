@@ -15,6 +15,7 @@ const updateMyProfile = require('../controller/user/updateMyProfile')
 const updateMyAddress = require('../controller/user/updateMyAddress')
 const deleteUser = require('../controller/user/deleteUser')
 const toggleUserStatus = require('../controller/user/toggleUserStatus')
+const orderController = require('../controller/orderController')
 const UploadProductController = require('../controller/product/uploadProduct')
 const getProductController = require('../controller/product/getProduct')
 const updateProductController = require('../controller/product/updateProduct')
@@ -73,6 +74,84 @@ const updateOrderStatus = require('../controller/admin/updateOrderStatus')
 const downloadInvoice = require('../controller/admin/downloadInvoice')
 const sendOrderNotification = require('../controller/admin/sendOrderNotification')
 
+//vendor controllers (moved to top)
+const {
+    becomeVendor,
+    getVendorProfile,
+    updateVendorProfile,
+    updateBankDetails,
+    updatePayoutSettings,
+    uploadVerificationDocuments,
+    getVendorStatus
+} = require('../controller/vendor/vendorController')
+
+const {
+    uploadVendorProduct,
+    getVendorProducts,
+    getVendorProductById,
+    updateVendorProduct,
+    deleteVendorProduct,
+    updateVendorInventory,
+    bulkUpdateInventory,
+    getVendorProductAnalytics
+} = require('../controller/vendor/vendorProductController')
+
+const {
+    getVendorOrders,
+    getVendorOrderById,
+    updateVendorOrderStatus,
+    getVendorOrderStats,
+    getRecentVendorOrders,
+    requestVendorRefund,
+    processVendorRefund
+} = require('../controller/vendor/vendorOrderController')
+
+const {
+    getVendorDashboardStats,
+    getVendorAnalytics,
+    getVendorPerformanceMetrics,
+    getVendorSalesChart
+} = require('../controller/vendor/vendorAnalyticsController')
+
+const {
+    getVendorPayouts,
+    requestPayout,
+    getVendorWallet,
+    getVendorTransactions
+} = require('../controller/vendor/vendorPayoutController')
+
+const {
+    getAllVendorApplications,
+    getVendorApplicationById,
+    approveVendor,
+    rejectVendor,
+    suspendVendor,
+    reactivateVendor,
+    getVendorStats,
+    getAllVendors,
+    getVendorById,
+    updateVendorConfig,
+    getAdminVendorAnalytics,
+    getAdminVendorOrders,
+    getAdminVendorPayouts,
+    deleteVendor,
+    getAdminVendorProducts,
+    getAllProductsWithVendor,
+    deleteAdminVendorProduct
+} = require('../controller/vendor/vendorAdminController')
+
+const {
+    getAllVendorOrders,
+    getVendorOrderStats: getAdminVendorOrderStats,
+    adminOverrideOrderStatus,
+    adminResolveDispute,
+    adminCancelOrder
+} = require('../controller/admin/vendorOrderController')
+
+// commission & payout
+const commissionController = require('../controller/admin/commissionController')
+const payoutController = require('../controller/payoutController')
+
 router.post("/signup", userSignUpController)
 router.post("/signin",userSignInController)
 router.get("/user-details",authToken,userDetailsController)
@@ -93,6 +172,12 @@ router.post("/refund-request", authToken, createRefundRequest)
 router.get("/my-refund-requests", authToken, getMyRefundRequests)
 router.post("/refund-details", authToken, getRefundRequestDetails)
 
+//order checkout (multi-vendor)
+router.post("/create-order", authToken, orderController.createOrder)
+router.get("/my-orders", authToken, orderController.getMyOrders)
+router.get("/order-details/:orderId", authToken, orderController.getOrderDetails)
+router.post("/cancel-order/:orderId", authToken, orderController.cancelOrder)
+
 //admin refund management
 router.get("/all-refund-requests", authToken, adminOnly, getAllRefundRequests)
 router.post("/update-refund-status", authToken, adminOnly, updateRefundStatus)
@@ -106,6 +191,14 @@ router.get("/all-orders",authToken,adminOnly,getAllOrders)
 router.post("/update-order-status",authToken,adminOnly,updateOrderStatus)
 router.post("/send-order-notification",authToken,adminOnly,sendOrderNotification)
 router.get("/download-invoice",authToken,adminOnly,downloadInvoice)
+
+//admin vendor order management
+router.get("/admin/vendor-orders", authToken, adminOnly, getAllVendorOrders)
+router.get("/admin/vendor-order-stats", authToken, adminOnly, getAdminVendorOrderStats)
+router.post("/admin/override-order-status", authToken, adminOnly, adminOverrideOrderStatus)
+router.post("/admin/resolve-dispute", authToken, adminOnly, adminResolveDispute)
+router.post("/admin/cancel-order", authToken, adminOnly, adminCancelOrder)
+
 router.post("/update-user",authToken,adminOnly,updateUser)
 router.post("/delete-user",authToken,adminOnly,deleteUser)
 router.post("/toggle-user-status",authToken,adminOnly,toggleUserStatus)
@@ -164,64 +257,9 @@ router.post("/footer-links/delete", authToken, adminOnly, deleteFooterLink)
 
 
 //vendor routes
-const {
-    becomeVendor,
-    getVendorProfile,
-    updateVendorProfile,
-    updateBankDetails,
-    updatePayoutSettings,
-    uploadVerificationDocuments,
-    getVendorStatus
-} = require('../controller/vendor/vendorController')
-
-const {
-    uploadVendorProduct,
-    getVendorProducts,
-    getVendorProductById,
-    updateVendorProduct,
-    deleteVendorProduct,
-    updateVendorInventory,
-    bulkUpdateInventory,
-    getVendorProductAnalytics
-} = require('../controller/vendor/vendorProductController')
-
-const {
-    getVendorOrders,
-    getVendorOrderById,
-    updateVendorOrderStatus,
-    getVendorOrderStats,
-    getRecentVendorOrders,
-    requestVendorRefund,
-    processVendorRefund
-} = require('../controller/vendor/vendorOrderController')
-
-const {
-    getVendorDashboardStats,
-    getVendorAnalytics,
-    getVendorPerformanceMetrics,
-    getVendorSalesChart
-} = require('../controller/vendor/vendorAnalyticsController')
-
-const {
-    getVendorPayouts,
-    requestPayout,
-    getVendorWallet,
-    getVendorTransactions
-} = require('../controller/vendor/vendorPayoutController')
-
-const {
-    getAllVendorApplications,
-    getVendorApplicationById,
-    approveVendor,
-    rejectVendor,
-    suspendVendor,
-    reactivateVendor,
-    getVendorStats
-} = require('../controller/vendor/vendorAdminController')
-
 //vendor authentication & profile
 router.post("/become-vendor", authToken, becomeVendor)
-router.get("/vendor-status", authToken, getVendorStatus)
+router.get("/vendor-status", authToken, vendorOnly, getVendorStatus)
 router.get("/vendor-profile", authToken, vendorOnly, getVendorProfile)
 router.post("/vendor-profile", authToken, vendorOnly, updateVendorProfile)
 router.post("/vendor-bank-details", authToken, vendorOnly, updateBankDetails)
@@ -231,9 +269,9 @@ router.post("/vendor-verification-documents", authToken, vendorOnly, uploadVerif
 //vendor products
 router.get("/vendor/products", authToken, vendorOnly, getVendorProducts)
 router.post("/vendor/products", authToken, vendorOnly, uploadVendorProduct)
-router.get("/vendor/products", authToken, vendorOnly, getVendorProductById)
-router.put("/vendor/products", authToken, vendorOnly, updateVendorProduct)
-router.delete("/vendor/products", authToken, vendorOnly, deleteVendorProduct)
+router.get("/vendor/products/:id", authToken, vendorOnly, getVendorProductById)
+router.put("/vendor/products/:id", authToken, vendorOnly, updateVendorProduct)
+router.delete("/vendor/products/:id", authToken, vendorOnly, deleteVendorProduct)
 router.post("/vendor/inventory", authToken, vendorOnly, updateVendorInventory)
 router.post("/vendor/inventory/bulk", authToken, vendorOnly, bulkUpdateInventory)
 router.get("/vendor/product-analytics", authToken, vendorOnly, getVendorProductAnalytics)
@@ -246,6 +284,7 @@ router.post("/vendor/refund-request", authToken, vendorOnly, requestVendorRefund
 router.post("/vendor/process-refund", authToken, vendorOnly, processVendorRefund)
 router.get("/vendor/order-stats", authToken, vendorOnly, getVendorOrderStats)
 router.get("/vendor/recent-orders", authToken, vendorOnly, getRecentVendorOrders)
+router.get("/vendor/sub-orders", authToken, vendorOnly, orderController.getVendorSubOrders)
 
 //vendor analytics & dashboard
 router.get("/vendor/dashboard-stats", authToken, vendorOnly, getVendorDashboardStats)
@@ -267,6 +306,41 @@ router.post("/admin/reject-vendor", authToken, adminOnly, rejectVendor)
 router.post("/admin/suspend-vendor", authToken, adminOnly, suspendVendor)
 router.post("/admin/reactivate-vendor", authToken, adminOnly, reactivateVendor)
 router.get("/admin/vendor-stats", authToken, adminOnly, getVendorStats)
+router.get("/admin/vendors", authToken, adminOnly, getAllVendors)
+router.get("/admin/vendors/:vendorId", authToken, adminOnly, getVendorById)
 
+//admin vendor products
+router.get("/admin/vendor-products", authToken, adminOnly, getAllProductsWithVendor)
+router.get("/admin/vendors/:vendorId/products", authToken, adminOnly, getAdminVendorProducts)
+router.delete("/admin/products/:id", authToken, adminOnly, deleteAdminVendorProduct)
+
+//commission management (admin)
+router.get("/admin/commission-settings", authToken, adminOnly, commissionController.getCommissionSettings)
+router.put("/admin/commission-settings", authToken, adminOnly, commissionController.updateCommissionSettings)
+router.post("/admin/category-commission", authToken, adminOnly, commissionController.updateCategoryCommission)
+router.delete("/admin/category-commission/:categoryId", authToken, adminOnly, commissionController.deleteCategoryCommission)
+router.post("/admin/commission-tiers", authToken, adminOnly, commissionController.addCommissionTier)
+router.put("/admin/commission-tiers/:tierId", authToken, adminOnly, commissionController.updateCommissionTier)
+router.delete("/admin/commission-tiers/:tierId", authToken, adminOnly, commissionController.deleteCommissionTier)
+router.post("/admin/vendor-commission-override", authToken, adminOnly, commissionController.setVendorCommissionOverride)
+router.get("/admin/commission-report", authToken, adminOnly, commissionController.getPlatformCommissionReport)
+router.get("/admin/vendor-commission-report/:vendorId", authToken, adminOnly, commissionController.getVendorCommissionReport)
+router.get("/admin/commission-transactions", authToken, adminOnly, commissionController.getAllTransactions)
+router.post("/admin/recalculate-commission/:orderId", authToken, adminOnly, commissionController.recalculateOrderCommission)
+
+//payout management (admin)
+router.get("/admin/payouts", authToken, adminOnly, payoutController.getAllPayouts)
+router.get("/admin/payouts/:payoutId", authToken, adminOnly, payoutController.getPayoutById)
+router.post("/admin/payouts/:payoutId/approve", authToken, adminOnly, payoutController.approvePayout)
+router.post("/admin/payouts/:payoutId/process", authToken, adminOnly, payoutController.processPayout)
+router.post("/admin/payouts/:payoutId/cancel", authToken, adminOnly, payoutController.cancelPayout)
+router.post("/admin/payouts/:payoutId/retry", authToken, adminOnly, payoutController.retryPayout)
+router.get("/admin/payout-stats", authToken, adminOnly, payoutController.getPayoutStats)
+router.post("/admin/run-scheduled-payouts", authToken, adminOnly, payoutController.runScheduledPayouts)
+
+//vendor payouts & wallet (enhanced)
+router.get("/vendor/payout-history", authToken, vendorOnly, payoutController.getVendorPayouts)
+router.get("/vendor/payouts/:payoutId", authToken, vendorOnly, payoutController.getVendorPayoutById)
+router.get("/vendor/wallet-summary", authToken, vendorOnly, payoutController.getVendorWalletSummary)
 
 module.exports = router

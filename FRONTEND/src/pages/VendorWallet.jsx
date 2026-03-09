@@ -6,15 +6,24 @@ import { useNavigate } from 'react-router-dom'
 const VendorWallet = () => {
     const [wallet, setWallet] = useState(null)
     const [payouts, setPayouts] = useState([])
+    const [transactions, setTransactions] = useState([])
     const [loading, setLoading] = useState(true)
+    const [txLoading, setTxLoading] = useState(false)
     const [error, setError] = useState(null)
     const [showPayoutModal, setShowPayoutModal] = useState(false)
     const [activeTab, setActiveTab] = useState('wallet')
+    const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
     const navigate = useNavigate()
 
     useEffect(() => {
         fetchWallet()
     }, [])
+
+    useEffect(() => {
+        if (activeTab === 'transactions') {
+            fetchTransactions()
+        }
+    }, [activeTab])
 
     const fetchWallet = async () => {
         setLoading(true)
@@ -60,6 +69,41 @@ const VendorWallet = () => {
         } catch (error) {
             console.error('Error requesting payout:', error)
         }
+    }
+
+    const fetchTransactions = async (page = 1) => {
+        setTxLoading(true)
+        try {
+            const response = await fetch(`${SummaryApi.vendorTransactions.url}?page=${page}&limit=20`, {
+                method: SummaryApi.vendorTransactions.method,
+                credentials: 'include'
+            })
+            const data = await response.json()
+            
+            if (data.success) {
+                setTransactions(data.data.transactions)
+                setPagination(data.data.pagination)
+            }
+        } catch (error) {
+            console.error('Error fetching transactions:', error)
+        } finally {
+            setTxLoading(false)
+        }
+    }
+
+    const getStatusColor = (status) => {
+        const colors = {
+            delivered: 'success',
+            pending: 'warning',
+            processing: 'info',
+            shipped: 'info',
+            cancelled: 'danger'
+        }
+        return colors[status] || 'default'
+    }
+
+    const getPaymentStatusColor = (status) => {
+        return status === 'paid' ? 'success' : 'warning'
     }
 
     if (loading) {
@@ -318,11 +362,67 @@ const VendorWallet = () => {
 
                 {activeTab === 'transactions' && (
                     <div className="transactions-list">
-                        <h3>Recent Transactions</h3>
-                        <div className="transaction-placeholder">
-                            <span>📋</span>
-                            <p>Transaction history will appear here</p>
-                        </div>
+                        <h3>Payment History</h3>
+                        {txLoading ? (
+                            <div className="loading-small">
+                                <div className="spinner-small"></div>
+                            </div>
+                        ) : transactions.length > 0 ? (
+                            <>
+                                <div className="transactions-table">
+                                    <div className="table-header">
+                                        <span>Date</span>
+                                        <span>Order ID</span>
+                                        <span>Product</span>
+                                        <span>Amount</span>
+                                        <span>Status</span>
+                                        <span>Payment</span>
+                                    </div>
+                                    {transactions.map((tx, index) => (
+                                        <div key={index} className="table-row">
+                                            <span className="date">
+                                                {new Date(tx.date).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric'
+                                                })}
+                                            </span>
+                                            <span className="order-id">{tx.orderId}</span>
+                                            <span className="product-name">{tx.productName}</span>
+                                            <span className="amount">{displayCEDICurrency(tx.amount)}</span>
+                                            <span className={`status-badge ${getStatusColor(tx.status)}`}>
+                                                {tx.status}
+                                            </span>
+                                            <span className={`status-badge ${getPaymentStatusColor(tx.paymentStatus)}`}>
+                                                {tx.paymentStatus}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                                {pagination.pages > 1 && (
+                                    <div className="pagination">
+                                        <button 
+                                            disabled={pagination.page === 1}
+                                            onClick={() => fetchTransactions(pagination.page - 1)}
+                                        >
+                                            Previous
+                                        </button>
+                                        <span>Page {pagination.page} of {pagination.pages}</span>
+                                        <button 
+                                            disabled={pagination.page === pagination.pages}
+                                            onClick={() => fetchTransactions(pagination.page + 1)}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="transaction-placeholder">
+                                <span>📋</span>
+                                <p>No transactions found</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

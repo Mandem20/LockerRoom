@@ -5,7 +5,7 @@ const { clearVendorDashboardCache } = require('./vendorAnalyticsController')
 
 const getVendorOrders = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -76,7 +76,7 @@ const getVendorOrders = async (req, res) => {
 
 const getVendorOrderById = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -122,7 +122,7 @@ const getVendorOrderById = async (req, res) => {
 
 const updateVendorOrderStatus = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -166,6 +166,7 @@ const updateVendorOrderStatus = async (req, res) => {
             })
         }
 
+        const previousStatus = order.order_status;
         order.order_status = status
         order.order_status_history.push({
             status,
@@ -174,6 +175,30 @@ const updateVendorOrderStatus = async (req, res) => {
         })
 
         await order.save()
+
+        if (status === 'delivered') {
+            const orderSplitService = require('../services/orderSplitService');
+            await orderSplitService.updateParentOrderStatus(order.parentOrderId);
+            
+            const commissionService = require('../services/commissionService');
+            try {
+                await commissionService.processOrderCommission(order._id, {
+                    metadata: {
+                        source: 'order_delivered',
+                        deliveredAt: new Date(),
+                        previousStatus
+                    }
+                });
+                console.log(`Commission processed for order ${order.orderId}`);
+            } catch (commError) {
+                console.error('Error processing commission:', commError);
+            }
+        }
+
+        if (status === 'cancelled') {
+            const orderSplitService = require('../services/orderSplitService');
+            await orderSplitService.updateParentOrderStatus(order.parentOrderId);
+        }
 
         clearVendorDashboardCache(vendor._id)
 
@@ -195,7 +220,7 @@ const updateVendorOrderStatus = async (req, res) => {
 
 const getVendorOrderStats = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -298,7 +323,7 @@ const getVendorOrderStats = async (req, res) => {
 
 const getRecentVendorOrders = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -335,7 +360,7 @@ const getRecentVendorOrders = async (req, res) => {
 
 const requestVendorRefund = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -397,7 +422,7 @@ const requestVendorRefund = async (req, res) => {
 
 const processVendorRefund = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({

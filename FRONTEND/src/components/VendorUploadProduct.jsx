@@ -287,6 +287,17 @@ const VendorUploadProduct = ({
                         }
                     </select>
 
+                    <label htmlFor='material' className='mt-3'>Material Type :</label>
+                    <input
+                        type='text'
+                        id='material'
+                        placeholder='Enter material type (e.g., Cotton, Polyester)'
+                        name='material'
+                        value={data.material}
+                        onChange={handleOnChange}
+                        className='p-2 bg-slate-100 border rounded'
+                    />
+
                     <label htmlFor='stock' className='mt-3'>Stock :</label>
                     <select required value={data.stock} name='stock' onChange={handleOnChange} className='p-2 bg-slate-100 border rounded'>
                         <option value={""}>Select Stock</option>

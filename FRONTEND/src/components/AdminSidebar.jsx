@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaUsers, FaBox, FaTags, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaHome, FaShoppingCart, FaUserCircle, FaChartBar, FaCog, FaStore } from 'react-icons/fa'
+import { FaUsers, FaBox, FaTags, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaHome, FaShoppingCart, FaUserCircle, FaChartBar, FaCog, FaStore, FaSlidersH, FaShoppingBag, FaShippingFast, FaMoneyBillWave } from 'react-icons/fa'
 
 const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen, setMobileOpen, isLoggingOut = false }) => {
     const location = useLocation()
@@ -12,6 +12,10 @@ const AdminSidebar = ({ user, onLogout, isCollapsed, setIsCollapsed, mobileOpen,
         { path: 'analytics', label: 'Analytics', icon: <FaChartBar /> },
         { path: 'all-products', label: 'Products', icon: <FaBox /> },
         { path: 'vendor-applications', label: 'Vendor Applications', icon: <FaStore /> },
+        { path: 'vendor-management', label: 'Vendor Config', icon: <FaSlidersH /> },
+        { path: 'vendor-products', label: 'Vendor Products', icon: <FaShoppingBag /> },
+        { path: 'vendor-orders', label: 'Vendor Orders', icon: <FaShippingFast /> },
+        { path: 'commission-payout', label: 'Commission & Payout', icon: <FaMoneyBillWave /> },
         { path: 'All-users', label: 'Users', icon: <FaUsers /> },
         { path: 'categories', label: 'Categories', icon: <FaTags /> },
         { path: 'settings', label: 'Settings', icon: <FaCog /> },

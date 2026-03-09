@@ -10,7 +10,26 @@ async function updateProductController(req,res) {
 
         const { _id, ...resBody} = req.body
 
-        const updateProduct = await productModel.findByIdAndUpdate(_id,resBody)
+        const existingProduct = await productModel.findById(_id)
+        
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: "Product not found",
+                success: false,
+                error: true
+            })
+        }
+
+        if (!resBody.more_details || Object.keys(resBody.more_details).length === 0) {
+            resBody.more_details = existingProduct.more_details
+        } else {
+            resBody.more_details = {
+                ...existingProduct.more_details,
+                ...resBody.more_details
+            }
+        }
+
+        const updateProduct = await productModel.findByIdAndUpdate(_id, resBody, { new: true })
 
         res.json({
             message : "Product updated successfully",

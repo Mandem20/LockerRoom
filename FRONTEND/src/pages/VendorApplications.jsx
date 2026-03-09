@@ -3,6 +3,7 @@ import SummaryApi from '../common'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import { FaCheck, FaTimes, FaEye, FaStore, FaSearch, FaFilter } from 'react-icons/fa'
+import './VendorPages.css'
 
 const VendorApplications = () => {
     const [applications, setApplications] = useState([])

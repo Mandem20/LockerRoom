@@ -3,7 +3,7 @@ const VendorModel = require('../../models/vendorModel')
 
 const uploadVendorProduct = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -93,7 +93,7 @@ const uploadVendorProduct = async (req, res) => {
 
 const getVendorProducts = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -105,7 +105,12 @@ const getVendorProducts = async (req, res) => {
 
         const { page = 1, limit = 20, search, category, status, sort } = req.query
 
-        const query = { 'more_details.vendorId': vendor._id }
+        const query = {
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        }
 
         if (search) {
             query.$or = [
@@ -164,7 +169,7 @@ const getVendorProducts = async (req, res) => {
 
 const getVendorProductById = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -174,9 +179,16 @@ const getVendorProductById = async (req, res) => {
             })
         }
 
+        const vendorIdStr = vendor._id.toString()
+
         const product = await productModel.findOne({
             _id: req.params.id,
-            'more_details.vendorId': vendor._id
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { 'more_details.vendorId': vendorIdStr },
+                { vendorId: vendor._id },
+                { vendorId: vendorIdStr }
+            ]
         })
 
         if (!product) {
@@ -205,7 +217,7 @@ const getVendorProductById = async (req, res) => {
 
 const updateVendorProduct = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -215,9 +227,16 @@ const updateVendorProduct = async (req, res) => {
             })
         }
 
+        const vendorIdStr = vendor._id.toString()
+
         const product = await productModel.findOne({
             _id: req.params.id,
-            'more_details.vendorId': vendor._id
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { 'more_details.vendorId': vendorIdStr },
+                { vendorId: vendor._id },
+                { vendorId: vendorIdStr }
+            ]
         })
 
         if (!product) {
@@ -239,14 +258,14 @@ const updateVendorProduct = async (req, res) => {
             'stock',
             'quantity',
             'location',
-            'more_details',
             'sizes',
             'gender',
             'color',
             'colorVariants',
             'material',
             'price',
-            'sellingPrice'
+            'sellingPrice',
+            'rating'
         ]
 
         allowedUpdates.forEach(field => {
@@ -254,6 +273,16 @@ const updateVendorProduct = async (req, res) => {
                 product[field] = req.body[field]
             }
         })
+
+        if (req.body.more_details) {
+            product.more_details = {
+                ...product.more_details,
+                ...req.body.more_details,
+                vendorId: product.more_details.vendorId,
+                vendorName: product.more_details.vendorName,
+                storeName: product.more_details.storeName
+            }
+        }
 
         product.lastUpdated = new Date()
 
@@ -277,7 +306,7 @@ const updateVendorProduct = async (req, res) => {
 
 const deleteVendorProduct = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -287,9 +316,16 @@ const deleteVendorProduct = async (req, res) => {
             })
         }
 
+        const vendorIdStr = vendor._id.toString()
+
         const product = await productModel.findOneAndDelete({
             _id: req.params.id,
-            'more_details.vendorId': vendor._id
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { 'more_details.vendorId': vendorIdStr },
+                { vendorId: vendor._id },
+                { vendorId: vendorIdStr }
+            ]
         })
 
         if (!product) {
@@ -320,7 +356,7 @@ const deleteVendorProduct = async (req, res) => {
 
 const updateVendorInventory = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -333,8 +369,10 @@ const updateVendorInventory = async (req, res) => {
         const { productId, quantity, operation } = req.body
 
         const product = await productModel.findOne({
-            _id: productId,
-            'more_details.vendorId': vendor._id
+            $or: [
+                { _id: productId, 'more_details.vendorId': vendor._id },
+                { _id: productId, vendorId: vendor._id }
+            ]
         })
 
         if (!product) {
@@ -376,7 +414,7 @@ const updateVendorInventory = async (req, res) => {
 
 const bulkUpdateInventory = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -400,8 +438,10 @@ const bulkUpdateInventory = async (req, res) => {
             updates.map(async (update) => {
                 try {
                     const product = await productModel.findOne({
-                        _id: update.productId,
-                        'more_details.vendorId': vendor._id
+                        $or: [
+                            { _id: update.productId, 'more_details.vendorId': vendor._id },
+                            { _id: update.productId, vendorId: vendor._id }
+                        ]
                     })
 
                     if (!product) {
@@ -449,7 +489,7 @@ const bulkUpdateInventory = async (req, res) => {
 
 const getVendorProductAnalytics = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -459,7 +499,12 @@ const getVendorProductAnalytics = async (req, res) => {
             })
         }
 
-        const products = await productModel.find({ 'more_details.vendorId': vendor._id })
+        const products = await productModel.find({
+            $or: [
+                { 'more_details.vendorId': vendor._id },
+                { vendorId: vendor._id }
+            ]
+        })
 
         const totalProducts = products.length
         const inStock = products.filter(p => p.stock === 'In Stock').length

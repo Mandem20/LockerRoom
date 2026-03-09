@@ -99,7 +99,7 @@ const becomeVendor = async (req, res) => {
 
 const getVendorProfile = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -127,7 +127,7 @@ const getVendorProfile = async (req, res) => {
 
 const updateVendorProfile = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -197,7 +197,7 @@ const updateVendorProfile = async (req, res) => {
 
 const updateBankDetails = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -238,7 +238,7 @@ const updateBankDetails = async (req, res) => {
 
 const updatePayoutSettings = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -276,7 +276,7 @@ const updatePayoutSettings = async (req, res) => {
 
 const uploadVerificationDocuments = async (req, res) => {
     try {
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
         
         if (!vendor) {
             return res.status(404).json({
@@ -326,7 +326,7 @@ const uploadVerificationDocuments = async (req, res) => {
 
 const getVendorStatus = async (req, res) => {
     try {
-        const user = await userModel.findById(req.userId)
+        const user = req.user || await userModel.findById(req.userId)
         
         if (!user) {
             return res.status(404).json({
@@ -336,8 +336,7 @@ const getVendorStatus = async (req, res) => {
             })
         }
 
-        // Check if user has a vendor application
-        const vendor = await VendorModel.findOne({ userId: req.userId })
+        const vendor = req.vendor || await VendorModel.findOne({ userId: req.userId })
 
         if (!vendor) {
             return res.status(200).json({

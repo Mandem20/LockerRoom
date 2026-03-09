@@ -35,7 +35,26 @@ const SummaryApi = {
          url : `${BackendDomain}/api/update-my-address`,
          method : "post"
        },
-      dashboardStats : {
+       
+       // Order Checkout
+       createOrder : {
+         url : `${BackendDomain}/api/create-order`,
+         method : "post"
+       },
+       getMyOrders : {
+         url : `${BackendDomain}/api/my-orders`,
+         method : "get"
+       },
+       getOrderDetails : {
+         url : `${BackendDomain}/api/order-details/:orderId`,
+         method : "get"
+       },
+       cancelOrder : {
+         url : `${BackendDomain}/api/cancel-order/:orderId`,
+         method : "post"
+       },
+       
+       dashboardStats : {
         url : `${BackendDomain}/api/dashboard-stats`,
         method : "get"
       },
@@ -46,6 +65,26 @@ const SummaryApi = {
       allOrders : {
         url : `${BackendDomain}/api/all-orders`,
         method : "get"
+      },
+      getAllVendorOrders : {
+        url : `${BackendDomain}/api/admin/vendor-orders`,
+        method : "get"
+      },
+      getVendorOrderStats : {
+        url : `${BackendDomain}/api/admin/vendor-order-stats`,
+        method : "get"
+      },
+      overrideOrderStatus : {
+        url : `${BackendDomain}/api/admin/override-order-status`,
+        method : "post"
+      },
+      resolveDispute : {
+        url : `${BackendDomain}/api/admin/resolve-dispute`,
+        method : "post"
+      },
+      adminCancelOrder : {
+        url : `${BackendDomain}/api/admin/cancel-order`,
+        method : "post"
       },
       updateOrderStatus : {
         url : `${BackendDomain}/api/update-order-status`,
@@ -249,15 +288,15 @@ const SummaryApi = {
             method : "post"
           },
           vendorProductDetails : {
-            url : `${BackendDomain}/api/vendor/products`,
+            url : `${BackendDomain}/api/vendor/products/:id`,
             method : "get"
           },
           updateVendorProduct : {
-            url : `${BackendDomain}/api/vendor/products`,
+            url : `${BackendDomain}/api/vendor/products/:id`,
             method : "put"
           },
           deleteVendorProduct : {
-            url : `${BackendDomain}/api/vendor/products`,
+            url : `${BackendDomain}/api/vendor/products/:id`,
             method : "delete"
           },
           updateVendorInventory : {
@@ -352,8 +391,114 @@ const SummaryApi = {
           rejectVendor : {
             url : `${BackendDomain}/api/admin/reject-vendor`,
             method : "post"
+          },
+          getAllVendors : {
+            url : `${BackendDomain}/api/admin/vendors`,
+            method : "get"
+          },
+          getVendorById : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId`,
+            method : "get"
+          },
+          updateVendorConfig : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId/config`,
+            method : "put"
+          },
+          getVendorAnalytics : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId/analytics`,
+            method : "get"
+          },
+          getVendorOrders : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId/orders`,
+            method : "get"
+          },
+          getVendorPayouts : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId/payouts`,
+            method : "get"
+          },
+          deleteVendor : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId`,
+            method : "delete"
+          },
+          getAllVendorProducts : {
+            url : `${BackendDomain}/api/admin/vendor-products`,
+            method : "get"
+          },
+          getVendorProducts : {
+            url : `${BackendDomain}/api/admin/vendors/:vendorId/products`,
+            method : "get"
+          },
+          deleteAdminVendorProduct : {
+            url : `${BackendDomain}/api/admin/products/:id`,
+            method : "delete"
+          },
+          
+          // Commission Management
+          getCommissionSettings : {
+            url : `${BackendDomain}/api/admin/commission-settings`,
+            method : "get"
+          },
+          updateCommissionSettings : {
+            url : `${BackendDomain}/api/admin/commission-settings`,
+            method : "put"
+          },
+          updateCategoryCommission : {
+            url : `${BackendDomain}/api/admin/category-commission`,
+            method : "post"
+          },
+          deleteCategoryCommission : {
+            url : `${BackendDomain}/api/admin/category-commission/:categoryId`,
+            method : "delete"
+          },
+          getAllCategories : {
+            url : `${BackendDomain}/api/get-categories`,
+            method : "get"
+          },
+          getCommissionReport : {
+            url : `${BackendDomain}/api/admin/commission-report`,
+            method : "get"
+          },
+          getCommissionTransactions : {
+            url : `${BackendDomain}/api/admin/commission-transactions`,
+            method : "get"
+          },
+          
+          // Payout Management (Admin)
+          getAllPayouts : {
+            url : `${BackendDomain}/api/admin/payouts`,
+            method : "get"
+          },
+          getPayoutById : {
+            url : `${BackendDomain}/api/admin/payouts/:payoutId`,
+            method : "get"
+          },
+          approvePayout : {
+            url : `${BackendDomain}/api/admin/payouts/:payoutId/approve`,
+            method : "post"
+          },
+          processPayout : {
+            url : `${BackendDomain}/api/admin/payouts/:payoutId/process`,
+            method : "post"
+          },
+          cancelPayout : {
+            url : `${BackendDomain}/api/admin/payouts/:payoutId/cancel`,
+            method : "post"
+          },
+          getPayoutStats : {
+            url : `${BackendDomain}/api/admin/payout-stats`,
+            method : "get"
+          },
+          
+          // Vendor Payout & Wallet (New endpoints)
+          vendorPayoutHistory : {
+            url : `${BackendDomain}/api/vendor/payout-history`,
+            method : "get"
+          },
+          vendorWalletSummary : {
+            url : `${BackendDomain}/api/vendor/wallet-summary`,
+            method : "get"
           }
-
-}
+        
+        }
 
 export default SummaryApi

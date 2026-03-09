@@ -1,4 +1,5 @@
 const productModel = require("../../models/productModel")
+const VendorModel = require("../../models/vendorModel")
 
 const deleteProductController = async (req, res) => {
   try {
@@ -12,15 +13,27 @@ const deleteProductController = async (req, res) => {
       })
     }
 
-    const deletedProduct = await productModel.findByIdAndDelete(productId)
+    const product = await productModel.findById(productId)
 
-    if (!deletedProduct) {
+    if (!product) {
       return res.json({
         message: "Product not found",
         error: true,
         success: false
       })
     }
+
+    const vendorId = product.more_details?.vendorId
+
+    if (vendorId) {
+      const vendor = await VendorModel.findById(vendorId)
+      if (vendor) {
+        vendor.analytics.totalProducts = Math.max(0, (vendor.analytics.totalProducts || 1) - 1)
+        await vendor.save()
+      }
+    }
+
+    await productModel.findByIdAndDelete(productId)
 
     res.json({
       message: "Product deleted successfully",

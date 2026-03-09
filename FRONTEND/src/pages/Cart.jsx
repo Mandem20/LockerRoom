@@ -9,6 +9,7 @@ import { MdDelete } from "react-icons/md";
 import { FaShippingFast, FaShieldAlt, FaUndo } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import Breadcrumb from '../components/Breadcrumb'
+import { toast } from 'react-toastify'
 
 const Cart = () => {
     const [data,setData] = useState([])
@@ -286,22 +287,72 @@ const Cart = () => {
                              </div>
                          </div>
 
-                         {data.length > 0 && (
-                             <div className='p-4 border-t bg-gray-50'>
-                                 <button 
-                                    onClick={() => {
-                                        if (!address || !phone) {
-                                            toast.error('Please enter delivery address and phone number')
-                                            return
-                                        }
-                                        toast.success('Proceeding to checkout...')
-                                    }}
-                                    className='bg-red-600 p-3 text-white w-full font-semibold rounded-lg hover:bg-red-700 transition-colors'
-                                 >
-                                     Proceed to Checkout
-                                 </button>
-                             </div>
-                         )}
+                          {data.length > 0 && (
+                              <div className='p-4 border-t bg-gray-50'>
+                                  <button 
+                                     onClick={async () => {
+                                         if (!address || !phone) {
+                                             toast.error('Please enter delivery address and phone number')
+                                             return
+                                         }
+                                         
+                                         try {
+                                             const items = data.map(item => ({
+                                                 productId: item.productId._id,
+                                                 quantity: item.quantity,
+                                                 size: item.size,
+                                                 color: item.color
+                                             }))
+                                             
+                                             const orderData = {
+                                                 items,
+                                                 deliveryAddress: address,
+                                                 contactPhone: phone,
+                                                 paymentMode: 'online',
+                                                 paymentMethod: 'card',
+                                                 paymentId: `PAY-${Date.now()}`,
+                                                 notes: '',
+                                                 shippingCost: shipping,
+                                                 taxAmount: tax,
+                                                 discountAmount: 0,
+                                                 shippingAddress: {
+                                                     address: address,
+                                                     phone: phone
+                                                 },
+                                                 billingAddress: {
+                                                     address: address,
+                                                     phone: phone
+                                                 }
+                                             }
+                                             
+                                             const response = await fetch(SummaryApi.createOrder.url, {
+                                                 method: SummaryApi.createOrder.method,
+                                                 credentials: 'include',
+                                                 headers: {
+                                                     'Content-Type': 'application/json'
+                                                 },
+                                                 body: JSON.stringify(orderData)
+                                             })
+                                             
+                                             const result = await response.json()
+                                             
+                                             if (result.success) {
+                                                 toast.success('Order placed successfully!')
+                                                 navigate('/my-account/orders')
+                                             } else {
+                                                 toast.error(result.message || 'Failed to place order')
+                                             }
+                                         } catch (error) {
+                                             console.error('Checkout error:', error)
+                                             toast.error('Failed to place order')
+                                         }
+                                     }}
+                                     className='bg-red-600 p-3 text-white w-full font-semibold rounded-lg hover:bg-red-700 transition-colors'
+                                  >
+                                      Proceed to Checkout
+                                  </button>
+                              </div>
+                          )}
                      </div>  
                      )
                 }
